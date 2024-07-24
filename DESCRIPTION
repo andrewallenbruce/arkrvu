@@ -6,8 +6,17 @@ Authors@R:
 Maintainer: Andrew Bruce <andrewallenbruce@gmail.com>
 Description: Revenue integrity tools.
 License: MIT + file LICENSE
-URL: https://github.com/andrewallenbruce/rvu, https://andrewallenbruce.github.io/rvu/
+URL: https://github.com/andrewallenbruce/rvu,
+    https://andrewallenbruce.github.io/rvu/
 BugReports: https://github.com/andrewallenbruce/rvu/issues
+Suggests:
+    fs,
+    fuimus,
+    pins,
+    qs,
+    rlang
+Remotes: 
+    github::andrewallenbruce/fuimus
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
