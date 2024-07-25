@@ -4,5 +4,5 @@
 #'
 #' @export
 get_rvu_files <- function() {
-  NULL
+  get_pin("rvu24a")
 }
