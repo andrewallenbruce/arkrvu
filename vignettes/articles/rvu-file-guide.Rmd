@@ -1,0 +1,25 @@
+---
+title: "rvu-file-guide"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse   = FALSE,
+  echo       = TRUE, 
+  message    = FALSE, 
+  warning    = FALSE,
+  error      = TRUE,
+  comment    = "#>",
+  dpi        = 600, 
+  out.width  = "100%",
+  fig.height = 14,
+  fig.width  = 10
+)
+options(scipen = 999)
+
+library(northstar)
+library(dplyr)
+library(rvu)
+```
+

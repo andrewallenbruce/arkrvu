@@ -9,3 +9,7 @@ get_rvu_files()
 \description{
 Get RVU Files
 }
+\examples{
+get_rvu_files()
+
+}

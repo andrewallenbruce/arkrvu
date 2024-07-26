@@ -14,9 +14,14 @@ Suggests:
     fuimus,
     pins,
     qs,
-    rlang
+    rlang,
+    roxyglobals
 Remotes: 
     github::andrewallenbruce/fuimus
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",
+    "roxyglobals::global_roclet"))
 RoxygenNote: 7.3.2
+Config/Needs/website: rmarkdown
+Config/roxyglobals/filename: generated-globals.R
+Config/roxyglobals/unique: TRUE
