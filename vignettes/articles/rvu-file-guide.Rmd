@@ -18,8 +18,6 @@ knitr::opts_chunk$set(
 )
 options(scipen = 999)
 
-library(northstar)
-library(dplyr)
 library(rvu)
 ```
 
