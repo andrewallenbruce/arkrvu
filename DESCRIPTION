@@ -1,10 +1,10 @@
 Package: rvu
-Title: Tidy Revenue Integrity Tools
+Title: S7 For Medicare Physician Fee Schedule
 Version: 0.0.0.9000
 Authors@R: 
     person("Andrew", "Bruce", , "andrewallenbruce@gmail.com", role = c("aut", "cre", "cph"))
 Maintainer: Andrew Bruce <andrewallenbruce@gmail.com>
-Description: Revenue integrity tools.
+Description: S7 Classes and Methods for the Components of Medicare's Physician Fee Schedule.
 License: MIT + file LICENSE
 URL: https://github.com/andrewallenbruce/rvu,
     https://andrewallenbruce.github.io/rvu/

@@ -4,9 +4,9 @@
 \name{rvu-package}
 \alias{rvu}
 \alias{rvu-package}
-\title{rvu: Tidy Revenue Integrity Tools}
+\title{rvu: S7 For Medicare Physician Fee Schedule}
 \description{
-Revenue integrity tools.
+S7 Classes and Methods for the Components of Medicare's Physician Fee Schedule.
 }
 \seealso{
 Useful links:
