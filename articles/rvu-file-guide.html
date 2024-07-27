@@ -76,8 +76,99 @@
 
     
     
-
-  </main>
+<div class="section level2">
+<h2 id="customary-charge-formula">Customary Charge Formula<a class="anchor" aria-label="anchor" href="#customary-charge-formula"></a>
+</h2>
+<p>Use the following formula for the calculation of a customary charge
+conversion factor:</p>
+<p><span class="math display">$$
+CF = \text{Customary Charge Conversion Factor} \\
+CHG = \text{Physician's Customary Charge for a Procedure} \\
+SVC = \text{Number of Times Physician Performed the Procedure} \\
+1-n = \text{The different procedures th physician performed within a
+category of service} \\
+RVU = \text{Relative Value Unit assigned to the procedure} \\
+$$</span></p>
+<p><span class="math display">$$
+CF = \frac{ \Bigl(\frac{\text{CHG}_1}{RVU_1} \times {SVC_1}\Bigr) +
+\biggl(\frac{CHG_2}{RVU_2} \times {SVC_2}\biggr) + \dotsc
+\biggl(\frac{CHG_n}{RVU_n} \times {SVC_n}\biggr)}{ {\sum}\ SVC_{1-n} }
+$$</span></p>
+<p>Compute a Customary Charge Conversion Factor for a physician with the
+following charge history:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">ex</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  procedure <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
+<span>  customary_charge <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">12</span>, <span class="fl">35</span>, <span class="fl">20</span>, <span class="fl">8</span><span class="op">)</span>,</span>
+<span>  relative_value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">1.5</span><span class="op">)</span>,</span>
+<span>  frequency <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">7</span>, <span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>,</span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 4</span></span></span>
+<span><span class="co">#&gt;   procedure customary_charge relative_value frequency</span></span>
+<span><span class="co">#&gt;       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>         1                5            1           3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>         2               12            2           7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>         3               35            4           5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>         4               20            3           4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>         5                8            1.5         6</span></span></code></pre>
+<p><br></p>
+<p>Method: 1. For each procedure, divide the customary charge by the
+relative value and multiply the result by the frequency of that
+procedure in the physician’s charge history. 2. Add all the results of
+these computations. 3. Divide the result by the sum of all the
+frequencies.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    step <span class="op">=</span> <span class="op">(</span><span class="va">customary_charge</span> <span class="op">/</span> <span class="va">relative_value</span><span class="op">)</span> <span class="op">*</span> <span class="va">frequency</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
+<span>    conversion_factor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">step</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">frequency</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 1</span></span></span>
+<span><span class="co">#&gt;   conversion_factor</span></span>
+<span><span class="co">#&gt;               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>              6.38</span></span></code></pre>
+<p><br></p>
+<p>To determine a physician’s customary charge for a particular
+procedure where there is no reliable statistical basis, multiply the
+relative value of the procedure by the physician’s customary charge
+conversion factor for the appropriate category of service (e.g.,
+radiology, medicine, surgery).</p>
+</div>
+<div class="section level2">
+<h2 id="prevailing-charges">Prevailing Charges<a class="anchor" aria-label="anchor" href="#prevailing-charges"></a>
+</h2>
+<p>The prevailing charge conversion factors used with the appropriate
+relative value scale are developed from the same formula used for
+customary charge conversion factors, except that:</p>
+<p>CHG $ = $ The fully adjusted locality prevailing charge for a
+procedure by locality and by specialty or group of specialties
+(regardless of the source of data from which the locality prevailing
+charge was developed).</p>
+<p>SVC $ = $ The number of times the procedure was performed by all
+physicians in the same specialty or group of specialties and
+locality.</p>
+<p>$ 1-n = $ The different procedures within a category of service for
+which prevailing charges have been established by specialty or group of
+specialties and locality.</p>
+<p>The conversion factors calculated for any fee screen year reflect
+customary and prevailing charges calculated on the basis of charge data
+for the year ending June 30 immediately preceding the start of the fee
+screen year.</p>
+<p>Also, reasonable charge screens established through the use of a
+relative value scale and conversion factors consist of two
+components.</p>
+<p>Consequently, the conversion factors must be recalculated when there
+is any change in the relative value units assigned to procedures (as may
+occur if you use a different or updated relative value scale) in order
+to assure that the change(s) in unit values do not violate the integrity
+of the reasonable charge screens.</p>
+<p>The economic index limitation, the no rollback provision, and the
+Administrative Savings Clause are not applied directly to prevailing
+charge conversion factors calculated in accordance with this
+section.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
