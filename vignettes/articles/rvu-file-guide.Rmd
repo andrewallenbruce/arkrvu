@@ -19,6 +19,8 @@ knitr::opts_chunk$set(
 options(scipen = 999)
 
 library(rvu)
+library(gt)
+library(gtExtras)
 ```
 
 
@@ -28,15 +30,19 @@ library(rvu)
 Use the following formula for the calculation of a customary charge conversion factor:
 
 $$
+
 CF = \text{Customary Charge Conversion Factor} \\
 CHG = \text{Physician's Customary Charge for a Procedure} \\
 SVC = \text{Number of Times Physician Performed the Procedure} \\
 1-n = \text{The different procedures th physician performed within a category of service} \\
 RVU = \text{Relative Value Unit assigned to the procedure} \\
+
 $$
 
 $$
+
 CF = \frac{ \Bigl(\frac{\text{CHG}_1}{RVU_1} \times {SVC_1}\Bigr) + \biggl(\frac{CHG_2}{RVU_2} \times {SVC_2}\biggr) + \dotsc \biggl(\frac{CHG_n}{RVU_n} \times {SVC_n}\biggr)}{ {\sum}\ SVC_{1-n} }
+
 $$
 
 
@@ -45,12 +51,18 @@ Compute a Customary Charge Conversion Factor for a physician with the following 
 
 
 ```{r}
-(ex <- dplyr::tibble(
-  procedure = 1:5,
-  customary_charge = c(5, 12, 35, 20, 8),
-  relative_value = c(1, 2, 4, 3, 1.5),
-  frequency = c(3, 7, 5, 4, 6),
-))
+ex <- dplyr::tibble(
+  Procedure = 1:5,
+  `Customary Charge` = c(5, 12, 35, 20, 8),
+  `Relative Value` = c(1, 2, 4, 3, 1.5),
+  Frequency = c(3, 7, 5, 4, 6),
+)
+
+ex |> 
+  gt::gt() |> 
+  gtExtras::gt_theme_excel() |>
+  gt::opt_table_font()
+  gt::tab_header(title = "Physician Charge History")
 ```
 <br>
 
@@ -79,13 +91,9 @@ To determine a physician’s customary charge for a particular procedure where t
 
 The prevailing charge conversion factors used with the appropriate relative value scale are developed from the same formula used for customary charge conversion factors, except that:
 
-CHG $ = $ The fully adjusted locality prevailing charge for a procedure by locality and by specialty or group of specialties (regardless of the source of data from which the locality prevailing charge was developed).
-
-
-SVC $ = $ The number of times the procedure was performed by all physicians in the same specialty or group of specialties and locality.
-
-
-$ 1-n = $ The different procedures within a category of service for which prevailing charges have been established by specialty or group of specialties and locality.
+   * <b>CHG</b>: The fully adjusted locality prevailing charge for a procedure by locality and by specialty or group of specialties (regardless of the source of data from which the locality prevailing charge was developed).
+   * <b>SVC</b>: The number of times the procedure was performed by all physicians in the same specialty or group of specialties and locality.
+   * <b>1-n</b>: The different procedures within a category of service for which prevailing charges have been established by specialty or group of specialties and locality.
 
 
 The conversion factors calculated for any fee screen year reflect customary and prevailing charges calculated on the basis of charge data for the year ending June 30 immediately preceding the start of the fee screen year. 

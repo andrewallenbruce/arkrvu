@@ -13,6 +13,8 @@ BugReports: https://github.com/andrewallenbruce/rvu/issues
 Suggests:
     dplyr,
     fs,
+    gt,
+    gtExtras,
     fuimus,
     lubridate,
     pins,
