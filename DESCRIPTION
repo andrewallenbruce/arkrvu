@@ -4,24 +4,27 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Andrew", "Bruce", , "andrewallenbruce@gmail.com", role = c("aut", "cre", "cph"))
 Maintainer: Andrew Bruce <andrewallenbruce@gmail.com>
-Description: S7 Classes and Methods for the Components of Medicare's Physician Fee Schedule.
+Description: S7 Classes and Methods for the Components of Medicare's
+    Physician Fee Schedule.
 License: MIT + file LICENSE
 URL: https://github.com/andrewallenbruce/rvu,
     https://andrewallenbruce.github.io/rvu/
 BugReports: https://github.com/andrewallenbruce/rvu/issues
 Suggests:
+    dplyr,
     fs,
     fuimus,
+    lubridate,
     pins,
     qs,
     rlang,
     roxyglobals
 Remotes: 
     github::andrewallenbruce/fuimus
+Config/Needs/website: rmarkdown
+Config/roxyglobals/filename: generated-globals.R
+Config/roxyglobals/unique: TRUE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",
     "roxyglobals::global_roclet"))
 RoxygenNote: 7.3.2
-Config/Needs/website: rmarkdown
-Config/roxyglobals/filename: generated-globals.R
-Config/roxyglobals/unique: TRUE

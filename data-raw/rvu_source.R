@@ -271,7 +271,7 @@ process_pprvu <- function(x) {
       dplyr::across(
         c(
           dplyr::contains("rvu"),
-          dplyr::contains("_surg"),
+          dplyr::contains("total"),
           dplyr::contains("_op"),
           conv_factor
         ),
@@ -291,6 +291,7 @@ pprvu <- purrr::map(raw_pprvu_24, process_pprvu) |>
     )
 
 pprvu
+
 
 # OPPSCAP ####
 #
@@ -496,3 +497,48 @@ pin_update(
 )
 
 fs::dir_delete(fs::dir_ls("data-raw", regexp = "RVU\\d{2}[A-Z]{0,2}"))
+
+# #--------------- CORRECTION FOR PPRVU ####
+# library(zeallot)
+#
+# raw_pprvu_24 %<-% unname(get_pin("rvu_source_2024")$files$pprvu)
+#
+# raw_pprvu_24 <- raw_pprvu_24 |>
+#   purrr::set_names(
+#     c(
+#       "rvu24a_pprrvu24_jan",
+#       "rvu24ar_pprrvu24_jan",
+#       "rvu24b_pprrvu24_apr",
+#       "rvu24c_pprrvu24_jul"
+#     )
+#   )
+#
+# correct_pprvu <- \(x) {
+#   dplyr::mutate(x,
+#                 dplyr::across(dplyr::contains("total"), as.numeric),
+#                 dplyr::across(dplyr::contains("_surg"), as.character)
+#   )
+# }
+#
+# pprvu <- purrr::map(raw_pprvu_24, correct_pprvu) |>
+#   purrr::set_names(
+#     c(
+#       "rvu24a_jan",
+#       "rvu24ar_jan",
+#       "rvu24b_apr",
+#       "rvu24c_jul"
+#     )
+#   )
+#
+# rvu_source_2024 <- list(
+#   link_table = get_pin("rvu_source_2024")$link_table,
+#   zip_table  = get_pin("rvu_source_2024")$zip_table,
+#   zip_list   = get_pin("rvu_source_2024")$zip_list,
+#   files = list(
+#     pprvu = pprvu,
+#     oppscap = get_pin("rvu_source_2024")$files$oppscap,
+#     gpci = get_pin("rvu_source_2024")$files$gpci,
+#     locco = get_pin("rvu_source_2024")$files$locco,
+#     anes = get_pin("rvu_source_2024")$files$anes
+#   )
+# )
