@@ -63,23 +63,35 @@ ex <- dplyr::tibble(
 
 ex |> 
   gt::gt() |> 
-  gt::opt_table_font()
+  gt::opt_table_font(gt::google_font(name = "Fira Code")) |> 
   gt::tab_header(title = "Physician Charge History")
 ```
 <br>
 
 Method:
-  1. For each procedure, divide the customary charge by the relative value and multiply the result by the frequency of that procedure in the physician’s charge history.
-  2. Add all the results of these computations.
-  3. Divide the result by the sum of all the frequencies.
+   
+   1. For each procedure, divide the customary charge by the relative value and multiply the result by the frequency of that procedure in the physician’s charge history.
+   2. Add all the results of these computations.
+   3. Divide the result by the sum of all the frequencies.
+
+
+```{r}
+ex <- ex |> 
+  dplyr::mutate(step = (`Customary Charge` / `Relative Value`) * Frequency)
+  
+ex |> 
+  gt::gt() |> 
+  gt::opt_table_font(gt::google_font(name = "Fira Code")) |> 
+  gt::tab_header(title = "Physician Charge History")
+```
 
 
 ```{r}
 ex |> 
-  dplyr::mutate(
-    step = (`Customary Charge` / `Relative Value`) * Frequency) |> 
-  dplyr::summarise(
-    `Conversion Factor` = sum(step) / sum(Frequency))
+  dplyr::summarise(`Conversion Factor` = sum(step) / sum(Frequency)) |> 
+  gt::gt() |> 
+  gt::opt_table_font(gt::google_font(name = "Fira Code")) |> 
+  gt::tab_header(title = "Physician Charge History")
 ```
 
 

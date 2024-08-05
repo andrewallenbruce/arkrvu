@@ -11,16 +11,21 @@ URL: https://github.com/andrewallenbruce/rvu,
     https://andrewallenbruce.github.io/rvu/
 BugReports: https://github.com/andrewallenbruce/rvu/issues
 Suggests:
+    collapse,
     dplyr,
     fs,
-    gt,
-    gtExtras,
     fuimus,
+    gt,
     lubridate,
     pins,
+    purrr,
     qs,
     rlang,
-    roxyglobals
+    roxyglobals,
+    rvest,
+    strex,
+    stringr,
+    tictoc
 Remotes: 
     github::andrewallenbruce/fuimus
 Config/Needs/website: rmarkdown

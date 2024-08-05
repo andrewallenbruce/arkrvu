@@ -1,17 +1,13 @@
-#' Get RVU Files
+#' Get RVU Source File
 #'
-#' @param source rvu source (link, zip, file, pprvu, oppscap, gpci, locco, anes)
+#' @param year `<int>` year
 #'
-#' @returns list of selected rvu source files
+#' @param source `<chr>` rvu source file (`pprvu`, `oppscap`, `gpci`, `locco`, `anes`)
+#'
+#' @returns `<list>` of tibbles containing rvu source files
 #'
 #' @examples
-#' get_source(2024, "link")
-#'
-#' get_source(2024, "zip")
-#'
-#' get_source(2024, "file")
-#'
-#' get_source(2024, "pprvu")
+#' get_source(2024, "pprrvu")
 #'
 #' get_source(2024, "gpci")
 #'
@@ -22,7 +18,7 @@ get_source <- function(year, source) {
 
   year   <- as.character(year)
   year   <- match.arg(year, as.character(2023:2024))
-  source <- match.arg(source, c("link", "zip", "file", "pprvu", "oppscap", "gpci", "locco", "anes"))
+  source <- match.arg(source, c("pprrvu", "oppscap", "gpci", "locco", "anes"))
 
   file <- switch(
     year,
@@ -32,16 +28,27 @@ get_source <- function(year, source) {
 
   switch(
     source,
-    link    = file$link_table,
-    zip     = file$zip_table,
-    file    = file$zip_list,
-    pprvu   = file$files$pprvu,
-    oppscap = file$files$oppscap,
-    gpci    = file$files$gpci,
-    locco   = file$files$locco,
-    anes    = file$files$anes
+    pprrvu  = file$pprrvu,
+    oppscap = file$oppscap,
+    gpci    = file$gpci,
+    locco   = file$locco,
+    anes    = file$anes
   )
+}
 
+
+#' Get RVU Link Table
+#'
+#' @returns list of selected rvu source files
+#'
+#' @examples
+#' get_link_table()
+#'
+#' @autoglobal
+#'
+#' @export
+get_link_table <- function() {
+  get_pin("rvu_link_table")
 }
 
 #' Get Conversion Factors by Effective Date
@@ -128,4 +135,61 @@ get_conversion_factor <- function() {
         dplyr::lag(conversion_factor) - conversion_factor
         ) / conversion_factor
       )
+}
+
+#' Download/update RVU Link Table
+#'
+#' @param update_pin `<lgl>` update pin; default is `FALSE`
+#'
+#' @returns RVU Link Table
+#'
+#' @autoglobal
+#'
+#' @keywords internal
+#'
+#' @export
+download_link_table <- function(update_pin = FALSE) {
+
+  url_land <- "https://www.cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files"
+
+  tictoc::tic("Downloaded RVU File Page")
+  html_land <- rvest::read_html(url_land)
+  tictoc::toc()
+
+  rvu_table <- rvest::html_table(html_land) |>
+    purrr::pluck(1) |>
+    dplyr::reframe(year = as.integer(stringr::str_remove_all(Name, "\\D")),
+                   file_html = stringr::str_remove_all(`File Name`, "\\n|File Name|\\s|.ZIP"))
+
+  rvu_urls <- rvest::html_elements(html_land, "a") |>
+    rvest::html_attr("href") |>
+    collapse::funique() |>
+    stringr::str_subset(stringr::regex(
+      paste(
+        "/medicare/payment/fee-schedules/physician/pfs-relative-value-files/",
+        "/medicare/medicare-fee-service-payment/physicianfeesched/pfs-relative-value-files/",
+        "/medicaremedicare-fee-service-paymentphysicianfeeschedpfs-relative-value-files/",
+        "/medicare/medicare-fee-for-service-payment/physicianfeesched/pfs-relative-value-files-items/",
+        sep = "|"
+      )))
+
+  link_table <- dplyr::bind_cols(
+    rvu_table,
+    dplyr::tibble(
+      file_url = strex::str_after_last(rvu_urls, "/"),
+      link_url = paste0("https://www.cms.gov", rvu_urls)
+    ))
+
+  if (update_pin) {
+    pin_update <- \(x, name, title) {
+      board <- pins::board_folder(here::here("inst/extdata/pins"))
+      board |> pins::pin_write(x, name = name, title = title, type = "qs")
+      board |> pins::write_board_manifest()
+    }
+    pin_update(
+      link_table,
+      name = "rvu_link_table",
+      title = "RVU Download Links")
+  }
+  return(link_table)
 }

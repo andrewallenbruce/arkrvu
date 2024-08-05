@@ -2,27 +2,23 @@
 % Please edit documentation in R/get_rvu_files.R
 \name{get_source}
 \alias{get_source}
-\title{Get RVU Files}
+\title{Get RVU Source File}
 \usage{
 get_source(year, source)
 }
 \arguments{
-\item{source}{rvu source (link, zip, file, pprvu, oppscap, gpci, locco, anes)}
+\item{year}{\verb{<int>} year}
+
+\item{source}{\verb{<chr>} rvu source file (\code{pprvu}, \code{oppscap}, \code{gpci}, \code{locco}, \code{anes})}
 }
 \value{
-list of selected rvu source files
+\verb{<list>} of tibbles containing rvu source files
 }
 \description{
-Get RVU Files
+Get RVU Source File
 }
 \examples{
-get_source(2024, "link")
-
-get_source(2024, "zip")
-
-get_source(2024, "file")
-
-get_source(2024, "pprvu")
+get_source(2024, "pprrvu")
 
 get_source(2024, "gpci")
 

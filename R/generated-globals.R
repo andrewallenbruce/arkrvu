@@ -5,5 +5,9 @@ utils::globalVariables(c(
   "conversion_factor",
   # <get_conversion_factor>
   "date_effective",
+  # <download_link_table>
+  "File Name",
+  # <download_link_table>
+  "Name",
   NULL
 ))
