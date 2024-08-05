@@ -5,33 +5,41 @@
 #' @returns list of selected rvu source files
 #'
 #' @examples
-#' get_source("link")
+#' get_source(2024, "link")
 #'
-#' get_source("zip")
+#' get_source(2024, "zip")
 #'
-#' get_source("file")
+#' get_source(2024, "file")
 #'
-#' get_source("pprvu")
+#' get_source(2024, "pprvu")
 #'
-#' get_source("gpci")
+#' get_source(2024, "gpci")
 #'
 #' @autoglobal
 #'
 #' @export
-get_source <- function(source = c("link", "zip", "file", "pprvu", "oppscap", "gpci", "locco", "anes")) {
+get_source <- function(year, source) {
 
-  source <- match.arg(source)
+  year   <- as.character(year)
+  year   <- match.arg(year, as.character(2023:2024))
+  source <- match.arg(source, c("link", "zip", "file", "pprvu", "oppscap", "gpci", "locco", "anes"))
+
+  file <- switch(
+    year,
+    '2024' = get_pin("rvu_source_2024"),
+    '2023' = get_pin("rvu_source_2023")
+         )
 
   switch(
     source,
-    link    = get_pin("rvu_source_2024")$link_table,
-    zip     = get_pin("rvu_source_2024")$zip_table,
-    file    = get_pin("rvu_source_2024")$zip_list,
-    pprvu   = get_pin("rvu_source_2024")$files$pprvu,
-    oppscap = get_pin("rvu_source_2024")$files$oppscap,
-    gpci    = get_pin("rvu_source_2024")$files$gpci,
-    locco   = get_pin("rvu_source_2024")$files$locco,
-    anes    = get_pin("rvu_source_2024")$files$anes
+    link    = file$link_table,
+    zip     = file$zip_table,
+    file    = file$zip_list,
+    pprvu   = file$files$pprvu,
+    oppscap = file$files$oppscap,
+    gpci    = file$files$gpci,
+    locco   = file$files$locco,
+    anes    = file$files$anes
   )
 
 }

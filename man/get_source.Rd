@@ -4,9 +4,7 @@
 \alias{get_source}
 \title{Get RVU Files}
 \usage{
-get_source(
-  source = c("link", "zip", "file", "pprvu", "oppscap", "gpci", "locco", "anes")
-)
+get_source(year, source)
 }
 \arguments{
 \item{source}{rvu source (link, zip, file, pprvu, oppscap, gpci, locco, anes)}
@@ -18,14 +16,14 @@ list of selected rvu source files
 Get RVU Files
 }
 \examples{
-get_source("link")
+get_source(2024, "link")
 
-get_source("zip")
+get_source(2024, "zip")
 
-get_source("file")
+get_source(2024, "file")
 
-get_source("pprvu")
+get_source(2024, "pprvu")
 
-get_source("gpci")
+get_source(2024, "gpci")
 
 }

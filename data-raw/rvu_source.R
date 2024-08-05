@@ -220,8 +220,8 @@ unpack_rvu_zips <- function(zip_paths, directory = "data-raw") {
 }
 
 link_table <- download_link_table()
-rvu_pages  <- download_rvu_pages(link_table, year = 2024)
-zip_table  <- process_rvu_pages(rvu_pages, link_table, year = 2024)
+rvu_pages  <- download_rvu_pages(link_table, year = 2023)
+zip_table  <- process_rvu_pages(rvu_pages, link_table, year = 2023)
 zip_paths  <- download_rvu_zips(zip_table, directory = "data-raw")
 zip_list   <- unpack_rvu_zips(zip_paths, directory = "data-raw")
 
@@ -245,13 +245,14 @@ raw <- rvu_xlsx_files |>
   purrr::set_names(rvu_setnames)
 
 # PPRRVU ####
-
-raw_pprvu_24 <- list(
-  raw$rvu24a_pprrvu24_jan,
-  raw$rvu24ar_pprrvu24_jan,
-  raw$rvu24b_pprrvu24_apr,
-  raw$rvu24c_pprrvu24_jul
+raw_pprvu_23 <- list(
+  raw$rvu23a_pprrvu23_jan,
+  raw$rvu23b_pprrvu23_apr,
+  raw$rvu23c_pprrvu23_jul,
+  raw$rvu23d_pprrvu23_oct
 )
+
+raw_pprvu_23
 
 process_pprvu <- function(x) {
 
@@ -280,13 +281,13 @@ process_pprvu <- function(x) {
 
 }
 
-pprvu <- purrr::map(raw_pprvu_24, process_pprvu) |>
+pprvu <- purrr::map(raw_pprvu_23, process_pprvu) |>
   purrr::set_names(
     c(
-      "rvu24a_jan",
-      "rvu24ar_jan",
-      "rvu24b_apr",
-      "rvu24c_jul"
+      "rvu23a_jan",
+      "rvu23b_apr",
+      "rvu23c_jul",
+      "rvu23d_oct"
       )
     )
 
@@ -300,11 +301,11 @@ pprvu
 # price codes, the field only contains the OPPS-based payment caps. Carrier
 # prices cannot exceed the OPPS-based payment caps.
 
-raw_oppscap_24 <- list(
-  raw$rvu24a_oppscap_jan,
-  raw$rvu24ar_oppscap_jan,
-  raw$rvu24b_oppscap_apr,
-  raw$rvu24c_oppscap_jul
+raw_oppscap_23 <- list(
+  raw$rvu23a_oppscap_jan,
+  raw$rvu23b_oppscap_apr,
+  raw$rvu23c_oppscap_jul,
+  raw$rvu23d_oppscap_oct
 )
 
 process_oppscap <- function(x) {
@@ -321,13 +322,13 @@ process_oppscap <- function(x) {
     )
 }
 
-oppscap <- purrr::map(raw_oppscap_24, process_oppscap) |>
+oppscap <- purrr::map(raw_oppscap_23, process_oppscap) |>
   purrr::set_names(
     c(
-      "rvu24a_jan",
-      "rvu24ar_jan",
-      "rvu24b_apr",
-      "rvu24c_jul"
+      "rvu23a_jan",
+      "rvu23d_oct",
+      "rvu23b_apr",
+      "rvu23c_jul"
     )
   )
 
@@ -338,11 +339,11 @@ oppscap
 # ADDENDUM E. FINAL CY 2024 GEOGRAPHIC PRACTICE COST INDICES (GPCIs) BY STATE AND MEDICARE LOCALITY
 # https://www.ama-assn.org/system/files/geographic-practice-cost-indices-gpcis.pdf
 
-raw_gpci_24 <- list(
-  raw$rvu24a_gpci2024,
-  raw$rvu24ar_gpci2024,
-  raw$rvu24b_gpci2024,
-  raw$rvu24c_gpci2024
+raw_gpci_23 <- list(
+  raw$rvu23a_gpci2023,
+  raw$rvu23b_gpci2023,
+  raw$rvu23c_gpci2023,
+  raw$rvu23d_gpci2023
 )
 
 process_gpci <- function(x) {
@@ -359,9 +360,9 @@ process_gpci <- function(x) {
       state,
       locality_number,
       locality_name,
-      gpci_work = x2024_pw_gpci_with_1_0_floor,
-      gpci_pe = x2024_pe_gpci,
-      gpci_mp = x2024_mp_gpci
+      gpci_work = x2023_pw_gpci_with_1_0_floor,
+      gpci_pe = x2023_pe_gpci,
+      gpci_mp = x2023_mp_gpci
     ) |>
     dplyr::mutate(
       dplyr::across(
@@ -375,13 +376,13 @@ process_gpci <- function(x) {
     )
 }
 
-gpci <- purrr::map(raw_gpci_24, process_gpci) |>
+gpci <- purrr::map(raw_gpci_23, process_gpci) |>
   purrr::set_names(
     c(
-      "rvu24a",
-      "rvu24ar",
-      "rvu24b",
-      "rvu24c"
+      "rvu23a",
+      "rvu23d",
+      "rvu23b",
+      "rvu23c"
     )
   )
 
@@ -394,11 +395,11 @@ gpci
 #
 # * = Payment locality is serviced by two carriers.
 
-raw_locco_24 <- list(
-  raw$rvu24a_24locco,
-  raw$rvu24ar_24locco,
-  raw$rvu24b_24locco,
-  raw$rvu24c_24locco
+raw_locco_23 <- list(
+  raw$rvu23a_23locco,
+  raw$rvu23d_23locco,
+  raw$rvu23b_23locco,
+  raw$rvu23c_23locco
 )
 
 process_locco <- function(x) {
@@ -435,22 +436,22 @@ process_locco <- function(x) {
     )
 }
 
-locco <- purrr::map(raw_locco_24, process_locco) |>
+locco <- purrr::map(raw_locco_23, process_locco) |>
   purrr::set_names(
     c(
-      "rvu24a",
-      "rvu24ar",
-      "rvu24b",
-      "rvu24c"
+      "rvu23a",
+      "rvu23d",
+      "rvu23b",
+      "rvu23c"
     )
   )
 
 # ANES2024 ####
-raw_anes_24 <- list(
-  raw$rvu24a_anes2024,
-  raw$rvu24ar_anes2024,
-  raw$rvu24b_anes2024,
-  raw$rvu24c_anes2024
+raw_anes_23 <- list(
+  raw$rvu23a_anes2023,
+  raw$rvu23d_anes2023,
+  raw$rvu23b_anes2023,
+  raw$rvu23c_anes2023
 )
 
 process_anes <- function(x) {
@@ -463,24 +464,24 @@ process_anes <- function(x) {
         stringr::str_pad(locality, 2, pad = "0"),
         locality),
       locality_name = stringr::str_remove_all(locality_name, stringr::fixed("*")),
-      anesthesia_conv_factor = as.double(x2024_anesthesia_conversion_factor)
+      anesthesia_conv_factor = as.double(x2023_anesthesia_conversion_factor)
     )
 }
 
-anes <- purrr::map(raw_anes_24, process_anes) |>
+anes <- purrr::map(raw_anes_23, process_anes) |>
   purrr::set_names(
     c(
-      "rvu24a",
-      "rvu24ar",
-      "rvu24b",
-      "rvu24c"
+      "rvu23a",
+      "rvu23b",
+      "rvu23c",
+      "rvu23d"
     )
   )
 
-rvu_source_2024 <- list(
+rvu_source_2023 <- list(
   link_table = link_table,    # RVU zip files available for download
   zip_table  = zip_table,     # RVU zip files that have been downloaded
-  zip_list   = zip_list_table, # RVU files that have been unzipped
+  zip_list   = zip_list, # RVU files that have been unzipped
   files = list(
     pprvu = pprvu,            # Physician Practice Expense Relative Value Units
     oppscap = oppscap,        # Outpatient Prospective Payment System Cap
@@ -491,9 +492,9 @@ rvu_source_2024 <- list(
 )
 
 pin_update(
-  rvu_source_2024,
-  name = "rvu_source_2024",
-  title = "RVU Source Files 2024"
+  rvu_source_2023,
+  name = "rvu_source_2023",
+  title = "RVU Source Files 2023"
 )
 
 fs::dir_delete(fs::dir_ls("data-raw", regexp = "RVU\\d{2}[A-Z]{0,2}"))
