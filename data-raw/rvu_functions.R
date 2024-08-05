@@ -191,3 +191,145 @@ unpack_rvu_zips <- function(zip_paths, directory = "data-raw") {
 
   return(zip_list_table)
 }
+
+create_list <- function(raw, list) {
+
+  raw_to_string <- stringr::str_c(
+    stringr::str_glue(
+      "raw${stringr::str_subset(names(raw), list)}"),
+    collapse = ", "
+  )
+
+  raw_to_list <- stringr::str_c("list(", raw_to_string, ")")
+
+  rlang::eval_tidy(rlang::parse_expr(raw_to_list))
+}
+
+process_pprrvu <- function(x) {
+
+  dplyr::slice(
+    x,
+    5:dplyr::n()
+  ) |>
+    unheadr::mash_colnames(
+      n_name_rows = 5,
+      keep_names = FALSE
+    ) |>
+    janitor::clean_names() |>
+    dplyr::filter(
+      !is.na(calculation_flag)
+    ) |>
+    dplyr::mutate(
+      dplyr::across(
+        c(
+          dplyr::contains("rvu"),
+          dplyr::contains("total"),
+          dplyr::contains("_op"),
+          conv_factor
+        ),
+        readr::parse_number)
+    )
+}
+
+process_oppscap <- function(x) {
+
+  dplyr::filter(x, HCPCS != "\u001a") |>
+    janitor::clean_names() |>
+    dplyr::mutate(
+      dplyr::across(
+        dplyr::contains("price"),
+        readr::parse_number)
+    ) |>
+    dplyr::rename(
+      non_facility_price = non_facilty_price
+    )
+}
+
+process_gpci <- function(x) {
+
+  x <- unheadr::mash_colnames(
+    x,
+    n_name_rows = 2,
+    keep_names = FALSE
+  ) |>
+    janitor::clean_names() |>
+    dplyr::filter(!is.na(state))
+
+  names(x) <- c(
+    "mac",
+    "state",
+    "locality_number",
+    "locality_name",
+    "gpci_work",
+    "gpci_pe",
+    "gpci_mp"
+  )
+
+  x |>
+    dplyr::mutate(
+      dplyr::across(
+        c(gpci_work, gpci_pe, gpci_mp),
+        readr::parse_number
+      ),
+      locality_name = stringr::str_remove_all(
+        locality_name, stringr::fixed("*")
+      ),
+      gpci_gaf = (gpci_work + gpci_pe + gpci_mp) / 3
+    )
+}
+
+process_locco <- function(x) {
+
+  df_state <- dplyr::tibble(
+    state_abb = state.abb,
+    state = toupper(state.name)
+  )
+
+  unheadr::mash_colnames(
+    x,
+    n_name_rows = 2,
+    keep_names = FALSE
+  ) |>
+    janitor::clean_names() |>
+    dplyr::filter(!is.na(medicare_adminstrative_contractor)) |>
+    tidyr::fill(state) |>
+    dplyr::reframe(
+      mac = medicare_adminstrative_contractor,
+      locality_number,
+      state,
+      fee_schedule_area = stringr::str_remove_all(fee_schedule_area, stringr::fixed("*")),
+      counties
+    ) |>
+    dplyr::left_join(df_state, by = dplyr::join_by(state)) |>
+    dplyr::mutate(
+      state = dplyr::case_match(
+        state_abb,
+        "DC" ~ "DISTRICT OF COLUMBIA",
+        "PR" ~ "PUERTO RICO",
+        "VI" ~ "VIRGIN ISLANDS",
+        .default = state
+      )
+    )
+}
+
+process_anes <- function(x) {
+
+  names(x) <- c(
+    "contractor",
+    "locality",
+    "locality_name",
+    "anesthesia_conv_factor"
+  )
+
+  x |>
+    dplyr::reframe(
+      contractor,
+      locality = dplyr::if_else(
+        stringr::str_length(locality) != 2,
+        stringr::str_pad(locality, 2, pad = "0"),
+        locality),
+      locality_name = stringr::str_remove_all(
+        locality_name, stringr::fixed("*")),
+      anesthesia_conv_factor = as.double(anesthesia_conv_factor)
+    )
+}
