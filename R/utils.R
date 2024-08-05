@@ -18,7 +18,7 @@ mount_board <- function(source = c("local", "remote")) {
     ),
     remote = pins::board_url(
       fuimus::gh_raw(
-        "andrewallenbruce/procedural/master/inst/extdata/rvu/")
+        "andrewallenbruce/rvu/master/inst/extdata/rvu/")
     )
   )
 }

@@ -39,6 +39,9 @@ RVU = \text{Relative Value Unit assigned to the procedure} \\
 
 $$
 
+<br>
+
+
 $$
 
 CF = \frac{ \Bigl(\frac{\text{CHG}_1}{RVU_1} \times {SVC_1}\Bigr) + \biggl(\frac{CHG_2}{RVU_2} \times {SVC_2}\biggr) + \dotsc \biggl(\frac{CHG_n}{RVU_n} \times {SVC_n}\biggr)}{ {\sum}\ SVC_{1-n} }
@@ -60,7 +63,7 @@ ex <- dplyr::tibble(
 
 ex |> 
   gt::gt() |> 
-  gtExtras::gt_theme_excel() |>
+  # gtExtras::gt_theme_excel() |>
   gt::opt_table_font()
   gt::tab_header(title = "Physician Charge History")
 ```
