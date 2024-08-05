@@ -34,7 +34,7 @@ $$
 CF = \text{Customary Charge Conversion Factor} \\
 CHG = \text{Physician's Customary Charge for a Procedure} \\
 SVC = \text{Number of Times Physician Performed the Procedure} \\
-1-n = \text{The different procedures th physician performed within a category of service} \\
+1-n = \text{The different procedures the physician performed within a category of service} \\
 RVU = \text{Relative Value Unit assigned to the procedure} \\
 
 $$
@@ -63,7 +63,6 @@ ex <- dplyr::tibble(
 
 ex |> 
   gt::gt() |> 
-  # gtExtras::gt_theme_excel() |>
   gt::opt_table_font()
   gt::tab_header(title = "Physician Charge History")
 ```
@@ -78,9 +77,9 @@ Method:
 ```{r}
 ex |> 
   dplyr::mutate(
-    step = (customary_charge / relative_value) * frequency) |> 
+    step = (`Customary Charge` / `Relative Value`) * Frequency) |> 
   dplyr::summarise(
-    conversion_factor = sum(step) / sum(frequency))
+    `Conversion Factor` = sum(step) / sum(Frequency))
 ```
 
 
