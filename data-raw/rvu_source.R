@@ -1,30 +1,16 @@
 source(here::here("data-raw", "pins_functions.R"))
 source(here::here("data-raw", "rvu_functions.R"))
 
+year       <- 2021
 link_table <- get_link_table()
-year       <- 2022
-
 rvu_pages  <- download_rvu_pages(link_table, year = year)
 zip_table  <- process_rvu_pages(rvu_pages, link_table, year = year)
 zip_paths  <- download_rvu_zips(zip_table, directory = "data-raw")
 zip_list   <- unpack_rvu_zips(zip_paths, directory = "data-raw")
-
-
-rvu_folders      <- fs::dir_ls(here::here("data-raw"), regexp = "RVU")
-rvu_folder_names <- basename(rvu_folders)
-rvu_xlsx_files   <- fs::dir_ls(rvu_folders, glob = "*.xlsx")
-rvu_setnames <- stringr::str_remove_all(rvu_xlsx_files, ".xlsx") |>
-  strex::str_after_nth("/", -2) |>
-  stringr::str_replace("/", "_") |>
-  tolower()
-
-raw <- rvu_xlsx_files |>
-  purrr::map(readxl::read_excel, col_types = "text") |>
-  purrr::map(fuimus::df_2_chr) |>
-  purrr::set_names(rvu_setnames)
+raw_files  <- process_raw_xlsx()
 
 #--- PPRRVU ####
-raw_pprrvu <- create_list(raw = raw, list = "pprrvu")
+raw_pprrvu <- create_list(raw = raw_files, list = "pprrvu")
 
 pprrvu <- purrr::map(raw_pprrvu, process_pprrvu) |>
   purrr::set_names(
@@ -33,13 +19,7 @@ pprrvu <- purrr::map(raw_pprrvu, process_pprrvu) |>
       stringr::str_remove("_pprrvu[0-9]{2}"))
 
 #--- OPPSCAP ####
-#
-# OPPSCAP contains the payment amounts after the application of the
-# OPPS-based payment caps, except for carrier priced codes. For carrier
-# price codes, the field only contains the OPPS-based payment caps. Carrier
-# prices cannot exceed the OPPS-based payment caps.
-
-raw_oppscap <- create_list(raw = raw, list = "oppscap")
+raw_oppscap <- create_list(raw = raw_files, list = "oppscap")
 
 oppscap <- purrr::map(raw_oppscap, process_oppscap) |>
   purrr::set_names(
@@ -48,11 +28,7 @@ oppscap <- purrr::map(raw_oppscap, process_oppscap) |>
       stringr::str_remove("_oppscap"))
 
 #--- GPCI ####
-#
-# ADDENDUM E. FINAL CY 2024 GEOGRAPHIC PRACTICE COST INDICES (GPCIs) BY STATE AND MEDICARE LOCALITY
-# https://www.ama-assn.org/system/files/geographic-practice-cost-indices-gpcis.pdf
-
-raw_gpci <- create_list(raw = raw, list = "gpci")
+raw_gpci <- create_list(raw = raw_files, list = "gpci")
 
 gpci <- purrr::map(raw_gpci, process_gpci) |>
   purrr::set_names(
@@ -62,13 +38,7 @@ gpci <- purrr::map(raw_gpci, process_gpci) |>
     )
 
 #--- LOCCO ####
-#
-# counties included in 2024 localities alphabetically
-# by state and locality name within state
-#
-# * = Payment locality is serviced by two carriers.
-
-raw_locco <- create_list(raw = raw, list = "locco")
+raw_locco <- create_list(raw = raw_files, list = "locco")
 
 locco <- purrr::map(raw_locco, process_locco) |>
   purrr::set_names(
@@ -78,7 +48,7 @@ locco <- purrr::map(raw_locco, process_locco) |>
   )
 
 #--- ANES ####
-raw_anes <- create_list(raw = raw, list = "anes")
+raw_anes <- create_list(raw = raw_files, list = "anes")
 
 anes <- purrr::map(raw_anes, process_anes) |>
   purrr::set_names(

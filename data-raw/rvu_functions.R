@@ -192,6 +192,22 @@ unpack_rvu_zips <- function(zip_paths, directory = "data-raw") {
   return(zip_list_table)
 }
 
+process_raw_xlsx <- function() {
+
+  rvu_folders      <- fs::dir_ls(here::here("data-raw"), regexp = "RVU")
+  rvu_folder_names <- basename(rvu_folders)
+  rvu_xlsx_files   <- fs::dir_ls(rvu_folders, glob = "*.xlsx")
+  rvu_setnames     <- stringr::str_remove_all(rvu_xlsx_files, ".xlsx") |>
+    strex::str_after_nth("/", -2) |>
+    stringr::str_replace("/", "_") |>
+    tolower()
+
+  rvu_xlsx_files |>
+    purrr::map(readxl::read_excel, col_types = "text") |>
+    purrr::map(fuimus::df_2_chr) |>
+    purrr::set_names(rvu_setnames)
+}
+
 create_list <- function(raw, list) {
 
   raw_to_string <- stringr::str_c(

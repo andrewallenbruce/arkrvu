@@ -12,8 +12,9 @@
 
 
 dplyr::tibble(
-  year = c(2006, 2007, 2008, 2009:2024),
-  budget_neutrality_adjustor = c(NA, 0.8994, 0.8806, rep(NA, 16))
+  year = c(2006, 2007,   2008,   2009:2014,                  2015,   2016:2024),
+  bna  = c(NA,   0.8994, 0.8806, rep(NA, length(2009:2014)), 0.9981, rep(NA, length(2016:2024))
+  )
 )
 
 
