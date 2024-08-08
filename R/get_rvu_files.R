@@ -17,14 +17,15 @@
 get_source <- function(year, source) {
 
   year   <- as.character(year)
-  year   <- match.arg(year, as.character(2022:2024))
+  year   <- match.arg(year, as.character(2021:2024))
   source <- match.arg(source, c("pprrvu", "oppscap", "gpci", "locco", "anes"))
 
   file <- switch(
     year,
     '2024' = get_pin("rvu_source_2024"),
     '2023' = get_pin("rvu_source_2023"),
-    '2022' = get_pin("rvu_source_2022")
+    '2022' = get_pin("rvu_source_2022"),
+    '2021' = get_pin("rvu_source_2021")
          )
 
   switch(
@@ -132,10 +133,7 @@ get_conversion_factor <- function() {
   ) |>
     dplyr::arrange(date_effective) |>
     dplyr::mutate(
-      pct_change = (
-        dplyr::lag(conversion_factor) - conversion_factor
-        ) / conversion_factor
-      )
+      abs_change = (conversion_factor - dplyr::lag(conversion_factor)))
 }
 
 #' Download/update RVU Link Table

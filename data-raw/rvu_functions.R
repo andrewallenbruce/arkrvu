@@ -208,17 +208,25 @@ process_raw_xlsx <- function() {
     purrr::set_names(rvu_setnames)
 }
 
-create_list <- function(raw, list) {
+create_list <- function(raw, list, remove) {
+
+  names <- stringr::str_subset(
+    names(raw), list)
 
   raw_to_string <- stringr::str_c(
-    stringr::str_glue(
-      "raw${stringr::str_subset(names(raw), list)}"),
-    collapse = ", "
-  )
+    stringr::str_glue("raw${names}"),
+    collapse = ", ")
 
-  raw_to_list <- stringr::str_c("list(", raw_to_string, ")")
+  string_to_list <- stringr::str_c(
+    "list(", raw_to_string, ")")
 
-  rlang::eval_tidy(rlang::parse_expr(raw_to_list))
+  list_to_df <- rlang::eval_tidy(
+    rlang::parse_expr(string_to_list)
+    )
+
+  list_to_df |> purrr::set_names(
+    stringr::str_remove(names, remove)
+    )
 }
 
 process_pprrvu <- function(x) {
