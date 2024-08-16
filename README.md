@@ -8,9 +8,9 @@
 
 ## :package: Installation
 
-You can install **rvu** from [GitHub](https://github.com/) with:
+You can install **rbrvs** from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
-pak::pak("andrewallenbruce/rvu")
+pak::pak("andrewallenbruce/rbrvs")
 ```

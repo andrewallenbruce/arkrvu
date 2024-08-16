@@ -1,4 +1,4 @@
-Package: rvu
+Package: rbrvs
 Title: S7 For Medicare Physician Fee Schedule
 Version: 0.0.0.9000
 Authors@R: 
@@ -7,9 +7,9 @@ Maintainer: Andrew Bruce <andrewallenbruce@gmail.com>
 Description: S7 Classes and Methods for the Components of Medicare's
     Physician Fee Schedule.
 License: MIT + file LICENSE
-URL: https://github.com/andrewallenbruce/rvu,
-    https://andrewallenbruce.github.io/rvu/
-BugReports: https://github.com/andrewallenbruce/rvu/issues
+URL: https://github.com/andrewallenbruce/rbrvs,
+    https://andrewallenbruce.github.io/rbrvs/
+BugReports: https://github.com/andrewallenbruce/rbrvs/issues
 Suggests:
     collapse,
     dplyr,
