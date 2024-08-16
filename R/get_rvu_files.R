@@ -39,6 +39,31 @@ get_source <- function(year, source) {
   )
 }
 
+#' Get PPRRVU File by Year
+#'
+#' @param year `<int>` year of rvu source file; default is `2023`
+#'
+#' @returns `<tibble>` containing pprrvu source file
+#'
+#' @examples
+#' get_pprrvu(2024)
+#'
+#' get_pprrvu(2023)
+#'
+#' @autoglobal
+#'
+#' @export
+get_pprrvu <- function(year) {
+
+  year   <- as.character(year)
+  year   <- match.arg(year, as.character(2023:2024))
+
+  switch(
+    year,
+    '2024' = get_pin("pprrvu_2024"),
+    '2023' = get_pin("pprrvu_2023")
+  )
+}
 
 #' Get RVU Link Table
 #'
@@ -75,6 +100,7 @@ get_conversion_factor <- function(dos = NULL) {
     date_start = c(
       clock::date_build(2024, 1, 1, invalid = "previous"),
       clock::date_build(2024, 3, 9, invalid = "previous"),
+      # clock::date_build(2024, 12, 31, invalid = "previous"),
       clock::date_build(2023, 1, 1, invalid = "previous"),
       clock::date_build(2022, 1, 1, invalid = "previous"),
       clock::date_build(2021, 1, 1, invalid = "previous"),

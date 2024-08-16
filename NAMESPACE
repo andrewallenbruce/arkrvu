@@ -3,4 +3,5 @@
 export(download_link_table)
 export(get_conversion_factor)
 export(get_link_table)
+export(get_pprrvu)
 export(get_source)
