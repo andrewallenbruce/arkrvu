@@ -269,6 +269,41 @@ process_oppscap <- function(x) {
     )
 }
 
+# starts at 2020 -- no more state names ####
+process_gpci2 <- function(x) {
+
+  x <- unheadr::mash_colnames(
+    x,
+    n_name_rows = 1,
+    keep_names = FALSE
+  ) |>
+    janitor::clean_names()
+
+  # |> dplyr::filter(!is.na(state))
+
+  names(x) <- c(
+    "mac",
+    "locality_number",
+    "locality_name",
+    "gpci_work",
+    "gpci_pe",
+    "gpci_mp"
+  )
+
+  x |>
+    dplyr::mutate(
+      dplyr::across(
+        c(gpci_work, gpci_pe, gpci_mp),
+        readr::parse_number
+      ),
+      locality_name = stringr::str_remove_all(
+        locality_name, stringr::fixed("*")
+      ),
+      gpci_gaf = (gpci_work + gpci_pe + gpci_mp) / 3
+    )
+}
+
+# 2021-Present ####
 process_gpci <- function(x) {
 
   x <- unheadr::mash_colnames(
@@ -302,6 +337,42 @@ process_gpci <- function(x) {
     )
 }
 
+# starts at 2020 -- medicare_adminstrative_contractor is now carrier_number ####
+process_locco2 <- function(x) {
+
+  df_state <- dplyr::tibble(
+    state_abb = state.abb,
+    state = toupper(state.name)
+  )
+
+  unheadr::mash_colnames(
+    x,
+    n_name_rows = 2,
+    keep_names = FALSE
+  ) |>
+    janitor::clean_names() |>
+    dplyr::filter(!is.na(carrier_number)) |>
+    tidyr::fill(state) |>
+    dplyr::reframe(
+      mac = carrier_number,
+      locality_number,
+      state,
+      fee_schedule_area = stringr::str_remove_all(fee_schedule_area, stringr::fixed("*")),
+      counties
+    ) |>
+    dplyr::left_join(df_state, by = dplyr::join_by(state)) |>
+    dplyr::mutate(
+      state = dplyr::case_match(
+        state_abb,
+        "DC" ~ "DISTRICT OF COLUMBIA",
+        "PR" ~ "PUERTO RICO",
+        "VI" ~ "VIRGIN ISLANDS",
+        .default = state
+      )
+    )
+}
+
+# 2021-Present ####
 process_locco <- function(x) {
 
   df_state <- dplyr::tibble(

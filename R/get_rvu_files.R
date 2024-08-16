@@ -17,7 +17,7 @@
 get_source <- function(year, source) {
 
   year   <- as.character(year)
-  year   <- match.arg(year, as.character(2021:2024))
+  year   <- match.arg(year, as.character(2020:2024))
   source <- match.arg(source, c("pprrvu", "oppscap", "gpci", "locco", "anes"))
 
   file <- switch(
@@ -25,7 +25,8 @@ get_source <- function(year, source) {
     '2024' = get_pin("rvu_source_2024"),
     '2023' = get_pin("rvu_source_2023"),
     '2022' = get_pin("rvu_source_2022"),
-    '2021' = get_pin("rvu_source_2021")
+    '2021' = get_pin("rvu_source_2021"),
+    '2020' = get_pin("rvu_source_2020")
          )
 
   switch(
