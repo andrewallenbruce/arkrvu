@@ -49,15 +49,23 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_pprrvu</span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_pprrvu</span><span class="op">(</span><span class="va">dos</span>, <span class="va">hcpcs</span>, <span class="va">pos</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
-<dd><p><code>&lt;int&gt;</code> year of rvu source file; default is <code>2023</code></p></dd>
+<dl><dt id="arg-dos">dos<a class="anchor" aria-label="anchor" href="#arg-dos"></a></dt>
+<dd><p><code>&lt;date&gt;</code> date of service; YYYY-MM-DD</p></dd>
+
+
+<dt id="arg-hcpcs">hcpcs<a class="anchor" aria-label="anchor" href="#arg-hcpcs"></a></dt>
+<dd><p><code>&lt;chr&gt;</code> hcpcs code</p></dd>
+
+
+<dt id="arg-pos">pos<a class="anchor" aria-label="anchor" href="#arg-pos"></a></dt>
+<dd><p><code>&lt;chr&gt;</code> place of service; <code>Facility</code> or <code>Non-Facility</code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -67,49 +75,40 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">get_pprrvu</span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 74,196 × 34</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    source_file date_start date_end   hcpcs mod   description         status_code</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> rvu24a_jan  2024-01-01 2024-03-31 A0021 <span style="color: #BB0000;">NA</span>    Outside state ambu… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> rvu24a_jan  2024-01-01 2024-03-31 A0080 <span style="color: #BB0000;">NA</span>    Noninterest escort… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> rvu24a_jan  2024-01-01 2024-03-31 A0090 <span style="color: #BB0000;">NA</span>    Interest escort in… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> rvu24a_jan  2024-01-01 2024-03-31 A0100 <span style="color: #BB0000;">NA</span>    Nonemergency trans… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> rvu24a_jan  2024-01-01 2024-03-31 A0110 <span style="color: #BB0000;">NA</span>    Nonemergency trans… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> rvu24a_jan  2024-01-01 2024-03-31 A0120 <span style="color: #BB0000;">NA</span>    Noner transport mi… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> rvu24a_jan  2024-01-01 2024-03-31 A0130 <span style="color: #BB0000;">NA</span>    Noner transport wh… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> rvu24a_jan  2024-01-01 2024-03-31 A0140 <span style="color: #BB0000;">NA</span>    Nonemergency trans… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> rvu24a_jan  2024-01-01 2024-03-31 A0160 <span style="color: #BB0000;">NA</span>    Noner transport ca… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> rvu24a_jan  2024-01-01 2024-03-31 A0170 <span style="color: #BB0000;">NA</span>    Transport parking … I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 74,186 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 27 more variables: not_used_for_medicare_payment &lt;chr&gt;, work_rvu &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   non_fac_pe_rvu &lt;dbl&gt;, non_fac_indicator &lt;chr&gt;, facility_pe_rvu &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   facility_indicator &lt;chr&gt;, mp_rvu &lt;dbl&gt;, non_facility_total &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   facility_total &lt;dbl&gt;, pctc_ind &lt;chr&gt;, glob_days &lt;chr&gt;, pre_op &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   intra_op &lt;dbl&gt;, post_op &lt;dbl&gt;, mult_proc &lt;chr&gt;, bilat_surg &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   asst_surg &lt;chr&gt;, co_surg &lt;chr&gt;, team_surg &lt;chr&gt;, endo_base &lt;chr&gt;, …</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">get_pprrvu</span><span class="op">(</span><span class="fl">2023</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 72,347 × 34</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    source_file date_start date_end   hcpcs mod   description         status_code</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> rvu23a_jan  2023-01-01 2023-03-31 A0021 <span style="color: #BB0000;">NA</span>    Outside state ambu… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> rvu23a_jan  2023-01-01 2023-03-31 A0080 <span style="color: #BB0000;">NA</span>    Noninterest escort… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> rvu23a_jan  2023-01-01 2023-03-31 A0090 <span style="color: #BB0000;">NA</span>    Interest escort in… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> rvu23a_jan  2023-01-01 2023-03-31 A0100 <span style="color: #BB0000;">NA</span>    Nonemergency trans… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> rvu23a_jan  2023-01-01 2023-03-31 A0110 <span style="color: #BB0000;">NA</span>    Nonemergency trans… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> rvu23a_jan  2023-01-01 2023-03-31 A0120 <span style="color: #BB0000;">NA</span>    Noner transport mi… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> rvu23a_jan  2023-01-01 2023-03-31 A0130 <span style="color: #BB0000;">NA</span>    Noner transport wh… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> rvu23a_jan  2023-01-01 2023-03-31 A0140 <span style="color: #BB0000;">NA</span>    Nonemergency trans… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> rvu23a_jan  2023-01-01 2023-03-31 A0160 <span style="color: #BB0000;">NA</span>    Noner transport ca… I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> rvu23a_jan  2023-01-01 2023-03-31 A0170 <span style="color: #BB0000;">NA</span>    Transport parking … I          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 72,337 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 27 more variables: not_used_for_medicare_payment &lt;chr&gt;, work_rvu &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   non_fac_pe_rvu &lt;dbl&gt;, non_fac_indicator &lt;chr&gt;, facility_pe_rvu &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   facility_indicator &lt;chr&gt;, mp_rvu &lt;dbl&gt;, non_facility_total &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   facility_total &lt;dbl&gt;, pctc_ind &lt;chr&gt;, glob_days &lt;chr&gt;, pre_op &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   intra_op &lt;dbl&gt;, post_op &lt;dbl&gt;, mult_proc &lt;chr&gt;, bilat_surg &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   asst_surg &lt;chr&gt;, co_surg &lt;chr&gt;, team_surg &lt;chr&gt;, endo_base &lt;chr&gt;, …</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">get_pprrvu</span><span class="op">(</span>dos <span class="op">=</span> <span class="st">"2024-03-31"</span>, hcpcs <span class="op">=</span> <span class="st">"99213"</span>, pos <span class="op">=</span> <span class="st">"Non-Facility"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 18,499 × 13</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    date_start date_end   hcpcs mod   description          work_rvu pe_rvu mp_rvu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2024-01-01 2024-03-31 A0021 <span style="color: #BB0000;">NA</span>    Outside state ambul…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2024-01-01 2024-03-31 A0080 <span style="color: #BB0000;">NA</span>    Noninterest escort …        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2024-01-01 2024-03-31 A0090 <span style="color: #BB0000;">NA</span>    Interest escort in …        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2024-01-01 2024-03-31 A0100 <span style="color: #BB0000;">NA</span>    Nonemergency transp…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2024-01-01 2024-03-31 A0110 <span style="color: #BB0000;">NA</span>    Nonemergency transp…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2024-01-01 2024-03-31 A0120 <span style="color: #BB0000;">NA</span>    Noner transport min…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2024-01-01 2024-03-31 A0130 <span style="color: #BB0000;">NA</span>    Noner transport whe…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2024-01-01 2024-03-31 A0140 <span style="color: #BB0000;">NA</span>    Nonemergency transp…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2024-01-01 2024-03-31 A0160 <span style="color: #BB0000;">NA</span>    Noner transport cas…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2024-01-01 2024-03-31 A0170 <span style="color: #BB0000;">NA</span>    Transport parking f…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18,489 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: rvu_total &lt;dbl&gt;, conv_factor &lt;dbl&gt;, pctc_ind &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   glob_days &lt;chr&gt;, mult_proc &lt;chr&gt;</span></span>
+<span class="r-in"><span><span class="fu">get_pprrvu</span><span class="op">(</span>dos <span class="op">=</span> <span class="st">"2024-02-28"</span>, hcpcs <span class="op">=</span> <span class="st">"99213"</span>, pos <span class="op">=</span> <span class="st">"Facility"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 18,499 × 13</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    date_start date_end   hcpcs mod   description          work_rvu pe_rvu mp_rvu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2024-01-01 2024-03-31 A0021 <span style="color: #BB0000;">NA</span>    Outside state ambul…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2024-01-01 2024-03-31 A0080 <span style="color: #BB0000;">NA</span>    Noninterest escort …        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2024-01-01 2024-03-31 A0090 <span style="color: #BB0000;">NA</span>    Interest escort in …        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2024-01-01 2024-03-31 A0100 <span style="color: #BB0000;">NA</span>    Nonemergency transp…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2024-01-01 2024-03-31 A0110 <span style="color: #BB0000;">NA</span>    Nonemergency transp…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2024-01-01 2024-03-31 A0120 <span style="color: #BB0000;">NA</span>    Noner transport min…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2024-01-01 2024-03-31 A0130 <span style="color: #BB0000;">NA</span>    Noner transport whe…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2024-01-01 2024-03-31 A0140 <span style="color: #BB0000;">NA</span>    Nonemergency transp…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2024-01-01 2024-03-31 A0160 <span style="color: #BB0000;">NA</span>    Noner transport cas…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2024-01-01 2024-03-31 A0170 <span style="color: #BB0000;">NA</span>    Transport parking f…        0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18,489 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: rvu_total &lt;dbl&gt;, conv_factor &lt;dbl&gt;, pctc_ind &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   glob_days &lt;chr&gt;, mult_proc &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
