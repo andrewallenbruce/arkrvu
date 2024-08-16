@@ -69,8 +69,9 @@ get_pprrvu <- function(dos, hcpcs, pos) {
     '2022' = get_pin("pprrvu_2022")
   )
 
+  file <- fuimus::search_in(file, file$hcpcs, hcpcs)
+
   file <- file |>
-    dplyr::filter(hcpcs == hcpcs) |>
     dplyr::rowwise() |>
     dplyr::filter(dplyr::between(dos, date_start, date_end)) |>
     dplyr::ungroup()
