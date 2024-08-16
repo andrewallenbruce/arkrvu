@@ -3,13 +3,41 @@
 utils::globalVariables(c(
   # <get_conversion_factor>
   "cf",
+  # <get_pprrvu>
+  "conv_factor",
+  # <get_pprrvu>
   # <get_conversion_factor>
   "date_end",
+  # <get_pprrvu>
   # <get_conversion_factor>
   "date_start",
+  # <get_pprrvu>
+  "description",
+  # <get_pprrvu>
+  "facility_pe_rvu",
+  # <get_pprrvu>
+  "facility_total",
   # <download_link_table>
   "File Name",
+  # <get_pprrvu>
+  "glob_days",
+  # <get_pprrvu>
+  "mod",
+  # <get_pprrvu>
+  "mp_rvu",
+  # <get_pprrvu>
+  "mult_proc",
   # <download_link_table>
   "Name",
+  # <get_pprrvu>
+  "non_fac_pe_rvu",
+  # <get_pprrvu>
+  "non_facility_total",
+  # <get_pprrvu>
+  "pctc_ind",
+  # <get_pprrvu>
+  "source_file",
+  # <get_pprrvu>
+  "work_rvu",
   NULL
 ))

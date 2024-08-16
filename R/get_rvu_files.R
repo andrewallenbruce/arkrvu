@@ -41,28 +41,78 @@ get_source <- function(year, source) {
 
 #' Get PPRRVU File by Year
 #'
-#' @param year `<int>` year of rvu source file; default is `2023`
+#' @param dos `<date>` date of service; YYYY-MM-DD
+#'
+#' @param hcpcs `<chr>` hcpcs code
+#'
+#' @param pos `<chr>` place of service; `Facility` or `Non-Facility`
 #'
 #' @returns `<tibble>` containing pprrvu source file
 #'
 #' @examples
-#' get_pprrvu(2024)
-#'
-#' get_pprrvu(2023)
+#' get_pprrvu(dos = "2024-03-31", hcpcs = "99213", pos = "Non-Facility")
+#' get_pprrvu(dos = "2024-02-28", hcpcs = "99213", pos = "Facility")
 #'
 #' @autoglobal
 #'
 #' @export
-get_pprrvu <- function(year) {
+get_pprrvu <- function(dos, hcpcs, pos) {
 
-  year   <- as.character(year)
-  year   <- match.arg(year, as.character(2023:2024))
+  dos  <- as.Date(dos)
+  year <- as.character(clock::get_year(dos))
+  pos  <- match.arg(pos, c("Facility", "Non-Facility"))
 
-  switch(
+  file <- switch(
     year,
-    '2024' = get_pin("pprrvu_2024"),
-    '2023' = get_pin("pprrvu_2023")
+    '2024' = dplyr::filter(get_pin("pprrvu_2024"), source_file != "rvu24a_jan"),
+    '2023' = get_pin("pprrvu_2023"),
+    '2022' = get_pin("pprrvu_2022")
   )
+
+  file <- file |>
+    dplyr::filter(hcpcs == hcpcs) |>
+    dplyr::rowwise() |>
+    dplyr::filter(dplyr::between(dos, date_start, date_end)) |>
+    dplyr::ungroup()
+
+  if (pos == "Non-Facility") {
+    file <- file |>
+      dplyr::select(
+        date_start,
+        date_end,
+        hcpcs,
+        mod,
+        description,
+        work_rvu,
+        pe_rvu = non_fac_pe_rvu,
+        mp_rvu,
+        rvu_total = non_facility_total,
+        conv_factor,
+        pctc_ind,
+        glob_days,
+        mult_proc
+      )
+  }
+
+  if (pos == "Facility") {
+    file <- file |>
+      dplyr::select(
+        date_start,
+        date_end,
+        hcpcs,
+        mod,
+        description,
+        work_rvu,
+        pe_rvu = facility_pe_rvu,
+        mp_rvu,
+        rvu_total = facility_total,
+        conv_factor,
+        pctc_ind,
+        glob_days,
+        mult_proc
+      )
+  }
+  return(file)
 }
 
 #' Get RVU Link Table

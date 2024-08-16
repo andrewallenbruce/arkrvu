@@ -4,10 +4,14 @@
 \alias{get_pprrvu}
 \title{Get PPRRVU File by Year}
 \usage{
-get_pprrvu(year)
+get_pprrvu(dos, hcpcs, pos)
 }
 \arguments{
-\item{year}{\verb{<int>} year of rvu source file; default is \code{2023}}
+\item{dos}{\verb{<date>} date of service; YYYY-MM-DD}
+
+\item{hcpcs}{\verb{<chr>} hcpcs code}
+
+\item{pos}{\verb{<chr>} place of service; \code{Facility} or \code{Non-Facility}}
 }
 \value{
 \verb{<tibble>} containing pprrvu source file
@@ -16,8 +20,7 @@ get_pprrvu(year)
 Get PPRRVU File by Year
 }
 \examples{
-get_pprrvu(2024)
-
-get_pprrvu(2023)
+get_pprrvu(dos = "2024-03-31", hcpcs = "99213", pos = "Non-Facility")
+get_pprrvu(dos = "2024-02-28", hcpcs = "99213", pos = "Facility")
 
 }
