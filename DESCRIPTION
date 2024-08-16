@@ -21,6 +21,7 @@ Suggests:
     pins,
     purrr,
     qs,
+    gtExtras,
     rlang,
     roxyglobals,
     rvest,

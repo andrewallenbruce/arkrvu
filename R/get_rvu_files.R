@@ -1,6 +1,6 @@
 #' Get RVU Source File
 #'
-#' @param year `<int>` year
+#' @param year `<int>` year of rvu source file; default is `2020`
 #'
 #' @param source `<chr>` rvu source file (`pprvu`, `oppscap`, `gpci`, `locco`, `anes`)
 #'

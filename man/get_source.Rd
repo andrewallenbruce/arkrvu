@@ -7,7 +7,7 @@
 get_source(year, source)
 }
 \arguments{
-\item{year}{\verb{<int>} year}
+\item{year}{\verb{<int>} year of rvu source file; default is \code{2020}}
 
 \item{source}{\verb{<chr>} rvu source file (\code{pprvu}, \code{oppscap}, \code{gpci}, \code{locco}, \code{anes})}
 }
