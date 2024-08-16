@@ -71,11 +71,6 @@ get_pprrvu <- function(dos, hcpcs, pos) {
 
   file <- fuimus::search_in(file, file$hcpcs, hcpcs)
 
-  file <- file |>
-    dplyr::rowwise() |>
-    dplyr::filter(dplyr::between(dos, date_start, date_end)) |>
-    dplyr::ungroup()
-
   if (pos == "Non-Facility") {
     file <- file |>
       dplyr::select(
@@ -113,6 +108,33 @@ get_pprrvu <- function(dos, hcpcs, pos) {
         mult_proc
       )
   }
+
+  if (vctrs::vec_is_empty(file)) {
+    file <- dplyr::tibble(
+        date_start  = as.Date(dos),
+        date_end    = as.Date(dos),
+        hcpcs       = hcpcs,
+        mod         = NA_character_,
+        description = NA_character_,
+        work_rvu    = NA_real_,
+        pe_rvu      = NA_real_,
+        mp_rvu      = NA_real_,
+        rvu_total   = NA_real_,
+        conv_factor = NA_real_,
+        pctc_ind    = NA_character_,
+        glob_days   = NA_character_,
+        mult_proc   = NA_character_
+      )
+    } else {
+      file <- file |>
+        dplyr::rowwise() |>
+        dplyr::filter(
+          dplyr::between(
+            dos,
+            date_start,
+            date_end)) |>
+        dplyr::ungroup()
+    }
   return(file)
 }
 

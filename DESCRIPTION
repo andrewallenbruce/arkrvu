@@ -11,25 +11,26 @@ URL: https://github.com/andrewallenbruce/rbrvs,
     https://andrewallenbruce.github.io/rbrvs/
 BugReports: https://github.com/andrewallenbruce/rbrvs/issues
 Suggests:
+    clock,
     collapse,
     dplyr,
-    clock,
-    ivs,
     fs,
     fuimus,
     gt,
+    gtExtras,
     here,
+    ivs,
     lubridate,
     pins,
     purrr,
     qs,
-    gtExtras,
     rlang,
     roxyglobals,
     rvest,
     strex,
     stringr,
-    tictoc
+    tictoc,
+    vctrs
 Remotes: 
     github::andrewallenbruce/fuimus
 Config/Needs/website: rmarkdown
