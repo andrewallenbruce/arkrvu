@@ -56,51 +56,54 @@ get_link_table <- function() {
 
 #' Get Conversion Factors by Effective Date
 #'
+#' @param dos `<Date>` date of service
+#'
 #' @returns list of selected rvu source files
 #'
 #' @examples
-#' get_conversion_factor()
+#' get_conversion_factor(dos = as.Date("2023-03-03"))
+#'
+#' get_conversion_factor() |>
+#'    print(n = 30)
 #'
 #' @autoglobal
 #'
 #' @export
-get_conversion_factor <- function() {
+get_conversion_factor <- function(dos = NULL) {
 
-  dplyr::tibble(
-    date_effective = as.Date(c(
-      "2024-01-01",
-      "2024-03-09",
-      "2023-01-01",
-      "2022-01-01",
-      "2021-01-01",
-      "2020-01-01",
-      "2019-01-01",
-      "2018-01-01",
-      "2017-01-01",
-      "2016-01-01",
-      "2015-01-01",
-      "2015-04-01",
-      "2014-01-01",
-      "2013-01-01",
-      "2012-01-01",
-      "2011-01-01",
-      "2010-01-01",
-      "2010-06-01",
-      "2009-01-01",
-      "2008-01-01",
-      "2008-07-01",
-      "2007-01-01",
-      "2006-01-01",
-      "2005-01-01",
-      "2004-01-01",
-      "2003-03-01", # Medicare physician/practitioner claims for services in January and February, 2003 were paid at the 2002 Physician Fee Schedule rates. The 2003 rates were effective March 1, 2003 through December 31, 2003.
-      "2002-01-01",
-      "2001-01-01",
-      "2000-01-01"
-      )
+  cf_df <- dplyr::tibble(
+    date_start = c(
+      clock::date_build(2024, 1, 1, invalid = "previous"),
+      clock::date_build(2024, 3, 9, invalid = "previous"),
+      clock::date_build(2023, 1, 1, invalid = "previous"),
+      clock::date_build(2022, 1, 1, invalid = "previous"),
+      clock::date_build(2021, 1, 1, invalid = "previous"),
+      clock::date_build(2020, 1, 1, invalid = "previous"),
+      clock::date_build(2019, 1, 1, invalid = "previous"),
+      clock::date_build(2018, 1, 1, invalid = "previous"),
+      clock::date_build(2017, 1, 1, invalid = "previous"),
+      clock::date_build(2016, 1, 1, invalid = "previous"),
+      clock::date_build(2015, 1, 1, invalid = "previous"),
+      clock::date_build(2015, 4, 1, invalid = "previous"),
+      clock::date_build(2014, 1, 1, invalid = "previous"),
+      clock::date_build(2013, 1, 1, invalid = "previous"),
+      clock::date_build(2012, 1, 1, invalid = "previous"),
+      clock::date_build(2011, 1, 1, invalid = "previous"),
+      clock::date_build(2010, 1, 1, invalid = "previous"),
+      clock::date_build(2010, 6, 1, invalid = "previous"),
+      clock::date_build(2009, 1, 1, invalid = "previous"),
+      clock::date_build(2008, 1, 1, invalid = "previous"),
+      clock::date_build(2008, 7, 1, invalid = "previous"),
+      clock::date_build(2007, 1, 1, invalid = "previous"),
+      clock::date_build(2006, 1, 1, invalid = "previous"),
+      clock::date_build(2005, 1, 1, invalid = "previous"),
+      clock::date_build(2004, 1, 1, invalid = "previous"),
+      clock::date_build(2003, 3, 1, invalid = "previous"),
+      clock::date_build(2002, 1, 1, invalid = "previous"),
+      clock::date_build(2001, 1, 1, invalid = "previous"),
+      clock::date_build(2000, 1, 1, invalid = "previous")
     ),
-    year = as.integer(lubridate::year(date_effective)),
-    conversion_factor = c(
+    cf = c(
       32.7442,
       33.2875,
       33.8872,
@@ -120,7 +123,7 @@ get_conversion_factor <- function() {
       36.0791,
       36.8729,
       36.0666,
-      38.087, # 0.5 percent update, retroactive to July 1, 2008
+      38.087,
       38.087,
       37.8975,
       37.8975,
@@ -130,11 +133,30 @@ get_conversion_factor <- function() {
       36.1992,
       38.2581,
       36.6137
-      )
+    )
   ) |>
-    dplyr::arrange(date_effective) |>
-    dplyr::mutate(
-      abs_change = (conversion_factor - dplyr::lag(conversion_factor)))
+    dplyr::arrange(date_start) |>
+    dplyr::reframe(
+      date_start,
+      date_end = dplyr::lead(date_start) - 1,
+      date_interval = ivs::iv(date_start, date_end),
+      cf,
+      cf_chg_abs = cf - dplyr::lag(cf),
+      cf_chg_rel = (cf - dplyr::lag(cf)) / dplyr::lag(cf)
+    )
+
+  if (!is.null(dos)) {
+    cf_df <- cf_df |>
+      dplyr::rowwise() |>
+      dplyr::filter(
+        dplyr::between(
+          as.Date(dos),
+          date_start,
+          date_end)
+        ) |>
+      dplyr::ungroup()
+  }
+  return(cf_df)
 }
 
 #' Download/update RVU Link Table

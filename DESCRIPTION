@@ -1,5 +1,5 @@
 Package: rbrvs
-Title: S7 For Medicare Physician Fee Schedule
+Title: Classes and Methods For Medicare's Physician Fee Schedule
 Version: 0.0.1
 Authors@R: 
     person("Andrew", "Bruce", , "andrewallenbruce@gmail.com", role = c("aut", "cre", "cph"))
@@ -13,6 +13,8 @@ BugReports: https://github.com/andrewallenbruce/rbrvs/issues
 Suggests:
     collapse,
     dplyr,
+    clock,
+    ivs,
     fs,
     fuimus,
     gt,

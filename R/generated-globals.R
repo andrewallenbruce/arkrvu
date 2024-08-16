@@ -2,9 +2,11 @@
 
 utils::globalVariables(c(
   # <get_conversion_factor>
-  "conversion_factor",
+  "cf",
   # <get_conversion_factor>
-  "date_effective",
+  "date_end",
+  # <get_conversion_factor>
+  "date_start",
   # <download_link_table>
   "File Name",
   # <download_link_table>

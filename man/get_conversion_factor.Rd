@@ -4,7 +4,10 @@
 \alias{get_conversion_factor}
 \title{Get Conversion Factors by Effective Date}
 \usage{
-get_conversion_factor()
+get_conversion_factor(dos = NULL)
+}
+\arguments{
+\item{dos}{\verb{<Date>} date of service}
 }
 \value{
 list of selected rvu source files
@@ -13,6 +16,9 @@ list of selected rvu source files
 Get Conversion Factors by Effective Date
 }
 \examples{
-get_conversion_factor()
+get_conversion_factor(dos = as.Date("2023-03-03"))
+
+get_conversion_factor() |>
+   print(n = 30)
 
 }

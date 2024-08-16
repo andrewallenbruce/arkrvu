@@ -4,7 +4,7 @@
 \name{rbrvs-package}
 \alias{rbrvs}
 \alias{rbrvs-package}
-\title{rbrvs: S7 For Medicare Physician Fee Schedule}
+\title{rbrvs: Classes and Methods For Medicare's Physician Fee Schedule}
 \description{
 S7 Classes and Methods for the Components of Medicare's Physician Fee Schedule.
 }
