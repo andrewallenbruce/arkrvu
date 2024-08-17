@@ -126,11 +126,8 @@ get_pprrvu <- function(dos, hcpcs, pos) {
         mult_proc   = NA_character_
       )
     } else {
-      file <- file |>
-        collapse::fsubset(
-          purrr::pmap_lgl(
-            list(dos, date_start, date_end),
-            dplyr::between))
+      file <- collapse::fsubset(file,
+        data.table::between(dos, date_start, date_end))
     }
   return(file)
 }

@@ -16,6 +16,7 @@ Imports:
     collapse
 Suggests:
     clock,
+    data.table,
     dplyr,
     fs,
     fuimus,
