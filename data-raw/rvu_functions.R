@@ -2,10 +2,7 @@ download_rvu_pages <- function(link_table, year = NULL) {
 
   if (!is.null(year)) {
 
-    selected_urls <- dplyr::filter(
-      link_table,
-      year == {{  year }}
-    ) |>
+    selected_urls <- dplyr::filter(link_table, year == {{  year }}) |>
       dplyr::pull(link_url)
 
   } else {
@@ -14,19 +11,12 @@ download_rvu_pages <- function(link_table, year = NULL) {
 
   }
 
-  tictoc::tic(
-    stringr::str_glue(
-      "Downloaded {length(selected_urls)} Pages"
-      )
-    )
+  tictoc::tic(stringr::str_glue("Downloaded {length(selected_urls)} Pages"))
 
   rvu_pgs <- purrr::map(
     selected_urls,
     rvest::read_html,
-    .progress = stringr::str_glue(
-      "Downloading {length(selected_urls)} Pages"
-      )
-    )
+    .progress = stringr::str_glue("Downloading {length(selected_urls)} Pages"))
 
   tictoc::toc()
 
@@ -59,17 +49,9 @@ process_rvu_pages <- function(rvu_pages, link_table, year) {
   )
 
   dplyr::tibble(
-    zip_link = purrr::map(
-      rvu_pages,
-      process$zip_link) |>
-      unlist(),
-    zip_info = purrr::map(
-      rvu_pages,
-      process$zip_info) |>
-      purrr::set_names(
-        link_table[link_table$year == year, 3, drop = TRUE]
-      )
-  ) |>
+    zip_link = purrr::map(rvu_pages, process$zip_link) |> unlist(),
+    zip_info = purrr::map(rvu_pages, process$zip_info) |>
+      purrr::set_names(link_table[link_table$year == year, 3, drop = TRUE])) |>
     tidyr::unnest(cols = zip_info) |>
     dplyr::mutate(
       col_name = dplyr::case_when(
@@ -131,12 +113,8 @@ process_rvu_pages <- function(rvu_pages, link_table, year) {
 
 download_rvu_zips <- function(zip_table, directory = "data-raw") {
 
-  zip_paths <- here::here(
-    directory,
-    stringr::str_glue(
-      "{zip_table$file_html}-{basename(zip_table$zip_link)}"
-      )
-    )
+  zip_paths <- here::here(directory,stringr::str_glue(
+      "{zip_table$file_html}-{basename(zip_table$zip_link)}"))
 
   curl::multi_download(
     urls = zip_table$zip_link,
@@ -149,41 +127,20 @@ download_rvu_zips <- function(zip_table, directory = "data-raw") {
 
 unpack_rvu_zips <- function(zip_paths, directory = "data-raw") {
 
-  zip_list_table <- purrr::map(
-    zip_paths,
-    zip::zip_list
-  ) |>
-    purrr::set_names(
-      stringr::str_extract(
-        basename(zip_paths),
-        "^RVU[0-9]{2}[A-Z]{0,2}"
-      )
-    ) |>
-    purrr::list_rbind(
-      names_to = "file_html"
-    ) |>
+  zip_list_table <- purrr::map(zip_paths, zip::zip_list) |>
+    purrr::set_names(stringr::str_extract(basename(zip_paths), "^RVU[0-9]{2}[A-Z]{0,2}")) |>
+    purrr::list_rbind(names_to = "file_html") |>
     dplyr::tibble() |>
     dplyr::select(
       file_html,
       sub_file = filename,
-      sub_file_timestamp = timestamp
-    ) |>
-    dplyr::filter(
-      grepl(".xlsx", sub_file)
-    )
+      sub_file_timestamp = timestamp) |>
+    dplyr::filter(grepl(".xlsx", sub_file))
 
   unzip_args <- list(
     zipfile = zip_paths,
-    exdir = here::here(
-      directory,
-      unique(
-        dplyr::pull(
-          zip_list_table,
-          file_html
-        )
-      )
-    )
-  )
+    exdir = here::here(directory,
+                       unique(dplyr::pull(zip_list_table, file_html))))
 
   purrr::pwalk(unzip_args, zip::unzip)
 
@@ -210,39 +167,19 @@ process_raw_xlsx <- function() {
 
 create_list <- function(raw, list, remove) {
 
-  names <- stringr::str_subset(
-    names(raw), list)
-
-  raw_to_string <- stringr::str_c(
-    stringr::str_glue("raw${names}"),
-    collapse = ", ")
-
-  string_to_list <- stringr::str_c(
-    "list(", raw_to_string, ")")
-
-  list_to_df <- rlang::eval_tidy(
-    rlang::parse_expr(string_to_list)
-    )
-
-  list_to_df |> purrr::set_names(
-    stringr::str_remove(names, remove)
-    )
+  names <- stringr::str_subset(names(raw), list)
+  raw_to_string <- stringr::str_c(stringr::str_glue("raw${names}"), collapse = ", ")
+  string_to_list <- stringr::str_c("list(", raw_to_string, ")")
+  list_to_df <- rlang::eval_tidy(rlang::parse_expr(string_to_list))
+  list_to_df |> purrr::set_names(stringr::str_remove(names, remove))
 }
 
 process_pprrvu <- function(x) {
 
-  dplyr::slice(
-    x,
-    5:dplyr::n()
-  ) |>
-    unheadr::mash_colnames(
-      n_name_rows = 5,
-      keep_names = FALSE
-    ) |>
+  dplyr::slice(x, 5:dplyr::n()) |>
+    unheadr::mash_colnames(n_name_rows = 5, keep_names = FALSE) |>
     janitor::clean_names() |>
-    dplyr::filter(
-      !is.na(calculation_flag)
-    ) |>
+    dplyr::filter(!is.na(calculation_flag)) |>
     dplyr::mutate(
       dplyr::across(
         c(

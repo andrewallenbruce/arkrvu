@@ -61,52 +61,52 @@ get_pprrvu <- function(dos, hcpcs, pos) {
   dos  <- as.Date(dos)
   year <- as.character(clock::get_year(dos))
   pos  <- match.arg(pos, c("Facility", "Non-Facility"))
+  code <- stringfish::convert_to_sf(hcpcs)
 
-  file <- switch(
-    year,
+  pp <- list(
     '2024' = collapse::fsubset(get_pin("pprrvu_2024"), source_file %!=% "rvu24a_jan"),
     '2023' = get_pin("pprrvu_2023"),
     '2022' = get_pin("pprrvu_2022")
   )
 
-  file <- fuimus::search_in(file, file$hcpcs, hcpcs)
-
   if (pos == "Non-Facility") {
-    file <- file |>
-      collapse::fselect(
-        date_start,
-        date_end,
-        hcpcs,
-        mod,
-        description,
-        work_rvu,
-        pe_rvu = non_fac_pe_rvu,
-        mp_rvu,
-        rvu_total = non_facility_total,
-        conv_factor,
-        pctc_ind,
-        glob_days,
-        mult_proc
-      )
+    file <- collapse::fsubset(
+      pp[[year]],
+      hcpcs %==% code,
+      date_start,
+      date_end,
+      hcpcs,
+      mod,
+      description,
+      wrvu = work_rvu,
+      prvu = non_fac_pe_rvu,
+      mrvu = mp_rvu,
+      trvu = non_facility_total,
+      cf = conv_factor,
+      pctc = pctc_ind,
+      glob = glob_days,
+      mult = mult_proc
+    )
   }
 
   if (pos == "Facility") {
-    file <- file |>
-      collapse::fselect(
-        date_start,
-        date_end,
-        hcpcs,
-        mod,
-        description,
-        work_rvu,
-        pe_rvu = facility_pe_rvu,
-        mp_rvu,
-        rvu_total = facility_total,
-        conv_factor,
-        pctc_ind,
-        glob_days,
-        mult_proc
-      )
+    file <- collapse::fsubset(
+      pp[[year]],
+      hcpcs %==% code,
+      date_start,
+      date_end,
+      hcpcs,
+      mod,
+      description,
+      wrvu = work_rvu,
+      prvu = facility_pe_rvu,
+      mrvu = mp_rvu,
+      trvu = facility_total,
+      cf = conv_factor,
+      pctc = pctc_ind,
+      glob = glob_days,
+      mult = mult_proc
+    )
   }
 
   if (vctrs::vec_is_empty(file)) {
@@ -116,19 +116,17 @@ get_pprrvu <- function(dos, hcpcs, pos) {
         hcpcs       = hcpcs,
         mod         = NA_character_,
         description = NA_character_,
-        work_rvu    = NA_real_,
-        pe_rvu      = NA_real_,
-        mp_rvu      = NA_real_,
-        rvu_total   = NA_real_,
-        conv_factor = NA_real_,
-        pctc_ind    = NA_character_,
-        glob_days   = NA_character_,
-        mult_proc   = NA_character_
+        wrvu        = NA_real_,
+        prvu        = NA_real_,
+        mrvu        = NA_real_,
+        trvu        = NA_real_,
+        cf          = NA_real_,
+        pctc        = NA_character_,
+        glob        = NA_character_,
+        mult        = NA_character_
       )
-    } else {
-      file <- collapse::fsubset(file,
-        data.table::between(dos, date_start, date_end))
     }
+  file <- collapse::fsubset(file, data.table::between(dos, date_start, date_end))
   return(file)
 }
 

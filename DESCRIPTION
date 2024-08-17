@@ -17,6 +17,7 @@ Imports:
 Suggests:
     clock,
     data.table,
+    stringfish,
     dplyr,
     fs,
     fuimus,
