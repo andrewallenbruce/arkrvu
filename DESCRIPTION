@@ -10,9 +10,12 @@ License: MIT + file LICENSE
 URL: https://github.com/andrewallenbruce/rbrvs,
     https://andrewallenbruce.github.io/rbrvs/
 BugReports: https://github.com/andrewallenbruce/rbrvs/issues
+Depends: 
+    R (>= 4.1.0)
+Imports:
+    collapse
 Suggests:
     clock,
-    collapse,
     dplyr,
     fs,
     fuimus,

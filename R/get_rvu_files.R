@@ -64,7 +64,7 @@ get_pprrvu <- function(dos, hcpcs, pos) {
 
   file <- switch(
     year,
-    '2024' = dplyr::filter(get_pin("pprrvu_2024"), source_file != "rvu24a_jan"),
+    '2024' = collapse::fsubset(get_pin("pprrvu_2024"), source_file %!=% "rvu24a_jan"),
     '2023' = get_pin("pprrvu_2023"),
     '2022' = get_pin("pprrvu_2022")
   )
@@ -73,7 +73,7 @@ get_pprrvu <- function(dos, hcpcs, pos) {
 
   if (pos == "Non-Facility") {
     file <- file |>
-      dplyr::select(
+      collapse::fselect(
         date_start,
         date_end,
         hcpcs,
@@ -92,7 +92,7 @@ get_pprrvu <- function(dos, hcpcs, pos) {
 
   if (pos == "Facility") {
     file <- file |>
-      dplyr::select(
+      collapse::fselect(
         date_start,
         date_end,
         hcpcs,
@@ -127,13 +127,10 @@ get_pprrvu <- function(dos, hcpcs, pos) {
       )
     } else {
       file <- file |>
-        dplyr::rowwise() |>
-        dplyr::filter(
-          dplyr::between(
-            dos,
-            date_start,
-            date_end)) |>
-        dplyr::ungroup()
+        collapse::fsubset(
+          purrr::pmap_lgl(
+            list(dos, date_start, date_end),
+            dplyr::between))
     }
   return(file)
 }
