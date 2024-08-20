@@ -47,6 +47,8 @@ get_source <- function(year, source) {
 #'
 #' @param pos `<chr>` place of service; `Facility` or `Non-Facility`
 #'
+#' @param ... additional arguments
+#'
 #' @returns `<tibble>` containing pprrvu source file
 #'
 #' @examples
@@ -56,7 +58,7 @@ get_source <- function(year, source) {
 #' @autoglobal
 #'
 #' @export
-get_pprrvu <- function(dos, hcpcs, pos) {
+get_pprrvu <- function(dos, hcpcs, pos, ...) {
 
   dos  <- as.Date(dos)
   year <- as.character(clock::get_year(dos))
@@ -126,8 +128,51 @@ get_pprrvu <- function(dos, hcpcs, pos) {
         mult        = NA_character_
       )
     }
-  file <- collapse::fsubset(file, data.table::between(dos, date_start, date_end))
+  file <- collapse::fsubset(
+    file,
+    data.table::between(
+      dos,
+      date_start,
+      date_end
+      )
+    )
   return(file)
+}
+
+#' Parallelized [get_pprrvu()]
+#'
+#' @param df `<tibble>` containing dos, hcpcs, pos
+#'
+#' @param ... Pass arguments to [get_pprrvu()].
+#'
+#' @returns `<tibble>` containing pprrvu source file
+#'
+#' @autoglobal
+#'
+#' @export
+get_pprrvu_ <- function(df, ...) {
+
+  tictoc::tic()
+
+  future::plan(
+    future::multisession(
+      workers = parallelly::availableCores()
+    )
+  )
+
+  x <- furrr::future_pmap_dfr(
+    .l = as.list(df),
+    .f = get_pprrvu,
+    ...,
+    .options = furrr::furrr_options(seed = NULL)
+    )
+
+  future::plan("sequential")
+
+  tictoc::toc()
+
+  return(x)
+
 }
 
 #' Get RVU Link Table
@@ -161,75 +206,106 @@ get_link_table <- function() {
 #' @export
 get_conversion_factor <- function(dos = NULL) {
 
+  dt <- \(y, m = 1L, d = 1L, ...) {
+    clock::date_build(
+      year = y,
+      month = m,
+      day = d,
+      ...,
+      invalid = "previous")
+  }
+
   cf_df <- dplyr::tibble(
     date_start = c(
-      clock::date_build(2024, 1, 1, invalid = "previous"),
-      clock::date_build(2024, 3, 9, invalid = "previous"),
-      # clock::date_build(2024, 12, 31, invalid = "previous"),
-      clock::date_build(2023, 1, 1, invalid = "previous"),
-      clock::date_build(2022, 1, 1, invalid = "previous"),
-      clock::date_build(2021, 1, 1, invalid = "previous"),
-      clock::date_build(2020, 1, 1, invalid = "previous"),
-      clock::date_build(2019, 1, 1, invalid = "previous"),
-      clock::date_build(2018, 1, 1, invalid = "previous"),
-      clock::date_build(2017, 1, 1, invalid = "previous"),
-      clock::date_build(2016, 1, 1, invalid = "previous"),
-      clock::date_build(2015, 1, 1, invalid = "previous"),
-      clock::date_build(2015, 4, 1, invalid = "previous"),
-      clock::date_build(2014, 1, 1, invalid = "previous"),
-      clock::date_build(2013, 1, 1, invalid = "previous"),
-      clock::date_build(2012, 1, 1, invalid = "previous"),
-      clock::date_build(2011, 1, 1, invalid = "previous"),
-      clock::date_build(2010, 1, 1, invalid = "previous"),
-      clock::date_build(2010, 6, 1, invalid = "previous"),
-      clock::date_build(2009, 1, 1, invalid = "previous"),
-      clock::date_build(2008, 1, 1, invalid = "previous"),
-      clock::date_build(2008, 7, 1, invalid = "previous"),
-      clock::date_build(2007, 1, 1, invalid = "previous"),
-      clock::date_build(2006, 1, 1, invalid = "previous"),
-      clock::date_build(2005, 1, 1, invalid = "previous"),
-      clock::date_build(2004, 1, 1, invalid = "previous"),
-      clock::date_build(2003, 3, 1, invalid = "previous"),
-      clock::date_build(2002, 1, 1, invalid = "previous"),
-      clock::date_build(2001, 1, 1, invalid = "previous"),
-      clock::date_build(2000, 1, 1, invalid = "previous")
+      dt(1992),
+      dt(1993),
+      dt(1994),
+      dt(1995),
+      dt(1996),
+      dt(1997),
+      dt(1998),
+      dt(1999),
+      dt(2000),
+      dt(2001),
+      dt(2002),
+      dt(2003),
+      dt(2004),
+      dt(2005),
+      dt(2006),
+      dt(2007),
+      dt(2008),
+      dt(2009),
+      dt(2010),       #dt(2010, 5, 31),
+      dt(2010, 6, 1), #dt(2010, 12, 31),
+      dt(2011),
+      dt(2012),
+      dt(2013),
+      dt(2014),
+      dt(2015),       #dt(2015, 6, 30),
+      dt(2015, 7, 1), #dt(2015, 12, 31),
+      dt(2016),
+      dt(2017),
+      dt(2018),
+      dt(2019),
+      dt(2020),
+      dt(2021),
+      dt(2022),
+      dt(2023),
+      dt(2024),       #dt(2024, 3, 8),
+      dt(2024, 3, 9)  #dt(2024, 12, 31)
     ),
     cf = c(
-      32.7442,
-      33.2875,
-      33.8872,
-      34.6062,
-      34.8931,
-      36.0896,
-      36.0391,
-      35.9996,
-      35.8887,
-      35.8043,
-      35.7547,
-      28.1872,
-      35.8228,
-      34.0230,
-      34.0376,
-      33.9764,
+      31.0010,
+      NA_real_,
+      NA_real_,
+      NA_real_,
+      NA_real_,
+      NA_real_,
+      36.6873,
+      34.7315,
+      36.6137,
+      38.2581,
+      36.1992,
+      36.7856,
+      37.3374,
+      37.8975,
+      37.8975,
+      37.8975,
+      38.0870,
+      36.0666,
       36.0791,
       36.8729,
-      36.0666,
-      38.087,
-      38.087,
-      37.8975,
-      37.8975,
-      37.8975,
-      37.3374,
-      36.7856,
-      36.1992,
-      38.2581,
-      36.6137
+      33.9764,
+      34.0376,
+      34.0230,
+      35.8228,
+      35.7547,
+      35.9335,
+      35.8043,
+      35.8887,
+      35.9996,
+      36.0391,
+      36.0896,
+      34.8931,
+      34.6062,
+      33.8872,
+      32.7442,
+      33.2875
     )
   ) |>
     dplyr::arrange(date_start) |>
     dplyr::reframe(
       date_start,
       date_end = dplyr::lead(date_start) - 1,
+      date_end = dplyr::case_match(date_start,
+                                   dt(2010)       ~ dt(2010, 5, 31),
+                                   dt(2010, 6, 1) ~ dt(2010, 12, 31),
+                                   dt(2015)       ~ dt(2015, 6, 30),
+                                   dt(2015, 7, 1) ~ dt(2015, 12, 31),
+                                   dt(2024)       ~ dt(2024, 3, 8),
+                                   dt(2024, 3, 9) ~ dt(2024, 12, 31),
+                                   .default = date_end
+      ),
       date_interval = ivs::iv(date_start, date_end),
       cf,
       cf_chg_abs = cf - dplyr::lag(cf),
@@ -244,7 +320,7 @@ get_conversion_factor <- function(dos = NULL) {
           as.Date(dos),
           date_start,
           date_end)
-        ) |>
+      ) |>
       dplyr::ungroup()
   }
   return(cf_df)

@@ -4,7 +4,7 @@
 \alias{get_pprrvu}
 \title{Get PPRRVU File by Year}
 \usage{
-get_pprrvu(dos, hcpcs, pos)
+get_pprrvu(dos, hcpcs, pos, ...)
 }
 \arguments{
 \item{dos}{\verb{<date>} date of service; YYYY-MM-DD}
@@ -12,6 +12,8 @@ get_pprrvu(dos, hcpcs, pos)
 \item{hcpcs}{\verb{<chr>} hcpcs code}
 
 \item{pos}{\verb{<chr>} place of service; \code{Facility} or \code{Non-Facility}}
+
+\item{...}{additional arguments}
 }
 \value{
 \verb{<tibble>} containing pprrvu source file

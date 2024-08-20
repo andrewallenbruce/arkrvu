@@ -13,11 +13,17 @@ ex <- readr::read_csv(
 
 n <- 1
 
+rlang::as_list(ex[n:20, ])
+
+ex[n:20, ]
+
 get_pprrvu(
   dos = ex[n, ]$dos,
   hcpcs = ex[n, ]$hcpcs,
   pos = ex[n, ]$pos
 )
+
+get_pprrvu_(df = ex[n:20, ])
 
 dos <- ex[n,]$dos
 hcpcs <- ex[n,]$hcpcs
