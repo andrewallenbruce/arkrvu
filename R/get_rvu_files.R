@@ -149,13 +149,25 @@ get_pprrvu <- function(dos, hcpcs, pos, ...) {
 #'
 #' @autoglobal
 #'
+#' @importFrom zeallot %<-%
+#'
 #' @noRd
-get_pprrvu2_ <- function(df, ...) {
+get_pprrvu2_ <- function(df, dos, code, pos) {
 
-  dos  <- as.Date(dos)
-  year <- as.character(clock::get_year(dos))
-  pos  <- match.arg(pos, c("Facility", "Non-Facility"))
-  code <- stringfish::convert_to_sf(hcpcs)
+  df <- dplyr::reframe(
+    df,
+    dos = clock::as_date(dos),
+    year = as.character(clock::get_year(dos)),
+    code = hcpcs,
+    pos = pos
+    )
+
+  # df <- dplyr::transmute(
+  #   df,
+  #   dos = clock::as_date({{ dos }}),
+  #   year = as.character(clock::get_year({{ dos }})),
+  #   code = {{ code }},
+  #   pos = {{ pos }})
 
   pp <- list(
     '2024' = collapse::fsubset(get_pin("pprrvu_2024"), source_file %!=% "rvu24a_jan"),
@@ -163,30 +175,35 @@ get_pprrvu2_ <- function(df, ...) {
     '2022' = get_pin("pprrvu_2022")
   )
 
-  f <- \(x, pp) {
+  c(dos, year, code, pos) %<-% as.list(df[1:1, ])
+
+  pprrvu_vec <- \(dos, year, code, pos, pp = pp[[year]], ...) {
+
     if (pos == "Non-Facility") {
-      file <- collapse::fsubset(
-        pp[[year]],
-        hcpcs %==% code,
-        date_start,
-        date_end,
-        hcpcs,
-        mod,
-        description,
-        wrvu = work_rvu,
-        prvu = non_fac_pe_rvu,
-        mrvu = mp_rvu,
-        trvu = non_facility_total,
-        cf = conv_factor,
-        pctc = pctc_ind,
-        glob = glob_days,
-        mult = mult_proc
-      )
+
+      file <- vctrs::vec_slice(pp, pp$hcpcs == code)
+      # file <- collapse::fsubset(
+      #   pp,
+      #   hcpcs %==% code,
+      #   date_start,
+      #   date_end,
+      #   hcpcs,
+      #   mod,
+      #   description,
+      #   wrvu = work_rvu,
+      #   prvu = non_fac_pe_rvu,
+      #   mrvu = mp_rvu,
+      #   trvu = non_facility_total,
+      #   cf = conv_factor,
+      #   pctc = pctc_ind,
+      #   glob = glob_days,
+      #   mult = mult_proc
+      # )
     }
 
     if (pos == "Facility") {
       file <- collapse::fsubset(
-        pp[[year]],
+        pp,
         hcpcs %==% code,
         date_start,
         date_end,
@@ -230,10 +247,12 @@ get_pprrvu2_ <- function(df, ...) {
       )
     )
     return(file)
-
   }
 
-
+  purrr::pmap(
+    .l = as.list(df[1:10, ]),
+    .f = pprrvu_vec
+  )
 
   tictoc::tic()
 
@@ -244,9 +263,9 @@ get_pprrvu2_ <- function(df, ...) {
   )
 
   x <- furrr::future_pmap_dfr(
-    .l = as.list(df),
-    .f = get_pprrvu,
-    ...,
+    .l = as.list(df[1:10, ]),
+    .f = pprrvu_vec,
+    # ...,
     .options = furrr::furrr_options(seed = NULL)
     )
 

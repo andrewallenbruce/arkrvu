@@ -13,7 +13,8 @@ BugReports: https://github.com/andrewallenbruce/rbrvs/issues
 Depends: 
     R (>= 4.1.0)
 Imports:
-    collapse
+    collapse,
+    zeallot
 Suggests:
     clock,
     data.table,

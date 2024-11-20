@@ -42,10 +42,8 @@ utils::globalVariables(c(
   # <download_link_table>
   "Name",
   # <get_pprrvu>
-  # <get_pprrvu2_>
   "non_fac_pe_rvu",
   # <get_pprrvu>
-  # <get_pprrvu2_>
   "non_facility_total",
   # <get_pprrvu>
   # <get_pprrvu2_>
@@ -56,5 +54,7 @@ utils::globalVariables(c(
   # <get_pprrvu>
   # <get_pprrvu2_>
   "work_rvu",
+  # <get_pprrvu2_>
+  "year",
   NULL
 ))

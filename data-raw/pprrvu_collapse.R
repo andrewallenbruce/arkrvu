@@ -41,3 +41,5 @@ pin_update(
   name = stringr::str_glue("pprrvu_{year}") |> as.character(),
   title = stringr::str_glue("PPRRVU {year}") |> as.character()
 )
+
+list_pins()
