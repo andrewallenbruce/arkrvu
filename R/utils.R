@@ -14,11 +14,11 @@ mount_board <- function(source = c("local", "remote")) {
     local  = pins::board_folder(
       fs::path_package(
         "extdata/pins",
-        package = "rbrvs")
+        package = "arkrvu")
     ),
     remote = pins::board_url(
       fuimus::gh_raw(
-        "andrewallenbruce/rvu/master/inst/extdata/rbrvs/")
+        "andrewallenbruce/rvu/master/inst/extdata/arkrvu/")
     )
   )
 }

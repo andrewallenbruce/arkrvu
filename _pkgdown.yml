@@ -1,4 +1,4 @@
-url: https://andrewallenbruce.github.io/rbrvs/
+url: https://andrewallenbruce.github.io/arkrvu/
 
 template:
   bootstrap: 5
@@ -45,7 +45,7 @@ navbar:
       href: news/index.html
     github:
       icon: fab fa-github fa-lg
-      href: https://github.com/andrewallenbruce/rvu/
+      href: https://github.com/andrewallenbruce/arkrvu/
       aria-label: GitHub
     articles:
       text: Articles

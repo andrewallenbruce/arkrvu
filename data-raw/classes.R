@@ -14,7 +14,7 @@
 #' @param children Integer: the index of any children of the node. Leaf nodes
 #' should have a value of `NA_integer_`.
 #'
-#' @return An object of class `"rbrvs::hcpcs", "S7_object"`
+#' @return An object of class `"arkrvu::hcpcs", "S7_object"`
 #'
 #' @examples
 #' hcpcs("A0000")
@@ -52,7 +52,7 @@ hcpcs <- S7::new_class(
     if (length(self@code) != 1) { "@code must be length 1" }
     if (nchar(self@code) != 5) { "@code must have 5 characters" }
   },
-  package = "rbrvs"
+  package = "arkrvu"
 )
 
 dplyr::glimpse(get_pin("rvu_source_2024")$files$pprvu)

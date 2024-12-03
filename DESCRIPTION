@@ -1,15 +1,14 @@
-Package: rbrvs
-Title: Classes and Methods For Medicare's Physician Fee Schedule
+Package: arkrvu
+Title: Archive: Physician Fee Schedule
 Version: 0.0.1
 Authors@R: 
     person("Andrew", "Bruce", , "andrewallenbruce@gmail.com", role = c("aut", "cre", "cph"))
 Maintainer: Andrew Bruce <andrewallenbruce@gmail.com>
-Description: S7 Classes and Methods for the Components of Medicare's
-    Physician Fee Schedule.
+Description: Archive of Medicare's Physician Fee Schedule.
 License: MIT + file LICENSE
-URL: https://github.com/andrewallenbruce/rbrvs,
-    https://andrewallenbruce.github.io/rbrvs/
-BugReports: https://github.com/andrewallenbruce/rbrvs/issues
+URL: https://github.com/andrewallenbruce/arkrvu,
+    https://andrewallenbruce.github.io/arkrvu/
+BugReports: https://github.com/andrewallenbruce/arkrvu/issues
 Depends: 
     R (>= 4.1.0)
 Imports:
