@@ -464,9 +464,9 @@ get_conversion_factor <- function(dos = NULL) {
   return(cf_df)
 }
 
-#' Download/update RVU Link Table
+#' Download/Update RVU Link Table
 #'
-#' @param update_pin `<lgl>` update pin; default is `FALSE`
+#' @param update_pin `<lgl>` update `"rvu_link_table"` pin; default is `FALSE`
 #'
 #' @returns RVU Link Table
 #'
@@ -485,20 +485,24 @@ download_link_table <- function(update_pin = FALSE) {
 
   rvu_table <- rvest::html_table(html_land) |>
     purrr::pluck(1) |>
-    dplyr::reframe(year = as.integer(stringr::str_remove_all(Name, "\\D")),
-                   file_html = stringr::str_remove_all(`File Name`, "\\n|File Name|\\s|.ZIP"))
+    dplyr::reframe(
+      year = as.integer(stringr::str_remove_all(Name, "\\D")),
+      file_html = stringr::str_remove_all(`File Name`, "\\n|File Name|\\s|.ZIP"))
 
   rvu_urls <- rvest::html_elements(html_land, "a") |>
     rvest::html_attr("href") |>
     collapse::funique() |>
-    stringr::str_subset(stringr::regex(
+    stringr::str_subset(
+      stringr::regex(
       paste(
         "/medicare/payment/fee-schedules/physician/pfs-relative-value-files/",
         "/medicare/medicare-fee-service-payment/physicianfeesched/pfs-relative-value-files/",
         "/medicaremedicare-fee-service-paymentphysicianfeeschedpfs-relative-value-files/",
         "/medicare/medicare-fee-for-service-payment/physicianfeesched/pfs-relative-value-files-items/",
         sep = "|"
-      )))
+        )
+      )
+    )
 
   link_table <- dplyr::bind_cols(
     rvu_table,
@@ -508,11 +512,15 @@ download_link_table <- function(update_pin = FALSE) {
     ))
 
   if (update_pin) {
+
     pin_update <- \(x, name, title) {
+
       board <- pins::board_folder(here::here("inst/extdata/pins"))
       board |> pins::pin_write(x, name = name, title = title, type = "qs")
       board |> pins::write_board_manifest()
+
     }
+
     pin_update(
       link_table,
       name = "rvu_link_table",

@@ -2,12 +2,15 @@ source(here::here("data-raw", "pins_functions.R"))
 source(here::here("data-raw", "rvu_functions.R"))
 
 year       <- 2020
-link_table <- get_link_table()
+link_table <- get_pin("rvu_link_table")
 rvu_pages  <- download_rvu_pages(link_table, year = year)
 zip_table  <- process_rvu_pages(rvu_pages, link_table, year = year)
-zip_paths  <- download_rvu_zips(zip_table, directory = "data-raw")
-zip_list   <- unpack_rvu_zips(zip_paths, directory = "data-raw")
+zip_paths  <- download_rvu_zips(zip_table, directory = "D:/MPFS Files Archive/")
+zip_list   <- unpack_rvu_zips(zip_paths, directory = "D:/MPFS Files Archive/unzipped/")
+
 raw_files  <- process_raw_xlsx()
+
+
 
 #--- PPRRVU ####
 raw_pprrvu <- create_list(raw = raw_files, list = "pprrvu", remove = "_pprrvu[0-9]{2}")
