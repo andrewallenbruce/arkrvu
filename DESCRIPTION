@@ -12,7 +12,12 @@ BugReports: https://github.com/andrewallenbruce/arkrvu/issues
 Depends: 
     R (>= 4.1.0)
 Imports:
-    collapse,
+    cheapr (>= 0.9.92),
+    collapse (>= 2.0.18),
+    kit (>= 0.0.19),
+    stringfish (>= 0.16.0),
+    stringi (>= 1.8.4),
+    vctrs (>= 0.6.5),
     zeallot
 Suggests:
     clock,
@@ -35,10 +40,8 @@ Suggests:
     roxyglobals,
     rvest,
     strex,
-    stringfish,
     stringr,
-    tictoc,
-    vctrs
+    tictoc
 Remotes: 
     github::andrewallenbruce/fuimus
 Config/Needs/website: rmarkdown
