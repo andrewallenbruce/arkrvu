@@ -1,5 +1,11 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9002
+
+* update standalone-helpers
+* updated standalone-helpers
+
+
 # arkrvu 0.0.1.9001
 
 * update standalone-helpers
