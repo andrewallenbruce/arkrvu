@@ -2,17 +2,17 @@
 % Please edit documentation in R/get_rvu_files.R
 \name{download_link_table}
 \alias{download_link_table}
-\title{Download/update RVU Link Table}
+\title{Download/Update RVU Link Table}
 \usage{
 download_link_table(update_pin = FALSE)
 }
 \arguments{
-\item{update_pin}{\verb{<lgl>} update pin; default is \code{FALSE}}
+\item{update_pin}{\verb{<lgl>} update \code{"rvu_link_table"} pin; default is \code{FALSE}}
 }
 \value{
 RVU Link Table
 }
 \description{
-Download/update RVU Link Table
+Download/Update RVU Link Table
 }
 \keyword{internal}
