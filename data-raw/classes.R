@@ -25,37 +25,43 @@
 hcpcs <- S7::new_class(
   "hcpcs",
   properties = list(
-    code         = S7::class_character,
-    mod          = S7::class_character,
-    status       = S7::class_character,
-    rvu_work     = S7::class_numeric,
-    rvu_pe_non   = S7::class_numeric,
-    rvu_pe_fac   = S7::class_numeric,
-    rvu_mp       = S7::class_numeric,
-    pctc         = S7::class_character,
-    glob_days    = S7::class_character,
-    pre_op       = S7::class_numeric,
-    intra_op     = S7::class_numeric,
-    post_op      = S7::class_numeric,
-    mult_proc    = S7::class_character,
-    bilat_surg   = S7::class_character,
-    asst_surg    = S7::class_character,
-    co_surg      = S7::class_character,
-    team_surg    = S7::class_character,
-    endo_base    = S7::class_character,
+    code = S7::class_character,
+    mod = S7::class_character,
+    status = S7::class_character,
+    rvu_work = S7::class_numeric,
+    rvu_pe_non = S7::class_numeric,
+    rvu_pe_fac = S7::class_numeric,
+    rvu_mp = S7::class_numeric,
+    pctc = S7::class_character,
+    glob_days = S7::class_character,
+    pre_op = S7::class_numeric,
+    intra_op = S7::class_numeric,
+    post_op = S7::class_numeric,
+    mult_proc = S7::class_character,
+    bilat_surg = S7::class_character,
+    asst_surg = S7::class_character,
+    co_surg = S7::class_character,
+    team_surg = S7::class_character,
+    endo_base = S7::class_character,
     diag_img_fam = S7::class_character,
-    opps_pe_non  = S7::class_numeric,
-    opps_pe_fac  = S7::class_numeric,
-    opps_mp      = S7::class_numeric
+    opps_pe_non = S7::class_numeric,
+    opps_pe_fac = S7::class_numeric,
+    opps_mp = S7::class_numeric
   ),
   validator = function(self) {
-    if (length(self@code) != 1) { "@code must be length 1" }
-    if (nchar(self@code) != 5) { "@code must have 5 characters" }
+    if (length(self@code) != 1) {
+      "@code must be length 1"
+    }
+    if (nchar(self@code) != 5) {
+      "@code must have 5 characters"
+    }
   },
   package = "arkrvu"
 )
 
-dplyr::glimpse(get_pin("rvu_source_2024")$files$pprvu)
+get_pin("rvu_source_2024")$pprrvu$rvu24a_jan
+
+dplyr::glimpse(get_pin("rvu_source_2024")$pprrvu$rvu24a_jan)
 
 pprvu <- get_pin("rvu_source_2024")$files$pprvu
 
@@ -100,15 +106,21 @@ tree <- S7::new_class(
     next_idx = S7::new_property(
       S7::class_integer,
       getter = function(self) {
-        if (self@size == 0) return(1L)
+        if (self@size == 0) {
+          return(1L)
+        }
         max(self@node_indices) + 1L
       }
     ),
     root = S7::new_property(
       S7::class_integer,
       getter = function(self) {
-        if (self@size == 0) return(NA_integer_)
-        if (self@size == 1) return(self@nodes[[1]]@index)
+        if (self@size == 0) {
+          return(NA_integer_)
+        }
+        if (self@size == 1) {
+          return(self@nodes[[1]]@index)
+        }
 
         get_nodes(self) |>
           vapply(
@@ -117,7 +129,6 @@ tree <- S7::new_class(
           ) |>
           is.na() |>
           which()
-
       }
     ),
     nodes = S7::class_list
