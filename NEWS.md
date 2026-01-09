@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9004
+
+* updated link table pin
+
+
 # arkrvu 0.0.1.9003
 
 * added `vctr_rvu` pin
