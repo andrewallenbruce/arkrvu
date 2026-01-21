@@ -1,3 +1,46 @@
+source(here::here("data-raw", "pins_functions.R"))
+source(here::here("data-raw", "rvu_functions.R"))
+
+# From vctr_rvu.R
+x_mat <- x_rvu |>
+  collapse::slt(wk, pr, mp) |>
+  as.matrix()
+
+dimnames(x_mat) <- list(x_rvu$id, c("w", "p", "m"))
+
+sum(
+  x_mat[1:2, ] *
+    t(
+      cbind(
+        c(w = 1, p = 0.883, m = 1.125),
+        c(w = 1, p = 0.883, m = 1.125)
+      )
+    )
+)
+
+total <- function(
+  rvu = x_mat[1:2, ],
+  gpci = c(1, 0.883, 1.125),
+  cf = 32.744
+) {
+  xmult <- c(1.14, 91.71, 0.07) * gpci
+  # 0 1.14000 80.97993  0.07875
+
+  # 1 1.14 80.97993 0.07875
+  # 2 1.14  0.41501 0.07875
+  xmat_mult <- x_mat[1:2, ] *
+    t(
+      cbind(
+        c(w = 1, p = 0.883, m = 1.125),
+        c(w = 1, p = 0.883, m = 1.125)
+      )
+    )
+
+  collapse::fsum(xmat_mult, g = c(1, 2))
+
+  sum(xmult) * cf # 2691.514
+}
+
 wrvu = 6.26 # Work RVU
 wgpci = 1 # Work GPCI
 
