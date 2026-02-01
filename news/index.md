@@ -1,5 +1,13 @@
 # Changelog
 
+## arkrvu 0.0.1.9006
+
+- Same as previous version.
+
+## arkrvu 0.0.1.9005
+
+- changes to vctr_rvu toy data
+
 ## arkrvu 0.0.1.9004
 
 - updated link table pin
@@ -19,8 +27,7 @@
 - updated rvu_link_table
 - some code reformatting
 - changed pkgname from rbrvs to arkrvu (2024-12-03)
-- [`get_pprrvu_()`](https://andrewallenbruce.github.io/arkrvu/reference/get_pprrvu_.md)
-  using future/furrr
+- `get_pprrvu_()` using future/furrr
 - [`get_conversion_factor()`](https://andrewallenbruce.github.io/arkrvu/reference/get_conversion_factor.md)
   refactored
 - data: processed 2024 PPRVU files

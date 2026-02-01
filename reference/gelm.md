@@ -25,7 +25,7 @@ gelm(l, e, m = "re", ...)
 - ...:
 
   additional arguments to pass to
-  [`collapse::get_elem()`](https://rdrr.io/pkg/collapse/man/extract_list.html)
+  [`collapse::get_elem()`](https://fastverse.org/collapse/reference/extract_list.html)
 
 ## Value
 
