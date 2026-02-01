@@ -60,80 +60,6 @@
 #
 # nocov start
 
-# pins --------------------------------------------------------------------
-#
-#' Mount [pins][pins::pins-package] board
-#'
-#' @param source `<chr>` `"local"` or `"remote"`
-#'
-#' @returns `<pins_board_folder>` or `<pins_board_url>`
-#'
-#' @autoglobal
-#'
-#' @keywords internal
-#'
-#' @export
-mount_board <- \(source = c("local", "remote")) {
-
-  source <- match.arg(source)
-
-  gh_raw  <- \(x) paste0("https://raw.githubusercontent.com/", x)
-
-  gh_path <- gh_raw(
-    paste0(
-      "andrewallenbruce/",
-      utils::packageName(),
-      "/master/inst/extdata/pins/"))
-
-  switch(
-    source,
-    local = pins::board_folder(
-      fs::path_package("extdata/pins", package = utils::packageName())),
-    remote = pins::board_url(gh_path))
-}
-
-#' Get pinned dataset from mount_board()
-#'
-#' @param pin `<chr>` string name of pinned dataset
-#'
-#' @param ... additional arguments passed to mount_board()
-#'
-#' @returns `<tibble>` or `<data.frame>`
-#'
-#' @autoglobal
-#'
-#' @keywords internal
-#'
-#' @export
-get_pin <- function(pin, ...) {
-
-  board <- mount_board(...)
-
-  pin <- rlang::arg_match0(pin, list_pins())
-
-  pins::pin_read(board, pin)
-
-}
-
-#' List pins from mount_board()
-#'
-#' @param ... arguments to pass to mount_board()
-#'
-#' @returns `<chr>` vector of named pins
-#'
-#' @autoglobal
-#'
-#' @keywords internal
-#'
-#' @export
-list_pins <- function(...) {
-
-  board <- mount_board(...)
-
-  pins::pin_list(board)
-
-}
-
 # vctrs -------------------------------------------------------------------
 #
 #' Is Vector Empty?
@@ -147,7 +73,9 @@ list_pins <- function(...) {
 #' @autoglobal
 #'
 #' @export
-empty <- \(x) { vctrs::vec_is_empty(x) }
+empty <- \(x) {
+  vctrs::vec_is_empty(x)
+}
 
 #' If `x` is empty, `NULL`, else `x`
 #'
@@ -160,7 +88,9 @@ empty <- \(x) { vctrs::vec_is_empty(x) }
 #' @autoglobal
 #'
 #' @export
-if_empty_null <- \(x) { if (empty(x)) NULL else x }
+if_empty_null <- \(x) {
+  if (empty(x)) NULL else x
+}
 
 #' Search in data frame
 #'
@@ -171,7 +101,9 @@ if_empty_null <- \(x) { if (empty(x)) NULL else x }
 #' @param what to search for in `column`
 #'
 #' @noRd
-search_in_impl <- \(x, column, what) vctrs::vec_slice(x, vctrs::vec_in(x[[column]], uniq(what)))
+search_in_impl <- \(x, column, what) {
+  vctrs::vec_slice(x, vctrs::vec_in(x[[column]], uniq(what)))
+}
 
 #' Search in data frame column if search term is not `NULL`
 #'
@@ -189,8 +121,9 @@ search_in_impl <- \(x, column, what) vctrs::vec_slice(x, vctrs::vec_in(x[[column
 #'
 #' @export
 search_in <- \(x, column, what) {
-
-  if (null(what)) return(x)
+  if (null(what)) {
+    return(x)
+  }
 
   search_in_impl(x, column, what)
 }
@@ -209,15 +142,15 @@ search_in <- \(x, column, what) {
 #'
 #' @export
 na_if <- \(x, y) {
-
   vctrs::vec_slice(
     x,
     vctrs::vec_in(
       x,
       y,
       needles_arg = "x",
-      haystack_arg = "y")
-    ) <- NA
+      haystack_arg = "y"
+    )
+  ) <- NA
   x
 }
 
@@ -237,7 +170,9 @@ na_if <- \(x, y) {
 #' @autoglobal
 #'
 #' @export
-iif_else <- \(x, yes, no) { kit::iif(test = x, yes = yes, no = no, nThread = 4L) }
+iif_else <- \(x, yes, no) {
+  kit::iif(test = x, yes = yes, no = no, nThread = 4L)
+}
 
 #' Parallel Sort
 #'
@@ -250,7 +185,9 @@ iif_else <- \(x, yes, no) { kit::iif(test = x, yes = yes, no = no, nThread = 4L)
 #' @autoglobal
 #'
 #' @export
-strsort <- \(x) { kit::psort(x, nThread = 4L) }
+strsort <- \(x) {
+  kit::psort(x, nThread = 4L)
+}
 
 # cheapr -------------------------------------------------------------------
 #
@@ -265,7 +202,9 @@ strsort <- \(x) { kit::psort(x, nThread = 4L) }
 #' @autoglobal
 #'
 #' @export
-na <- \(x) { cheapr::is_na(x) }
+na <- \(x) {
+  cheapr::is_na(x)
+}
 
 #' Predicate to filter out NAs
 #'
@@ -278,7 +217,9 @@ na <- \(x) { cheapr::is_na(x) }
 #' @autoglobal
 #'
 #' @export
-not_na <- \(x) { !na(x) }
+not_na <- \(x) {
+  !na(x)
+}
 
 #' Remove columns and rows with all NAs
 #'
@@ -291,7 +232,9 @@ not_na <- \(x) { !na(x) }
 #' @autoglobal
 #'
 #' @export
-remove_all_na <- \(x) { cheapr::na_rm(x[, !cheapr::col_all_na(x)]) }
+remove_all_na <- \(x) {
+  cheapr::na_rm(x[, !cheapr::col_all_na(x)])
+}
 
 # collapse -----------------------------------------------------------------
 #
@@ -308,7 +251,9 @@ remove_all_na <- \(x) { cheapr::na_rm(x[, !cheapr::col_all_na(x)]) }
 #' @autoglobal
 #'
 #' @export
-getelem <- \(l, e) { collapse::get_elem(l = l, elem = e, regex = TRUE) }
+getelem <- \(l, e) {
+  collapse::get_elem(l = l, elem = e, regex = TRUE)
+}
 
 #' `getelem` with more flexibility
 #'
@@ -328,13 +273,13 @@ getelem <- \(l, e) { collapse::get_elem(l = l, elem = e, regex = TRUE) }
 #'
 #' @export
 gelm <- \(l, e, m = "re", ...) {
-
   collapse::get_elem(
     l = l,
     elem = e,
     regex = ifelse(m == "re", TRUE, FALSE),
-    DF.as.list = ifelse(m == "df", TRUE, FALSE), ...)
-
+    DF.as.list = ifelse(m == "df", TRUE, FALSE),
+    ...
+  )
 }
 
 #' Lengths of Vector
@@ -348,7 +293,9 @@ gelm <- \(l, e, m = "re", ...) {
 #' @autoglobal
 #'
 #' @export
-vlen <- \(x) { collapse::vlengths(x, use.names = FALSE) }
+vlen <- \(x) {
+  collapse::vlengths(x, use.names = FALSE)
+}
 
 #' Unique Values of Vector
 #'
@@ -361,7 +308,9 @@ vlen <- \(x) { collapse::vlengths(x, use.names = FALSE) }
 #' @autoglobal
 #'
 #' @export
-uniq <- \(x) { collapse::funique(x) }
+uniq <- \(x) {
+  collapse::funique(x)
+}
 
 #' Unique Lengths of Vector
 #'
@@ -374,7 +323,9 @@ uniq <- \(x) { collapse::funique(x) }
 #' @autoglobal
 #'
 #' @export
-uniq_vlen <- \(x) { uniq(vlen(x)) }
+uniq_vlen <- \(x) {
+  uniq(vlen(x))
+}
 
 #' Unique Values with NAs Removed
 #'
@@ -387,7 +338,9 @@ uniq_vlen <- \(x) { uniq(vlen(x)) }
 #' @autoglobal
 #'
 #' @export
-uniq_narm <- \(x) { uniq(collapse::na_rm(x)) }
+uniq_narm <- \(x) {
+  uniq(collapse::na_rm(x))
+}
 
 #' Maximum Vector Length
 #'
@@ -400,7 +353,9 @@ uniq_narm <- \(x) { uniq(collapse::na_rm(x)) }
 #' @autoglobal
 #'
 #' @export
-max_vlen <- \(x) { collapse::fmax(vlen(x)) }
+max_vlen <- \(x) {
+  collapse::fmax(vlen(x))
+}
 
 # stringfish ---------------------------------------------------------------
 #
@@ -419,7 +374,9 @@ max_vlen <- \(x) { collapse::fmax(vlen(x)) }
 #' @autoglobal
 #'
 #' @export
-sf_sub <- \(x, start = 1, stop) { stringfish::sf_substr(x, start = start, stop = stop, nthreads = 4L) }
+sf_sub <- \(x, start = 1, stop) {
+  stringfish::sf_substr(x, start = start, stop = stop, nthreads = 4L)
+}
 
 #' Convert string to stringfish vector
 #'
@@ -432,7 +389,9 @@ sf_sub <- \(x, start = 1, stop) { stringfish::sf_substr(x, start = start, stop =
 #' @autoglobal
 #'
 #' @export
-sf_conv <- \(x) { stringfish::convert_to_sf(x) }
+sf_conv <- \(x) {
+  stringfish::convert_to_sf(x)
+}
 
 #' Count number of characters in character vector
 #'
@@ -445,7 +404,9 @@ sf_conv <- \(x) { stringfish::convert_to_sf(x) }
 #' @autoglobal
 #'
 #' @export
-sf_chars <- \(x) { stringfish::sf_nchar(x, nthreads = 4L) }
+sf_chars <- \(x) {
+  stringfish::sf_nchar(x, nthreads = 4L)
+}
 
 #' Subset Vector at One Index Point
 #'
@@ -460,7 +421,9 @@ sf_chars <- \(x) { stringfish::sf_nchar(x, nthreads = 4L) }
 #' @autoglobal
 #'
 #' @export
-sf_at <- \(x, idx = 1) { sf_sub(x, start = idx, stop = idx) }
+sf_at <- \(x, idx = 1) {
+  sf_sub(x, start = idx, stop = idx)
+}
 
 #' Detect by Regex
 #'
@@ -475,7 +438,9 @@ sf_at <- \(x, idx = 1) { sf_sub(x, start = idx, stop = idx) }
 #' @autoglobal
 #'
 #' @export
-sf_detect <- \(s, p) { stringfish::sf_grepl(s, p, nthreads = 4L) }
+sf_detect <- \(s, p) {
+  stringfish::sf_grepl(s, p, nthreads = 4L)
+}
 
 #' Detect Opposite by Regex
 #'
@@ -490,7 +455,9 @@ sf_detect <- \(s, p) { stringfish::sf_grepl(s, p, nthreads = 4L) }
 #' @autoglobal
 #'
 #' @export
-sf_ndetect <- \(s, p) { !stringfish::sf_grepl(s, p, nthreads = 4L) }
+sf_ndetect <- \(s, p) {
+  !stringfish::sf_grepl(s, p, nthreads = 4L)
+}
 
 #' Extract by Regex
 #'
@@ -505,7 +472,9 @@ sf_ndetect <- \(s, p) { !stringfish::sf_grepl(s, p, nthreads = 4L) }
 #' @autoglobal
 #'
 #' @export
-sf_extract <- \(s, p) { s[sf_detect(s, p)] }
+sf_extract <- \(s, p) {
+  s[sf_detect(s, p)]
+}
 
 #' Extract Opposite by Regex
 #'
@@ -520,7 +489,9 @@ sf_extract <- \(s, p) { s[sf_detect(s, p)] }
 #' @autoglobal
 #'
 #' @export
-sf_nextract <- \(s, p) { s[sf_ndetect(s, p)] }
+sf_nextract <- \(s, p) {
+  s[sf_ndetect(s, p)]
+}
 
 #' Replace by Regex
 #'
@@ -539,7 +510,15 @@ sf_nextract <- \(s, p) { s[sf_ndetect(s, p)] }
 #' @autoglobal
 #'
 #' @export
-sf_replace <- \(s, p, r, fix = FALSE) { stringfish::sf_gsub(subject = s, pattern = p, replacement = r, fixed = fix, nthreads = 4L) }
+sf_replace <- \(s, p, r, fix = FALSE) {
+  stringfish::sf_gsub(
+    subject = s,
+    pattern = p,
+    replacement = r,
+    fixed = fix,
+    nthreads = 4L
+  )
+}
 
 #' Remove by Regex
 #'
@@ -556,7 +535,15 @@ sf_replace <- \(s, p, r, fix = FALSE) { stringfish::sf_gsub(subject = s, pattern
 #' @autoglobal
 #'
 #' @export
-sf_remove <- \(s, p, fix = FALSE) { stringfish::sf_gsub(subject = s, pattern = p, replacement = "", fixed = fix, nthreads = 4L) }
+sf_remove <- \(s, p, fix = FALSE) {
+  stringfish::sf_gsub(
+    subject = s,
+    pattern = p,
+    replacement = "",
+    fixed = fix,
+    nthreads = 4L
+  )
+}
 
 #' Remove single or double quotes from a character string
 #'
@@ -569,7 +556,9 @@ sf_remove <- \(s, p, fix = FALSE) { stringfish::sf_gsub(subject = s, pattern = p
 #' @autoglobal
 #'
 #' @export
-remove_quotes <- \(x) { if (is.character(x)) sf_remove(x, '["\']') else x }
+remove_quotes <- \(x) {
+  if (is.character(x)) sf_remove(x, '["\']') else x
+}
 
 #' Concatenate Vectors
 #'
@@ -582,7 +571,9 @@ remove_quotes <- \(x) { if (is.character(x)) sf_remove(x, '["\']') else x }
 #' @autoglobal
 #'
 #' @export
-sf_c <- \(...) { stringfish::sfc(...) }
+sf_c <- \(...) {
+  stringfish::sfc(...)
+}
 
 #' Collapse Vector
 #'
@@ -597,7 +588,9 @@ sf_c <- \(...) { stringfish::sfc(...) }
 #' @autoglobal
 #'
 #' @export
-sf_smush <- \(x, sep = "") { stringfish::sf_collapse(x, collapse = sep) }
+sf_smush <- \(x, sep = "") {
+  stringfish::sf_collapse(x, collapse = sep)
+}
 
 #' Split string by delimiter
 #'
@@ -614,7 +607,9 @@ sf_smush <- \(x, sep = "") { stringfish::sf_collapse(x, collapse = sep) }
 #' @autoglobal
 #'
 #' @export
-sf_strsplit <- \(x, s, fix = TRUE) { stringfish::sf_split(subject = x, split = s, fixed = fix, nthreads = 4L) }
+sf_strsplit <- \(x, s, fix = TRUE) {
+  stringfish::sf_split(subject = x, split = s, fixed = fix, nthreads = 4L)
+}
 
 # stringi -----------------------------------------------------------------
 #
@@ -633,7 +628,9 @@ sf_strsplit <- \(x, s, fix = TRUE) { stringfish::sf_split(subject = x, split = s
 #' @autoglobal
 #'
 #' @export
-random_string <- \(n, ln, p = "[A-Z0-9]") { stringi::stri_rand_strings(n = n, length = ln, pattern = p) }
+random_string <- \(n, ln, p = "[A-Z0-9]") {
+  stringi::stri_rand_strings(n = n, length = ln, pattern = p)
+}
 
 # base --------------------------------------------------------------------
 #
@@ -648,7 +645,9 @@ random_string <- \(n, ln, p = "[A-Z0-9]") { stringi::stri_rand_strings(n = n, le
 #' @autoglobal
 #'
 #' @export
-delist <- \(x) { unlist(x, use.names = FALSE) }
+delist <- \(x) {
+  unlist(x, use.names = FALSE)
+}
 
 #' Unlist, unname and split
 #'
@@ -660,10 +659,11 @@ delist <- \(x) { unlist(x, use.names = FALSE) }
 #'
 #' @export
 desplit <- \(x) {
-
   res <- sf_strsplit(delist(x), "")
 
-  if (length(res) == 1) return(res[[1]])
+  if (length(res) == 1) {
+    return(res[[1]])
+  }
 
   res
 }
@@ -679,7 +679,9 @@ desplit <- \(x) {
 #' @autoglobal
 #'
 #' @export
-null <- \(x) { is.null(x) }
+null <- \(x) {
+  is.null(x)
+}
 
 #' Is `x` not `NULL`?
 #'
@@ -692,7 +694,9 @@ null <- \(x) { is.null(x) }
 #' @autoglobal
 #'
 #' @export
-not_null <- \(x) { !null(x) }
+not_null <- \(x) {
+  !null(x)
+}
 
 #' Is `x` `TRUE`?
 #'
@@ -705,7 +709,9 @@ not_null <- \(x) { !null(x) }
 #' @autoglobal
 #'
 #' @export
-true <- \(x) { isTRUE(x) }
+true <- \(x) {
+  isTRUE(x)
+}
 
 #' Is `x` `FALSE`?
 #'
@@ -718,7 +724,9 @@ true <- \(x) { isTRUE(x) }
 #' @autoglobal
 #'
 #' @export
-false <- \(x) { isFALSE(x) }
+false <- \(x) {
+  isFALSE(x)
+}
 
 #' Coerce vector to `<chr>`
 #'
@@ -731,7 +739,9 @@ false <- \(x) { isFALSE(x) }
 #' @autoglobal
 #'
 #' @export
-as_chr <- \(x) { if (is.character(x)) x else as.character(x) }
+as_chr <- \(x) {
+  if (is.character(x)) x else as.character(x)
+}
 
 #' Coerce vector to `<int>`
 #'
@@ -744,7 +754,9 @@ as_chr <- \(x) { if (is.character(x)) x else as.character(x) }
 #' @autoglobal
 #'
 #' @export
-as_int <- \(x) { if (is.integer(x)) x else as.integer(x) }
+as_int <- \(x) {
+  if (is.integer(x)) x else as.integer(x)
+}
 
 #' Coerce vector to `<num>` class
 #'
@@ -757,7 +769,9 @@ as_int <- \(x) { if (is.integer(x)) x else as.integer(x) }
 #' @autoglobal
 #'
 #' @export
-as_num <- \(x) { if (is.numeric(x)) x else as.numeric(x) }
+as_num <- \(x) {
+  if (is.numeric(x)) x else as.numeric(x)
+}
 
 #' Coerce vector to `<date>` class
 #'
@@ -774,7 +788,9 @@ as_num <- \(x) { if (is.numeric(x)) x else as.numeric(x) }
 #' @autoglobal
 #'
 #' @export
-as_date <- \(x, ..., fmt = "%Y-%m-%d") { as.Date(x, ..., format = fmt) }
+as_date <- \(x, ..., fmt = "%Y-%m-%d") {
+  as.Date(x, ..., format = fmt)
+}
 
 #' Invert a named vector
 #'
@@ -788,7 +804,6 @@ as_date <- \(x, ..., fmt = "%Y-%m-%d") { as.Date(x, ..., format = fmt) }
 #'
 #' @export
 invert_named <- \(x) {
-
   stopifnot("Input must be a named vector" = not_null(names(x)))
 
   stats::setNames(names(x), unname(x))
@@ -808,16 +823,15 @@ invert_named <- \(x) {
 #'
 #' @export
 roundup <- \(x, d = 2) {
+  d <- 10^d
 
-  d  <- 10^d
+  z <- abs(x) * d
 
-  z  <- abs(x) * d
+  z <- z + 0.5 + sqrt(.Machine[["double.eps"]])
 
-  z  <- z + 0.5 + sqrt(.Machine[["double.eps"]])
+  z <- trunc(z)
 
-  z  <- trunc(z)
-
-  z  <- z / d
+  z <- z / d
 
   z * sign(x)
 }

@@ -117,6 +117,7 @@ x_rvu |>
     tot = sum * 32.744
   )
 
+
 pin_update(
   x_rvu,
   name = "vctr_rvu",

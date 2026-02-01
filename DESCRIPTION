@@ -23,31 +23,13 @@ Imports:
     zeallot (>= 0.2.0)
 Suggests:
     clock,
-    data.table,
-    dplyr,
     fs,
-    fuimus,
-    furrr,
-    future,
-    gt,
-    gtExtras,
-    here,
     ivs,
-    lubridate,
-    parallelly,
     purrr,
-    qs,
-    roxyglobals,
     rvest,
-    strex,
     stringr,
     tictoc
-Remotes: 
-    github::andrewallenbruce/fuimus
 Config/Needs/website: rmarkdown
-Config/roxyglobals/filename: generated-globals.R
-Config/roxyglobals/unique: TRUE
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",
-    "roxyglobals::global_roclet"))
+Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd"))
 RoxygenNote: 7.3.3

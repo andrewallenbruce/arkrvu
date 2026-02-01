@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_rvu_files.R
 \name{get_pprrvu}
 \alias{get_pprrvu}
-\title{Get PPRRVU File by Year}
+\title{PPRRVU File by Year}
 \usage{
 get_pprrvu(dos, hcpcs, pos, ...)
 }
@@ -16,13 +16,12 @@ get_pprrvu(dos, hcpcs, pos, ...)
 \item{...}{additional arguments}
 }
 \value{
-\verb{<tibble>} containing pprrvu source file
+\verb{<tibble>} containing PPRRVU source file
 }
 \description{
-Get PPRRVU File by Year
+PPRRVU File by Year
 }
 \examples{
-get_pprrvu(dos = "2024-03-31", hcpcs = "99213", pos = "Non-Facility")
-get_pprrvu(dos = "2024-02-28", hcpcs = "99213", pos = "Facility")
-
+get_pprrvu("2024-03-31", "99213", "Non-Facility")
+get_pprrvu("2024-02-28", "99213", "Facility")
 }
