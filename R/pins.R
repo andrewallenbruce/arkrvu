@@ -1,13 +1,7 @@
 #' Mount [pins][pins::pins-package] board
-#'
 #' @param source `<chr>` `"local"` or `"remote"`
-#'
 #' @returns `<pins_board_folder>` or `<pins_board_url>`
-#'
-#' @autoglobal
-#'
 #' @keywords internal
-#'
 #' @export
 mount_board <- \(source = c("local", "remote")) {
   source <- match.arg(source)
@@ -32,17 +26,10 @@ mount_board <- \(source = c("local", "remote")) {
 }
 
 #' Get pinned dataset from mount_board()
-#'
 #' @param pin `<chr>` string name of pinned dataset
-#'
 #' @param ... additional arguments passed to mount_board()
-#'
 #' @returns `<tibble>` or `<data.frame>`
-#'
-#' @autoglobal
-#'
 #' @keywords internal
-#'
 #' @export
 get_pin <- function(pin, ...) {
   board <- mount_board(...)
@@ -53,15 +40,9 @@ get_pin <- function(pin, ...) {
 }
 
 #' List pins from mount_board()
-#'
 #' @param ... arguments to pass to mount_board()
-#'
 #' @returns `<chr>` vector of named pins
-#'
-#' @autoglobal
-#'
 #' @keywords internal
-#'
 #' @export
 list_pins <- function(...) {
   board <- mount_board(...)

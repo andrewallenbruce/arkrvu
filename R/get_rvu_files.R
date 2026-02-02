@@ -1,35 +1,24 @@
 #' Get RVU Source File
 #'
 #' @param year `<int>` year of rvu source file; default is `2020`
-#'
 #' @param source `<chr>` rvu source file (`pprvu`, `oppscap`, `gpci`, `locco`, `anes`)
-#'
 #' @returns `<list>` of tibbles containing rvu source files
-#'
 #' @examples
 #' get_source(2024, "pprrvu")
-#'
 #' get_source(2024, "gpci")
-#'
-#' @autoglobal
-#'
 #' @export
 get_source <- function(year, source) {
-  year <- as.character(year)
-  year <- match.arg(year, as.character(2020:2024))
-  source <- match.arg(source, c("pprrvu", "oppscap", "gpci", "locco", "anes"))
-
   file <- switch(
-    year,
-    '2024' = get_pin("rvu_source_2024"),
-    '2023' = get_pin("rvu_source_2023"),
-    '2022' = get_pin("rvu_source_2022"),
-    '2021' = get_pin("rvu_source_2021"),
-    '2020' = get_pin("rvu_source_2020")
+    match.arg(as.character(year), as.character(2020:2024)),
+    "2024" = get_pin("rvu_source_2024"),
+    "2023" = get_pin("rvu_source_2023"),
+    "2022" = get_pin("rvu_source_2022"),
+    "2021" = get_pin("rvu_source_2021"),
+    "2020" = get_pin("rvu_source_2020")
   )
 
   switch(
-    source,
+    match.arg(source, c("pprrvu", "oppscap", "gpci", "locco", "anes")),
     pprrvu = file$pprrvu,
     oppscap = file$oppscap,
     gpci = file$gpci,
@@ -46,8 +35,8 @@ get_source <- function(year, source) {
 #' @param ... additional arguments
 #' @returns `<tibble>` containing PPRRVU source file
 #' @examples
-#' get_pprrvu("2024-03-31", "99213", "Non-Facility")
-#' get_pprrvu("2024-02-28", "99213", "Facility")
+#' get_pprrvu(dos = "2024-03-31", hcpcs = "99213", pos = "Non-Facility")
+#' get_pprrvu(dos = "2024-02-28", hcpcs = "99213", pos = "Facility")
 #' @autoglobal
 #' @export
 get_pprrvu <- function(dos, hcpcs, pos, ...) {
@@ -55,7 +44,8 @@ get_pprrvu <- function(dos, hcpcs, pos, ...) {
 
   year <- as.character(clock::get_year(dos))
 
-  x <- list(
+  x <- switch(
+    year,
     "2024" = collapse::sbt(
       get_pin("pprrvu_2024"),
       source_file %!=% "rvu24a_jan"
@@ -64,227 +54,11 @@ get_pprrvu <- function(dos, hcpcs, pos, ...) {
     "2022" = get_pin("pprrvu_2022")
   )
 
-  file <- switch(
-    match.arg(pos, c("Facility", "Non-Facility")),
-    "Non-Facility" = x[[year]] |>
-      collapse::sbt(
-        hcpcs %==% hcpcs,
-        date_start,
-        date_end,
-        hcpcs,
-        mod,
-        description,
-        wrvu = work_rvu,
-        prvu = non_fac_pe_rvu,
-        mrvu = mp_rvu,
-        trvu = non_facility_total,
-        cf = conv_factor,
-        pctc = pctc_ind,
-        glob = glob_days,
-        mult = mult_proc
-      ),
-    "Facility" = x[[year]] |>
-      collapse::sbt(
-        hcpcs %==% hcpcs,
-        date_start,
-        date_end,
-        hcpcs,
-        mod,
-        description,
-        wrvu = work_rvu,
-        prvu = facility_pe_rvu,
-        mrvu = mp_rvu,
-        trvu = facility_total,
-        cf = conv_factor,
-        pctc = pctc_ind,
-        glob = glob_days,
-        mult = mult_proc
-      )
+  x <- collapse::ss(x, cheapr::which_(x$hcpcs == hcpcs))
+  collapse::ss(
+    x,
+    cheapr::which_(data.table::between(dos, x$date_start, x$date_end))
   )
-
-  if (vctrs::vec_is_empty(file)) {
-    file <- cheapr::fast_df(
-      date_start = as.Date(dos),
-      date_end = as.Date(dos),
-      hcpcs = hcpcs,
-      mod = NA_character_,
-      description = NA_character_,
-      wrvu = NA_real_,
-      prvu = NA_real_,
-      mrvu = NA_real_,
-      trvu = NA_real_,
-      cf = NA_real_,
-      pctc = NA_character_,
-      glob = NA_character_,
-      mult = NA_character_
-    )
-  }
-
-  collapse::sbt(file, data.table::between(dos, date_start, date_end))
-}
-
-#' Parallelized [get_pprrvu()]
-#'
-#' @param df `<tibble>` containing dos, hcpcs, pos
-#'
-#' @param ... Pass arguments to [get_pprrvu()].
-#'
-#' @returns `<tibble>` containing pprrvu source file
-#'
-#' @autoglobal
-#'
-#' @importFrom zeallot %<-%
-#'
-#' @noRd
-get_pprrvu2_ <- function(df, dos, code, pos) {
-  df <- dplyr::reframe(
-    df,
-    dos = clock::as_date(dos),
-    year = as.character(clock::get_year(dos)),
-    code = hcpcs,
-    pos = pos
-  )
-
-  # df <- dplyr::transmute(
-  #   df,
-  #   dos = clock::as_date({{ dos }}),
-  #   year = as.character(clock::get_year({{ dos }})),
-  #   code = {{ code }},
-  #   pos = {{ pos }})
-
-  pp <- list(
-    '2024' = collapse::fsubset(
-      get_pin("pprrvu_2024"),
-      source_file %!=% "rvu24a_jan"
-    ),
-    '2023' = get_pin("pprrvu_2023"),
-    '2022' = get_pin("pprrvu_2022")
-  )
-
-  c(dos, year, code, pos) %<-% as.list(df[1:1, ])
-
-  pprrvu_vec <- \(dos, year, code, pos, pp = pp[[year]], ...) {
-    if (pos == "Non-Facility") {
-      file <- vctrs::vec_slice(pp, pp$hcpcs == code)
-      # file <- collapse::fsubset(
-      #   pp,
-      #   hcpcs %==% code,
-      #   date_start,
-      #   date_end,
-      #   hcpcs,
-      #   mod,
-      #   description,
-      #   wrvu = work_rvu,
-      #   prvu = non_fac_pe_rvu,
-      #   mrvu = mp_rvu,
-      #   trvu = non_facility_total,
-      #   cf = conv_factor,
-      #   pctc = pctc_ind,
-      #   glob = glob_days,
-      #   mult = mult_proc
-      # )
-    }
-
-    if (pos == "Facility") {
-      file <- collapse::fsubset(
-        pp,
-        hcpcs %==% code,
-        date_start,
-        date_end,
-        hcpcs,
-        mod,
-        description,
-        wrvu = work_rvu,
-        prvu = facility_pe_rvu,
-        mrvu = mp_rvu,
-        trvu = facility_total,
-        cf = conv_factor,
-        pctc = pctc_ind,
-        glob = glob_days,
-        mult = mult_proc
-      )
-    }
-
-    if (vctrs::vec_is_empty(file)) {
-      file <- dplyr::tibble(
-        date_start = as.Date(dos),
-        date_end = as.Date(dos),
-        hcpcs = hcpcs,
-        mod = NA_character_,
-        description = NA_character_,
-        wrvu = NA_real_,
-        prvu = NA_real_,
-        mrvu = NA_real_,
-        trvu = NA_real_,
-        cf = NA_real_,
-        pctc = NA_character_,
-        glob = NA_character_,
-        mult = NA_character_
-      )
-    }
-    file <- collapse::fsubset(
-      file,
-      data.table::between(
-        dos,
-        date_start,
-        date_end
-      )
-    )
-    return(file)
-  }
-
-  purrr::pmap(
-    .l = as.list(df[1:10, ]),
-    .f = pprrvu_vec
-  )
-
-  tictoc::tic()
-
-  future::plan(
-    future::multisession(
-      workers = parallelly::availableCores()
-    )
-  )
-
-  x <- furrr::future_pmap_dfr(
-    .l = as.list(df[1:10, ]),
-    .f = pprrvu_vec,
-    # ...,
-    .options = furrr::furrr_options(seed = NULL)
-  )
-
-  future::plan("sequential")
-
-  tictoc::toc()
-
-  return(x)
-}
-
-#' Parallelized [get_pprrvu()]
-#'
-#' @param df `<tibble>` containing dos, hcpcs, pos
-#' @param ... Pass arguments to [get_pprrvu()].
-#' @returns `<tibble>` containing pprrvu source file
-#' @noRd
-get_pprrvu_ <- function(df, ...) {
-  # tictoc::tic()
-  #
-  # future::plan(
-  #   future::multisession(
-  #     workers = parallelly::availableCores()
-  #   )
-  # )
-  # x <- furrr::future_pmap_dfr(
-  #   .l = as.list(df),
-  #   .f = get_pprrvu,
-  #   ...,
-  #   .options = furrr::furrr_options(seed = NULL)
-  # )
-  #
-  # future::plan("sequential")
-  #
-  # tictoc::toc()
-  # return(x)
 }
 
 #' Get RVU Link Table
@@ -327,7 +101,7 @@ get_conversion_factor <- function(dos = NULL) {
     )
   }
 
-  cf_df <- dplyr::tibble(
+  cf_df <- fastplyr::new_tbl(
     date_start = c(
       dt(1992L),
       dt(1993L),
@@ -404,25 +178,25 @@ get_conversion_factor <- function(dos = NULL) {
       32.7442,
       33.2875
     )
-  ) |>
-    dplyr::arrange(date_start) |>
-    dplyr::reframe(
-      date_start,
-      date_end = dplyr::lead(date_start) - 1,
-      date_end = dplyr::case_match(
+  )
+
+  cf_df = cf_df |>
+    collapse::roworder(date_start) |>
+    collapse::mtt(
+      date_end = cheapr::lag_(date_start, -1L) - 1L,
+      date_end = cheapr::val_match(
         date_start,
         dt(2010) ~ dt(2010, 5, 31),
-        dt(2010, 6, 1) ~ dt(2010, 12, 31),
         dt(2015) ~ dt(2015, 6, 30),
-        dt(2015, 7, 1) ~ dt(2015, 12, 31),
         dt(2024) ~ dt(2024, 3, 8),
+        dt(2010, 6, 1) ~ dt(2010, 12, 31),
+        dt(2015, 7, 1) ~ dt(2015, 12, 31),
         dt(2024, 3, 9) ~ dt(2024, 12, 31),
         .default = date_end
       ),
       date_interval = ivs::iv(date_start, date_end),
-      cf,
-      cf_chg_abs = cf - dplyr::lag(cf),
-      cf_chg_rel = (cf - dplyr::lag(cf)) / dplyr::lag(cf)
+      cf_chg_abs = cf - cheapr::lag_(cf),
+      cf_chg_rel = (cf - cheapr::lag_(cf)) / cheapr::lag_(cf)
     )
 
   if (!is.null(dos)) {

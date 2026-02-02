@@ -22,6 +22,6 @@ get_pprrvu(dos, hcpcs, pos, ...)
 PPRRVU File by Year
 }
 \examples{
-get_pprrvu("2024-03-31", "99213", "Non-Facility")
-get_pprrvu("2024-02-28", "99213", "Facility")
+get_pprrvu(dos = "2024-03-31", hcpcs = "99213", pos = "Non-Facility")
+get_pprrvu(dos = "2024-02-28", hcpcs = "99213", pos = "Facility")
 }
