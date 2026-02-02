@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9008
+
+* added `conv_fct` internal data
+
+
 # arkrvu 0.0.1.9007
 
 * added 2026 files
