@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_rvu_files.R
 \name{get_source}
 \alias{get_source}
-\title{Get RVU Source File}
+\title{RVU Source File}
 \usage{
 get_source(year, source)
 }
@@ -15,7 +15,7 @@ get_source(year, source)
 \verb{<list>} of tibbles containing rvu source files
 }
 \description{
-Get RVU Source File
+RVU Source File
 }
 \examples{
 get_source(2024, "pprrvu")

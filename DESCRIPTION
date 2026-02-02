@@ -14,13 +14,16 @@ Depends:
 Imports:
     cheapr (>= 1.5.0),
     collapse (>= 2.1.6),
+    data.table,
+    dplyr,
+    here,
+    strex,
     kit (>= 0.0.20),
     pins (>= 1.4.0),
     rlang,
     stringfish (>= 0.18.0),
     stringi (>= 1.8.4),
-    vctrs (>= 0.7.0),
-    zeallot (>= 0.2.0)
+    vctrs (>= 0.7.0)
 Suggests:
     clock,
     fs,
@@ -33,3 +36,4 @@ Config/Needs/website: rmarkdown
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd"))
 RoxygenNote: 7.3.3
+LazyData: true
