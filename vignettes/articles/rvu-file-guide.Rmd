@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
   fig.width  = 10
 )
 options(scipen = 999)
-
 library(arkrvu)
 library(gt)
 library(gtExtras)
