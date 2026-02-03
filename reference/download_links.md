@@ -1,0 +1,33 @@
+# RVU File Download Links
+
+RVU File Download Links
+
+## Usage
+
+``` r
+download_links()
+```
+
+## Value
+
+list of selected rvu source files
+
+## Examples
+
+``` r
+download_links()
+#> # A tibble: 107 × 4
+#>     year file_html file_url link_url                                            
+#>    <int> <chr>     <chr>    <chr>                                               
+#>  1  2026 RVU26A    rvu26a   https://www.cms.gov/medicare/payment/fee-schedules/…
+#>  2  2025 RVU25A    rvu25a   https://www.cms.gov/medicare/payment/fee-schedules/…
+#>  3  2025 RVU25B    rvu25b   https://www.cms.gov/medicare/payment/fee-schedules/…
+#>  4  2025 RVU25C    rvu25c   https://www.cms.gov/medicare/payment/fee-schedules/…
+#>  5  2025 RVU25D    rvu25d-0 https://www.cms.gov/medicare/payment/fee-schedules/…
+#>  6  2024 RVU24A    rvu24a   https://www.cms.gov/medicare/payment/fee-schedules/…
+#>  7  2024 RVU24B    rvu24b   https://www.cms.gov/medicare/payment/fee-schedules/…
+#>  8  2024 RVU24AR   rvu24ar  https://www.cms.gov/medicare/payment/fee-schedules/…
+#>  9  2024 RVU24C    rvu24c   https://www.cms.gov/medicare/payment/fee-schedules/…
+#> 10  2024 RVU24D    rvu24d   https://www.cms.gov/medicare/payment/fee-schedules/…
+#> # ℹ 97 more rows
+```
