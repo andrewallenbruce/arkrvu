@@ -13,17 +13,14 @@ Depends:
     R (>= 4.1.0)
 Imports:
     cheapr (>= 1.5.0),
+    cli,
     collapse (>= 2.1.6),
     data.table,
     dplyr,
     here,
     strex,
-    kit (>= 0.0.20),
     pins (>= 1.4.0),
-    rlang,
-    stringfish (>= 0.18.0),
-    stringi (>= 1.8.4),
-    vctrs (>= 0.7.0)
+    rlang
 Suggests:
     clock,
     fs,

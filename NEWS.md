@@ -46,10 +46,9 @@
 * `get_conversion_factor()` refactored
 * data: processed 2024 PPRVU files
 
-
-# arkrvu (development version)
-
 # arkrvu 0.0.1
+
+* initial 0.0.1 release
 
 # arkrvu 0.0.0.9001
 

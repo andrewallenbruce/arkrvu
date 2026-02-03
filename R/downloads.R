@@ -1,7 +1,23 @@
+#' RVU File Download Links
+#'
+#' @returns list of selected rvu source files
+#'
+#' @examples
+#' download_links()
+#'
+#' @export
+download_links <- function() {
+  get_pin("rvu_link_table")
+}
+
 #' Download and Update RVU Link Table
+#'
 #' @param update_pin `<lgl>` update `"rvu_link_table"` pin; default is `FALSE`
+#'
 #' @returns RVU Link Table
+#'
 #' @keywords internal
+#'
 #' @export
 download_link_table <- function(update_pin = FALSE) {
   url_land <- "https://www.cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files"
