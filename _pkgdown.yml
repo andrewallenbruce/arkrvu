@@ -4,8 +4,8 @@ template:
   bootstrap: 5
   light-switch: true
   bslib:
-    base_font: {google: "Roboto"}
-    heading_font: {google: "Roboto Slab"}
+    base_font: {google: "Inter"}
+    heading_font: {google: "Recursive"}
     code_font: {google: "Source Code Pro"}
 
 navbar:
@@ -50,5 +50,5 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: rvu-file-guide
+      - text: "Customary Charge"
         href: articles/rvu-file-guide.html

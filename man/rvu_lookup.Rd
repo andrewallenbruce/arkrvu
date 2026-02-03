@@ -23,6 +23,6 @@ RVU Lookup by Date of Service, HCPCS, and Place of Service
 }
 \examples{
 rvu_lookup(dos = "2024-03-31", hcpcs = "99215", pos = "Non-Facility")
-rvu_lookup(dos = "2024-02-28", hcpcs = "99215", pos = "Facility")
-
+rvu_lookup(dos = "2023-02-28", hcpcs = "99215", pos = "Facility")
+rvu_lookup(dos = "2022-02-28", hcpcs = "99215", pos = "Facility")
 }

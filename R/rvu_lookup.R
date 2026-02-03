@@ -12,8 +12,8 @@
 #'
 #' @examples
 #' rvu_lookup(dos = "2024-03-31", hcpcs = "99215", pos = "Non-Facility")
-#' rvu_lookup(dos = "2024-02-28", hcpcs = "99215", pos = "Facility")
-#'
+#' rvu_lookup(dos = "2023-02-28", hcpcs = "99215", pos = "Facility")
+#' rvu_lookup(dos = "2022-02-28", hcpcs = "99215", pos = "Facility")
 #' @export
 rvu_lookup <- function(dos, hcpcs, pos, ...) {
   if (missing(dos)) {
@@ -26,14 +26,13 @@ rvu_lookup <- function(dos, hcpcs, pos, ...) {
 
   x <- switch(
     as.character(clock::get_year(dos)),
-    "2024" = get_pin("pprrvu_2024") |>
-      collapse::sbt(source_file %!=% "rvu24a_jan"),
+    "2024" = get_pin("pprrvu_2024"),
     "2023" = get_pin("pprrvu_2023"),
     "2022" = get_pin("pprrvu_2022")
   )
 
   if (!missing(hcpcs)) {
-    x <- collapse::ss(x, cheapr::which_(x$hcpcs == hcpcs))
+    x <- cheapr::sset(x, cheapr::which_(x$hcpcs == hcpcs))
   }
 
   if (!missing(pos)) {
@@ -48,14 +47,16 @@ rvu_lookup <- function(dos, hcpcs, pos, ...) {
     ) <- NULL
   }
 
-  collapse::ss(
-    x,
-    cheapr::which_(
-      data.table::between(
-        dos,
-        x$date_start,
-        x$date_end
-      )
+  switch(
+    as.character(clock::get_year(dos)),
+    "2024" = cheapr::sset(
+      x,
+      ivs::iv_locate_between(dos, x$date_iv, no_match = "drop")$haystack
+    ),
+    "2023" = ,
+    "2022" = cheapr::sset(
+      x,
+      cheapr::which_(data.table::between(dos, x$date_start, x$date_end))
     )
   )
 }

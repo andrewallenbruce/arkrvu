@@ -60,7 +60,7 @@ conv_fct <- conv_fct |>
       make_date(2024L, 3L, 9L) ~ make_date(2024L, 12L, 31L),
       .default = date_end
     ),
-    date_iv = ivs::iv(date_start, date_end),
+    date_iv = ivs::iv(date_start, date_end + 1L),
     cf = vctrs::vec_fill_missing(cf),
     chg_abs = cf - cheapr::lag_(cf),
     chg_rel = (cf - cheapr::lag_(cf)) / cheapr::lag_(cf)
