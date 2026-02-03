@@ -1,6 +1,6 @@
-# Download/Update RVU Link Table
+# Download and Update RVU Link Table
 
-Download/Update RVU Link Table
+Download and Update RVU Link Table
 
 ## Usage
 

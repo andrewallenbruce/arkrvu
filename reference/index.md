@@ -2,11 +2,13 @@
 
 ## All functions
 
-- [`get_conversion_factor()`](https://andrewallenbruce.github.io/arkrvu/reference/get_conversion_factor.md)
-  : Get Conversion Factors by Effective Date
+- [`conversion_factor()`](https://andrewallenbruce.github.io/arkrvu/reference/conversion_factor.md)
+  : Conversion Factor
 - [`get_link_table()`](https://andrewallenbruce.github.io/arkrvu/reference/get_link_table.md)
   : Get RVU Link Table
 - [`get_pprrvu()`](https://andrewallenbruce.github.io/arkrvu/reference/get_pprrvu.md)
   : PPRRVU File by Year
 - [`get_source()`](https://andrewallenbruce.github.io/arkrvu/reference/get_source.md)
-  : Get RVU Source File
+  : RVU Source File
+- [`make_date()`](https://andrewallenbruce.github.io/arkrvu/reference/make_date.md)
+  : Make a date object

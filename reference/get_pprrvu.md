@@ -33,36 +33,28 @@ get_pprrvu(dos, hcpcs, pos, ...)
 ## Examples
 
 ``` r
-get_pprrvu("2024-03-31", "99213", "Non-Facility")
-#> # A tibble: 18,499 × 13
-#>    date_start date_end   hcpcs mod   description    wrvu  prvu  mrvu  trvu    cf
-#>    <date>     <date>     <chr> <chr> <chr>         <dbl> <dbl> <dbl> <dbl> <dbl>
-#>  1 2024-01-01 2024-03-31 A0021 NA    Outside stat…     0     0     0     0  33.3
-#>  2 2024-01-01 2024-03-31 A0080 NA    Noninterest …     0     0     0     0  33.3
-#>  3 2024-01-01 2024-03-31 A0090 NA    Interest esc…     0     0     0     0  33.3
-#>  4 2024-01-01 2024-03-31 A0100 NA    Nonemergency…     0     0     0     0  33.3
-#>  5 2024-01-01 2024-03-31 A0110 NA    Nonemergency…     0     0     0     0  33.3
-#>  6 2024-01-01 2024-03-31 A0120 NA    Noner transp…     0     0     0     0  33.3
-#>  7 2024-01-01 2024-03-31 A0130 NA    Noner transp…     0     0     0     0  33.3
-#>  8 2024-01-01 2024-03-31 A0140 NA    Nonemergency…     0     0     0     0  33.3
-#>  9 2024-01-01 2024-03-31 A0160 NA    Noner transp…     0     0     0     0  33.3
-#> 10 2024-01-01 2024-03-31 A0170 NA    Transport pa…     0     0     0     0  33.3
-#> # ℹ 18,489 more rows
-#> # ℹ 3 more variables: pctc <chr>, glob <chr>, mult <chr>
-get_pprrvu("2024-02-28", "99213", "Facility")
-#> # A tibble: 18,499 × 13
-#>    date_start date_end   hcpcs mod   description    wrvu  prvu  mrvu  trvu    cf
-#>    <date>     <date>     <chr> <chr> <chr>         <dbl> <dbl> <dbl> <dbl> <dbl>
-#>  1 2024-01-01 2024-03-31 A0021 NA    Outside stat…     0     0     0     0  33.3
-#>  2 2024-01-01 2024-03-31 A0080 NA    Noninterest …     0     0     0     0  33.3
-#>  3 2024-01-01 2024-03-31 A0090 NA    Interest esc…     0     0     0     0  33.3
-#>  4 2024-01-01 2024-03-31 A0100 NA    Nonemergency…     0     0     0     0  33.3
-#>  5 2024-01-01 2024-03-31 A0110 NA    Nonemergency…     0     0     0     0  33.3
-#>  6 2024-01-01 2024-03-31 A0120 NA    Noner transp…     0     0     0     0  33.3
-#>  7 2024-01-01 2024-03-31 A0130 NA    Noner transp…     0     0     0     0  33.3
-#>  8 2024-01-01 2024-03-31 A0140 NA    Nonemergency…     0     0     0     0  33.3
-#>  9 2024-01-01 2024-03-31 A0160 NA    Noner transp…     0     0     0     0  33.3
-#> 10 2024-01-01 2024-03-31 A0170 NA    Transport pa…     0     0     0     0  33.3
-#> # ℹ 18,489 more rows
-#> # ℹ 3 more variables: pctc <chr>, glob <chr>, mult <chr>
+get_pprrvu(dos = "2024-03-31", hcpcs = "99213", pos = "Non-Facility")
+#> # A tibble: 1 × 34
+#>   source_file date_start date_end   hcpcs mod   description          status_code
+#>   <chr>       <date>     <date>     <chr> <chr> <chr>                <chr>      
+#> 1 rvu24ar_jan 2024-01-01 2024-03-31 99213 NA    Office o/p est low … A          
+#> # ℹ 27 more variables: not_used_for_medicare_payment <chr>, work_rvu <dbl>,
+#> #   non_fac_pe_rvu <dbl>, non_fac_indicator <chr>, facility_pe_rvu <dbl>,
+#> #   facility_indicator <chr>, mp_rvu <dbl>, non_facility_total <dbl>,
+#> #   facility_total <dbl>, pctc_ind <chr>, glob_days <chr>, pre_op <dbl>,
+#> #   intra_op <dbl>, post_op <dbl>, mult_proc <chr>, bilat_surg <chr>,
+#> #   asst_surg <chr>, co_surg <chr>, team_surg <chr>, endo_base <chr>,
+#> #   conv_factor <dbl>, physician_supervision_of_diagnostic_procedures <chr>, …
+get_pprrvu(dos = "2024-02-28", hcpcs = "99213", pos = "Facility")
+#> # A tibble: 1 × 34
+#>   source_file date_start date_end   hcpcs mod   description          status_code
+#>   <chr>       <date>     <date>     <chr> <chr> <chr>                <chr>      
+#> 1 rvu24ar_jan 2024-01-01 2024-03-31 99213 NA    Office o/p est low … A          
+#> # ℹ 27 more variables: not_used_for_medicare_payment <chr>, work_rvu <dbl>,
+#> #   non_fac_pe_rvu <dbl>, non_fac_indicator <chr>, facility_pe_rvu <dbl>,
+#> #   facility_indicator <chr>, mp_rvu <dbl>, non_facility_total <dbl>,
+#> #   facility_total <dbl>, pctc_ind <chr>, glob_days <chr>, pre_op <dbl>,
+#> #   intra_op <dbl>, post_op <dbl>, mult_proc <chr>, bilat_surg <chr>,
+#> #   asst_surg <chr>, co_surg <chr>, team_surg <chr>, endo_base <chr>,
+#> #   conv_factor <dbl>, physician_supervision_of_diagnostic_procedures <chr>, …
 ```

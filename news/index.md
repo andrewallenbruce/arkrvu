@@ -1,5 +1,13 @@
 # Changelog
 
+## arkrvu 0.0.1.9008
+
+- added `conv_fct` internal data
+
+## arkrvu 0.0.1.9007
+
+- added 2026 files
+
 ## arkrvu 0.0.1.9006
 
 - Same as previous version.
@@ -28,8 +36,7 @@
 - some code reformatting
 - changed pkgname from rbrvs to arkrvu (2024-12-03)
 - `get_pprrvu_()` using future/furrr
-- [`get_conversion_factor()`](https://andrewallenbruce.github.io/arkrvu/reference/get_conversion_factor.md)
-  refactored
+- `get_conversion_factor()` refactored
 - data: processed 2024 PPRVU files
 
 ## arkrvu (development version)

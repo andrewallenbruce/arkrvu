@@ -12,13 +12,14 @@
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/as_date.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/as_int.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/as_num.html</loc></url>
+<url><loc>https://andrewallenbruce.github.io/arkrvu/reference/conv_fct.html</loc></url>
+<url><loc>https://andrewallenbruce.github.io/arkrvu/reference/conversion_factor.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/delist.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/desplit.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/download_link_table.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/empty.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/false.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/gelm.html</loc></url>
-<url><loc>https://andrewallenbruce.github.io/arkrvu/reference/get_conversion_factor.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/get_link_table.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/get_pin.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/get_pprrvu.html</loc></url>
@@ -29,6 +30,7 @@
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/index.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/invert_named.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/list_pins.html</loc></url>
+<url><loc>https://andrewallenbruce.github.io/arkrvu/reference/make_date.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/max_vlen.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/mount_board.html</loc></url>
 <url><loc>https://andrewallenbruce.github.io/arkrvu/reference/na.html</loc></url>

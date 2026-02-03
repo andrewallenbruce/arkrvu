@@ -1,6 +1,6 @@
-# Get RVU Source File
+# RVU Source File
 
-Get RVU Source File
+RVU Source File
 
 ## Usage
 
@@ -114,7 +114,6 @@ get_source(2024, "pprrvu")
 #> #   glob_days <chr>, pre_op <dbl>, intra_op <dbl>, post_op <dbl>,
 #> #   mult_proc <chr>, bilat_surg <chr>, asst_surg <chr>, co_surg <chr>, …
 #> 
-
 get_source(2024, "gpci")
 #> $rvu24a
 #> # A tibble: 109 × 8
