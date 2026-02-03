@@ -1,99 +1,58 @@
-# rvu-file-guide
-
-## Customary Charge Formula
-
-Use the following formula for the calculation of a customary charge
-conversion factor:
-
-\$\$
-
-CF = \\ CHG = \\ SVC = \\ 1-n = \\ RVU = \\
-
-\$\$
-
-  
-
-\$\$
-
-CF =
-
-\$\$
-
-Compute a Customary Charge Conversion Factor for a physician with the
-following charge history:
-
-``` r
-ex <- dplyr::tibble(
-  Procedure = 1:5,
-  `Customary Charge` = c(5, 12, 35, 20, 8),
-  `Relative Value` = c(1, 2, 4, 3, 1.5),
-  Frequency = c(3, 7, 5, 4, 6),
-)
-
-ex |> 
-  gt::gt() |> 
-  gt::opt_table_font(gt::google_font(name = "Fira Code")) |> 
-  gt::tab_header(title = "Physician Charge History")
-```
-
-| Physician Charge History |                  |                |           |
-|--------------------------|------------------|----------------|-----------|
-| Procedure                | Customary Charge | Relative Value | Frequency |
-| 1                        | 5                | 1.0            | 3         |
-| 2                        | 12               | 2.0            | 7         |
-| 3                        | 35               | 4.0            | 5         |
-| 4                        | 20               | 3.0            | 4         |
-| 5                        | 8                | 1.5            | 6         |
-
-  
-
-Method:
-
-1.  For each procedure, divide the customary charge by the relative
-    value and multiply the result by the frequency of that procedure in
-    the physician’s charge history.
-2.  Add all the results of these computations.
-3.  Divide the result by the sum of all the frequencies.
-
-``` r
-ex <- ex |> 
-  dplyr::mutate(step = (`Customary Charge` / `Relative Value`) * Frequency)
-  
-ex |> 
-  gt::gt() |> 
-  gt::opt_table_font(gt::google_font(name = "Fira Code")) |> 
-  gt::tab_header(title = "Physician Charge History")
-```
-
-| Physician Charge History |                  |                |           |          |
-|--------------------------|------------------|----------------|-----------|----------|
-| Procedure                | Customary Charge | Relative Value | Frequency | step     |
-| 1                        | 5                | 1.0            | 3         | 15.00000 |
-| 2                        | 12               | 2.0            | 7         | 42.00000 |
-| 3                        | 35               | 4.0            | 5         | 43.75000 |
-| 4                        | 20               | 3.0            | 4         | 26.66667 |
-| 5                        | 8                | 1.5            | 6         | 32.00000 |
-
-``` r
-ex |> 
-  dplyr::summarise(`Conversion Factor` = sum(step) / sum(Frequency)) |> 
-  gt::gt() |> 
-  gt::opt_table_font(gt::google_font(name = "Fira Code")) |> 
-  gt::tab_header(title = "Physician Charge History")
-```
-
-| Physician Charge History |
-|--------------------------|
-| Conversion Factor        |
-| 6.376667                 |
-
-  
+# Customary Charge
 
 To determine a physician’s customary charge for a particular procedure
 where there is no reliable statistical basis, multiply the relative
 value of the procedure by the physician’s customary charge conversion
 factor for the appropriate category of service (e.g., radiology,
 medicine, surgery).
+
+## Customary Charge Formula
+
+Compute a Customary Charge Conversion Factor for a physician with the
+following charge history:
+
+``` r
+charges <- data.frame(
+  procedure = 1:5,
+  charge = c(5, 12, 35, 20, 8),
+  value = c(1, 2, 4, 3, 1.5),
+  frequency = c(3, 7, 5, 4, 6)
+)
+
+charges
+```
+
+    #>   procedure charge value frequency
+    #> 1         1      5   1.0         3
+    #> 2         2     12   2.0         7
+    #> 3         3     35   4.0         5
+    #> 4         4     20   3.0         4
+    #> 5         5      8   1.5         6
+
+For each procedure, divide the customary `charge` by the relative
+`value`, then multiply the result by that procedure’s `frequency`:
+
+``` r
+charges <- collapse::mtt(charges, calculation = (charge / value) * frequency)
+charges
+```
+
+    #>   procedure charge value frequency calculation
+    #> 1         1      5   1.0         3    15.00000
+    #> 2         2     12   2.0         7    42.00000
+    #> 3         3     35   4.0         5    43.75000
+    #> 4         4     20   3.0         4    26.66667
+    #> 5         5      8   1.5         6    32.00000
+
+Divide the sum of the `calculation` by the sum of the `frequency`:
+
+``` r
+sum(charges$calculation) / sum(charges$frequency)
+```
+
+    #> [1] 6.376667
+
+------------------------------------------------------------------------
 
 ## Prevailing Charges
 
