@@ -1,5 +1,9 @@
 # Changelog
 
+## arkrvu 0.0.1.9011
+
+- refactored `download_table`
+
 ## arkrvu 0.0.1.9010
 
 - clean up
