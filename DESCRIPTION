@@ -1,6 +1,6 @@
 Package: arkrvu
 Title: Archive: Physician Fee Schedule
-Version: 0.0.1.9011
+Version: 0.0.1.9012
 Authors@R: 
     person("Andrew", "Bruce", , "andrewallenbruce@gmail.com", role = c("aut", "cre", "cph"))
 Maintainer: Andrew Bruce <andrewallenbruce@gmail.com>
