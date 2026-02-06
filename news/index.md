@@ -1,5 +1,9 @@
 # Changelog
 
+## arkrvu 0.0.1.9013
+
+- refactored `download_table`
+
 ## arkrvu 0.0.1.9012
 
 - `rvu_lookup` work
