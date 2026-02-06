@@ -12,3 +12,5 @@
   : RVU Raw Source Files
 - [`rvu_lookup()`](https://andrewallenbruce.github.io/arkrvu/reference/rvu_lookup.md)
   : RVU Lookup by Date of Service, HCPCS, and Place of Service
+- [`zip_links()`](https://andrewallenbruce.github.io/arkrvu/reference/zip_links.md)
+  : RVU Zip File Download Links

@@ -11,3 +11,11 @@ download_table()
 ## Value
 
 `<tibble>` containing year, file, and url of RVU source files
+
+## Examples
+
+``` r
+if (FALSE) { # rlang::is_interactive()
+download_table()
+}
+```
