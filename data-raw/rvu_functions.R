@@ -1,39 +1,36 @@
-download_rvu_pages <- function(link_table, year = NULL) {
-
+download_rvu_pages <- function(year = NULL) {
   if (!is.null(year)) {
-
     selected_urls <- dplyr::filter(
-      link_table,
-      year == {{  year }}) |>
-      dplyr::pull(link_url)
-
+      download_links(),
+      year %in% {{ year }}
+    ) |>
+      dplyr::pull(url)
   } else {
-
-    selected_urls <- dplyr::pull(link_table, link_url)
-
+    selected_urls <- dplyr::pull(download_links(), url)
   }
 
   tictoc::tic(
     stringr::str_glue(
       "Downloaded {length(selected_urls)} Pages"
-      )
     )
+  )
 
-  rvu_pgs <- purrr::map(
+  results <- purrr::map(
     selected_urls,
-    rvest::read_html,
+    \(x) {
+      res <- curl::curl_fetch_memory(x)
+      rawToChar(res$content)
+    },
     .progress = stringr::str_glue(
       "Downloading {length(selected_urls)} Pages"
-      )
     )
+  )
 
   tictoc::toc()
-
-  return(rvu_pgs)
+  return(results)
 }
 
 process <- list(
-
   zip_link = \(x) {
     link <- rvest::html_elements(x, css = "a") |>
       rvest::html_attr("href") |>
@@ -55,79 +52,89 @@ process <- list(
   lookup = purrr::set_names(1:12, month.name)
 )
 
+process_rvu_pages <- function(x) {
+  purrr::map(x, \(x) {
+    x <- xml2::read_html(x)
 
-process_rvu_pages <- function(rvu_pages, link_table, year) {
+    x <- dplyr::tibble(
+      zip_link = process$zip_link(x),
+      zip_info = process$zip_info(x),
+      # zip_link = purrr::map_chr(x, process$zip_link),
+      # zip_info = purrr::map(x, process$zip_info)
+    )
 
-  dplyr::tibble(
-    zip_link = purrr::map(rvu_pages, process$zip_link) |>
-      unlist(),
-    zip_info = purrr::map(rvu_pages, process$zip_info) |>
-      purrr::set_names(
-        link_table[link_table$year == year, 3, drop = TRUE]
-        )
-    ) |>
-    tidyr::unnest(cols = zip_info) |>
-    dplyr::mutate(
-      col_name = dplyr::case_when(
-        stringr::str_detect(zip_info, "File Name") ~ "filename",
-        stringr::str_detect(zip_info, "Description") ~ "description",
-        stringr::str_detect(zip_info, "File Size") ~ "filesize",
-        stringr::str_detect(zip_info, "Downloads") ~ "downloads",
-        .default = NA_character_),
-      zip_info = stringr::str_remove_all(
-        zip_info,
-        "File Name |Description |File Size |Downloads "
-      )
-    ) |>
-    tidyr::pivot_wider(
-      names_from = col_name,
-      values_from = zip_info
-    ) |>
-    dplyr::reframe(
-      file_html = filename,
-      last_updated = stringr::str_extract(
-        downloads, "\\d{2}\\/\\d{2}\\/\\d{4}")
-      # |> anytime::anydate()
-      ,
-      date_effective = stringr::str_remove_all(
-        description,
-        "Medicare|Physician|Fee|Schedule|rates|effective|-|release"
-      ) |>
-        stringr::str_squish() |>
-        stringr::str_extract(
-          "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+(\\d{1,2}\\,\\s+)?(\\d{4})"
+    x <- x |>
+      dplyr::mutate(
+        col_name = dplyr::case_when(
+          stringr::str_detect(zip_info, "File Name") ~ "file",
+          stringr::str_detect(zip_info, "Description") ~ "description",
+          stringr::str_detect(zip_info, "File Size") ~ "size",
+          stringr::str_detect(zip_info, "Downloads") ~ "updated",
+          .default = NA_character_
         ),
-      mon = stringr::str_extract(
-        date_effective,
-        "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
-      ),
-      mon = process$lookup[mon],
-      day = stringr::str_extract(
-        date_effective,
-        "[0-9]{1,2}(?=,)"
+        zip_info = stringr::str_remove_all(
+          zip_info,
+          "File Name |Description |File Size |Downloads "
+        )
       ) |>
-        tidyr::replace_na("1") |>
-        as.integer(),
-      year = stringr::str_extract(
-        date_effective,
-        "\\d{4}$"
-      ) |>
-        as.integer(),
-      date_effective = clock::date_build(year, mon, day),
-      zip_link
-    ) |>
+      tidyr::pivot_wider(
+        names_from = col_name,
+        values_from = zip_info
+      )
+
+    x <- x |>
+      dplyr::mutate(
+        updated = stringr::str_extract(
+          updated,
+          "\\d{2}\\/\\d{2}\\/\\d{4}"
+        ),
+        date_start = stringr::str_remove_all(
+          description,
+          "Medicare|Physician|Fee|Schedule|rates|effective|-|release"
+        ) |>
+          stringr::str_squish() |>
+          stringr::str_extract(
+            "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+(\\d{1,2}\\,\\s+)?(\\d{4})"
+          ),
+        mon = stringr::str_extract(
+          date_start,
+          "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
+        ),
+        mon = process$lookup[mon],
+        day = stringr::str_extract(
+          date_start,
+          "[0-9]{1,2}(?=,)"
+        ) |>
+          tidyr::replace_na("1") |>
+          as.integer(),
+        year = stringr::str_extract(
+          date_start,
+          "\\d{4}$"
+        ) |>
+          as.integer(),
+        date_start = clock::date_build(year, mon, day),
+        updated = as.Date(updated, format = "%m/%d/%Y"),
+        size = fs::as_fs_bytes(size)
+      )
+    x
+  }) |>
+    purrr::list_rbind() |>
     dplyr::select(
-      file_html,
-      date_effective,
-      last_updated,
-      zip_link
+      year,
+      file,
+      date_start,
+      updated,
+      size,
+      zip_link,
+      description
     ) |>
-    dplyr::arrange(date_effective)
+    dplyr::arrange(file, dplyr::desc(date_start))
 }
 
 download_rvu_zips <- function(zip_table, directory = "D:/MPFS Files Archive/") {
-
-  zip_paths <- stringr::str_glue("{directory}{zip_table$file_html}-{basename(zip_table$zip_link)}")
+  zip_paths <- stringr::str_glue(
+    "{directory}{zip_table$file_html}-{basename(zip_table$zip_link)}"
+  )
 
   curl::multi_download(
     urls = zip_table$zip_link,
@@ -138,22 +145,31 @@ download_rvu_zips <- function(zip_table, directory = "D:/MPFS Files Archive/") {
   return(zip_paths)
 }
 
-unpack_rvu_zips <- function(zip_paths, directory = "D:/MPFS Files Archive/unzipped/") {
-
+unpack_rvu_zips <- function(
+  zip_paths,
+  directory = "D:/MPFS Files Archive/unzipped/"
+) {
   zip_list_table <- purrr::map(zip_paths, zip::zip_list) |>
-    purrr::set_names(stringr::str_extract(basename(zip_paths), "^RVU[0-9]{2}[A-Z]{0,2}")) |>
+    purrr::set_names(stringr::str_extract(
+      basename(zip_paths),
+      "^RVU[0-9]{2}[A-Z]{0,2}"
+    )) |>
     purrr::list_rbind(names_to = "file_html") |>
     dplyr::tibble() |>
     dplyr::select(
       file_html,
       sub_file = filename,
-      sub_file_timestamp = timestamp) |>
+      sub_file_timestamp = timestamp
+    ) |>
     dplyr::filter(grepl(".xlsx", sub_file))
 
   unzip_args <- list(
     zipfile = zip_paths,
-    exdir = paste0(directory, collapse::funique(dplyr::pull(zip_list_table, file_html)))
+    exdir = paste0(
+      directory,
+      collapse::funique(dplyr::pull(zip_list_table, file_html))
     )
+  )
 
   purrr::pwalk(unzip_args, zip::unzip)
 
@@ -163,11 +179,10 @@ unpack_rvu_zips <- function(zip_paths, directory = "D:/MPFS Files Archive/unzipp
 }
 
 process_raw_xlsx <- function() {
-
-  rvu_folders      <- fs::dir_ls(here::here("data-raw"), regexp = "RVU")
+  rvu_folders <- fs::dir_ls(here::here("data-raw"), regexp = "RVU")
   rvu_folder_names <- basename(rvu_folders)
-  rvu_xlsx_files   <- fs::dir_ls(rvu_folders, glob = "*.xlsx")
-  rvu_setnames     <- stringr::str_remove_all(rvu_xlsx_files, ".xlsx") |>
+  rvu_xlsx_files <- fs::dir_ls(rvu_folders, glob = "*.xlsx")
+  rvu_setnames <- stringr::str_remove_all(rvu_xlsx_files, ".xlsx") |>
     strex::str_after_nth("/", -2) |>
     stringr::str_replace("/", "_") |>
     tolower()
@@ -179,16 +194,17 @@ process_raw_xlsx <- function() {
 }
 
 create_list <- function(raw, list, remove) {
-
   names <- stringr::str_subset(names(raw), list)
-  raw_to_string <- stringr::str_c(stringr::str_glue("raw${names}"), collapse = ", ")
+  raw_to_string <- stringr::str_c(
+    stringr::str_glue("raw${names}"),
+    collapse = ", "
+  )
   string_to_list <- stringr::str_c("list(", raw_to_string, ")")
   list_to_df <- rlang::eval_tidy(rlang::parse_expr(string_to_list))
   list_to_df |> purrr::set_names(stringr::str_remove(names, remove))
 }
 
 process_pprrvu <- function(x) {
-
   dplyr::slice(x, 5:dplyr::n()) |>
     unheadr::mash_colnames(n_name_rows = 5, keep_names = FALSE) |>
     janitor::clean_names() |>
@@ -201,18 +217,19 @@ process_pprrvu <- function(x) {
           dplyr::contains("_op"),
           conv_factor
         ),
-        readr::parse_number)
+        readr::parse_number
+      )
     )
 }
 
 process_oppscap <- function(x) {
-
   dplyr::filter(x, HCPCS != "\u001a") |>
     janitor::clean_names() |>
     dplyr::mutate(
       dplyr::across(
         dplyr::contains("price"),
-        readr::parse_number)
+        readr::parse_number
+      )
     ) |>
     dplyr::rename(
       non_facility_price = non_facilty_price
@@ -221,7 +238,6 @@ process_oppscap <- function(x) {
 
 # starts at 2020 -- no more state names ####
 process_gpci2 <- function(x) {
-
   x <- unheadr::mash_colnames(
     x,
     n_name_rows = 1,
@@ -247,7 +263,8 @@ process_gpci2 <- function(x) {
         readr::parse_number
       ),
       locality_name = stringr::str_remove_all(
-        locality_name, stringr::fixed("*")
+        locality_name,
+        stringr::fixed("*")
       ),
       gpci_gaf = (gpci_work + gpci_pe + gpci_mp) / 3
     )
@@ -255,7 +272,6 @@ process_gpci2 <- function(x) {
 
 # 2021-Present ####
 process_gpci <- function(x) {
-
   x <- unheadr::mash_colnames(
     x,
     n_name_rows = 2,
@@ -281,7 +297,8 @@ process_gpci <- function(x) {
         readr::parse_number
       ),
       locality_name = stringr::str_remove_all(
-        locality_name, stringr::fixed("*")
+        locality_name,
+        stringr::fixed("*")
       ),
       gpci_gaf = (gpci_work + gpci_pe + gpci_mp) / 3
     )
@@ -289,7 +306,6 @@ process_gpci <- function(x) {
 
 # starts at 2020 -- medicare_adminstrative_contractor is now carrier_number ####
 process_locco2 <- function(x) {
-
   df_state <- dplyr::tibble(
     state_abb = state.abb,
     state = toupper(state.name)
@@ -307,7 +323,10 @@ process_locco2 <- function(x) {
       mac = carrier_number,
       locality_number,
       state,
-      fee_schedule_area = stringr::str_remove_all(fee_schedule_area, stringr::fixed("*")),
+      fee_schedule_area = stringr::str_remove_all(
+        fee_schedule_area,
+        stringr::fixed("*")
+      ),
       counties
     ) |>
     dplyr::left_join(df_state, by = dplyr::join_by(state)) |>
@@ -324,7 +343,6 @@ process_locco2 <- function(x) {
 
 # 2021-Present ####
 process_locco <- function(x) {
-
   df_state <- dplyr::tibble(
     state_abb = state.abb,
     state = toupper(state.name)
@@ -342,7 +360,10 @@ process_locco <- function(x) {
       mac = medicare_adminstrative_contractor,
       locality_number,
       state,
-      fee_schedule_area = stringr::str_remove_all(fee_schedule_area, stringr::fixed("*")),
+      fee_schedule_area = stringr::str_remove_all(
+        fee_schedule_area,
+        stringr::fixed("*")
+      ),
       counties
     ) |>
     dplyr::left_join(df_state, by = dplyr::join_by(state)) |>
@@ -358,7 +379,6 @@ process_locco <- function(x) {
 }
 
 process_anes <- function(x) {
-
   names(x) <- c(
     "contractor",
     "locality",
@@ -372,9 +392,12 @@ process_anes <- function(x) {
       locality = dplyr::if_else(
         stringr::str_length(locality) != 2,
         stringr::str_pad(locality, 2, pad = "0"),
-        locality),
+        locality
+      ),
       locality_name = stringr::str_remove_all(
-        locality_name, stringr::fixed("*")),
+        locality_name,
+        stringr::fixed("*")
+      ),
       anesthesia_conv_factor = as.double(anesthesia_conv_factor)
     )
 }

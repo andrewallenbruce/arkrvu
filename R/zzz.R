@@ -3,5 +3,8 @@ utils::globalVariables(c(
   "File Name",
   "source_file",
   "yr",
+  "year",
+  "updated",
+  "link",
   NULL
 ))
