@@ -1,14 +1,16 @@
 # Changelog
 
+## arkrvu 0.0.1.9019
+
+- renamed functions
+
 ## arkrvu 0.0.1.9018
 
 - added 2018 zip links
 
 ## arkrvu 0.0.1.9017
 
-- refactored
-  [`download_table()`](https://andrewallenbruce.github.io/arkrvu/reference/download_table.md)
-  & updated `rvu_link_table`
+- refactored `download_table()` & updated `rvu_link_table`
 
 ## arkrvu 0.0.1.9016
 
