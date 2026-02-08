@@ -1,5 +1,11 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9020
+
+* added `parse_rvu_zip_links()`
+* added 2017 to `rvu_zip_links` data
+
+
 # arkrvu 0.0.1.9019
 
 * renamed functions
