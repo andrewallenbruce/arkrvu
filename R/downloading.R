@@ -1,44 +1,15 @@
-#' RVU File Download Links
-#'
-#' @param years `<int>` years of RVU source files
-#'
-#' @returns `<tibble>` containing year, file, and url of RVU source files
-#'
-#' @examples
-#' rvu_link_table()
-#'
-#' @export
-rvu_link_table <- function(years) {
-  if (missing(years)) {
-    return(get_pin("rvu_link_table"))
-  }
-
-  collapse::sbt(get_pin("rvu_link_table"), year %in% years)
-}
-
-#' RVU Zip File Download Links
-#'
-#' @param years `<int>` years of RVU source files
-#'
-#' @returns `<tibble>` containing year, file, and date_start, date_end, description, size and url of RVU zip files
-#'
-#' @examples
-#' rvu_zip_links()
-#'
-#' @export
-rvu_zip_links <- function(years) {
-  if (missing(years)) {
-    return(get_pin("rvu_zip_links"))
-  }
-
-  collapse::sbt(get_pin("rvu_zip_links"), year %in% years)
-}
-
 #' Download RVU Link Table
+#'
+#' Downloads the table of RVU source file links from the CMS website. Used
+#' internally to populate and update the `rvu_link_table` dataset.
+#'
 #' @returns `<tibble>` containing year, file, and url of RVU source files
-#' @examplesIf rlang::is_interactive()
+#'
+#' @examplesIf FALSE
 #' download_rvu_link_table()
+#'
 #' @keywords internal
+#'
 #' @export
 download_rvu_link_table <- function() {
   x <- rvest::read_html(
@@ -46,10 +17,13 @@ download_rvu_link_table <- function() {
   )
 
   table <- rvest::html_table(x) |>
-    _[[1]] |>
+    purrr::pluck(1) |>
     rlang::set_names(c("year", "file")) |>
     collapse::mtt(
-      year = strtoi(stringr::str_extract(year, "[12]{1}[0-9]{3}")),
+      year = strtoi(stringr::str_extract(
+        year,
+        stringr::regex("[12]{1}[0-9]{3}")
+      )),
       file = stringr::str_replace(file, stringr::fixed("File Name\n"), "") |>
         stringr::str_squish()
     )
@@ -59,25 +33,47 @@ download_rvu_link_table <- function() {
     collapse::funique() |>
     stringr::str_subset("pfs-relative-value-files[/-]")
 
+  if (nrow(table) != length(urls)) {
+    cli::cli_warn(
+      "Length of {.var urls} {.pkg ({length(urls)})} does not match number of {.var table} rows {.pkg ({nrow(table)})}."
+    )
+  }
+
   fastplyr::f_bind_cols(
     table,
     url = paste0("https://www.cms.gov", urls)
   )
 }
 
-#' Download RVU Zip File Links
-#' @param years `<int>` years of RVU source files
+#' Download RVU Zip File Link Table
+#'
+#' Downloads the table of RVU source zip file links from the CMS website. Used
+#' internally to populate and update the `rvu_zip_links` dataset.
+#'
+#' @param years `<int>` year(s) of RVU source file, available in `rvu_link_table()`
+#'
 #' @returns `<tibble>` containing year, file, and url of RVU source files
-#' @examplesIf rlang::is_interactive()
+#'
+#' @examplesIf FALSE
 #' download_rvu_zip_links(years = 2024)
+#'
 #' @keywords internal
+#'
 #' @export
 download_rvu_zip_links <- function(years) {
   if (missing(years)) {
     cli::cli_abort("Argument {.arg years} is required.")
   }
 
-  url <- collapse::sbt(rvu_link_table(), year %in% years) |> _$url
+  links <- rvu_link_table()
+
+  if (any(!years %in% collapse::funique(links$year))) {
+    cli::cli_abort(
+      "One or more {.arg years} not found in {.fn rvu_link_table}."
+    )
+  }
+
+  url <- collapse::sbt(links, year %in% years) |> _$url
 
   results <- purrr::map(
     url,
