@@ -1,30 +1,23 @@
-x <- download_rvu_pages(year = c(2026, 2025))
+source(here::here("data-raw", "data_pins.R"))
+source(here::here("data-raw", "rvu_functions.R"))
+
+x <- download_rvu_pages(year = 2022)
 x
-zip_links_25_26 <- process_rvu_pages(x) |>
-  collapse::mtt(
-    date_start = cheapr::if_else_(
-      file == "RVU25D",
-      make_date(2025, 10, 1),
-      date_start
-    )
-  )
 
-y <- download_rvu_pages(year = 2024)
-y
-zip_links_24 <- process_rvu_pages(y)
-
-z <- download_rvu_pages(year = 2023)
-z
-zip_links_23 <- process_rvu_pages(z)
-zip_links_23
+zip_22 <- process_rvu_pages(x)
 
 rvu_zip_links <- vctrs::vec_rbind(
-  zip_links_25_26,
-  zip_links_24
+  get_pin("rvu_zip_links"),
+  zip_22
 ) |>
-  collapse::slt(-updated) |>
   collapse::roworder(year, file) |>
-  collapse::mtt(date_end = cheapr::lag_(date_start, -1L) - 1L) |>
+  collapse::mtt(
+    date_end = cheapr::if_else_(
+      is.na(date_end),
+      cheapr::lag_(date_start, -1L) - 1L,
+      date_end
+    )
+  ) |>
   collapse::colorder(
     year,
     file,
@@ -32,10 +25,7 @@ rvu_zip_links <- vctrs::vec_rbind(
     date_end,
     description,
     size,
-    zip_link
-  ) |>
-  collapse::frename(
-    url = zip_link
+    url
   )
 
 pin_update(

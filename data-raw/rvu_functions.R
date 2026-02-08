@@ -17,10 +17,7 @@ download_rvu_pages <- function(year = NULL) {
 
   results <- purrr::map(
     selected_urls,
-    \(x) {
-      res <- curl::curl_fetch_memory(x)
-      rawToChar(res$content)
-    },
+    rvest::read_html,
     .progress = stringr::str_glue(
       "Downloading {length(selected_urls)} Pages"
     )
@@ -54,13 +51,9 @@ process <- list(
 
 process_rvu_pages <- function(x) {
   purrr::map(x, \(x) {
-    x <- xml2::read_html(x)
-
     x <- dplyr::tibble(
       zip_link = process$zip_link(x),
-      zip_info = process$zip_info(x),
-      # zip_link = purrr::map_chr(x, process$zip_link),
-      # zip_info = purrr::map(x, process$zip_info)
+      zip_info = process$zip_info(x)
     )
 
     x <- x |>
@@ -128,7 +121,9 @@ process_rvu_pages <- function(x) {
       zip_link,
       description
     ) |>
-    dplyr::arrange(file, dplyr::desc(date_start))
+    dplyr::arrange(file, dplyr::desc(date_start)) |>
+    collapse::slt(-updated) |>
+    collapse::frename(url = zip_link)
 }
 
 download_rvu_zips <- function(zip_table, directory = "D:/MPFS Files Archive/") {
