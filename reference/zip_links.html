@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">arkrvu</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9015</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9016</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,27 +60,20 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">zip_links</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 18 × 7</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     year file    date_start date_end   description                    size url  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                         <span style="color: #949494; font-style: italic;">&lt;fs:&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">2</span>022 RVU22A  2022-01-01 2022-03-31 Physician Fee Schedule - Jan…    3M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">2</span>022 RVU22B  2022-04-01 2022-06-30 Physician Fee Schedule - Apr…  3.5M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">2</span>022 RVU22C  2022-07-01 2022-09-30 Physician Fee Schedule - Jul…    3M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">2</span>022 RVU22D  2022-10-01 2022-12-31 Physician Fee Schedule - Oct…  3.5M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">2</span>023 RVU23A  2023-01-01 2023-03-31 Physician Fee Schedule - Jan…    3M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">2</span>023 RVU23B  2023-04-01 2023-06-30 Physician Fee Schedule - Apr…  3.5M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">2</span>023 RVU23C  2023-07-01 2023-09-30 Physician Fee Schedule - Jul…  3.7M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>023 RVU23D  2023-10-01 2023-12-31 Physician Fee Schedule - Oct… 3.66M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>024 RVU24A  2024-01-01 2024-03-08 Medicare Physician Fee Sched…    4M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>024 RVU24AR 2024-03-09 2024-03-31 Medicare Physician Fee Sched…    4M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span>  <span style="text-decoration: underline;">2</span>024 RVU24B  2024-04-01 2024-06-30 Physician Fee Schedule - Apr…    4M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span>  <span style="text-decoration: underline;">2</span>024 RVU24C  2024-07-01 2024-09-30 Physician Fee Schedule - Jul…    4M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span>  <span style="text-decoration: underline;">2</span>024 RVU24D  2024-10-01 2024-12-31 Physician Fee Schedule - Oct…    4M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span>  <span style="text-decoration: underline;">2</span>025 RVU25A  2025-01-01 2025-03-31 Physician Fee Schedule - Jan…    4M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span>  <span style="text-decoration: underline;">2</span>025 RVU25B  2025-04-01 2025-06-30 Physician Fee Schedule – Apr…    4M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span>  <span style="text-decoration: underline;">2</span>025 RVU25C  2025-07-01 2025-09-30 Physician Fee Schedule – Jul…    4M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span>  <span style="text-decoration: underline;">2</span>025 RVU25D  2025-10-01 2025-12-31 PFS Relative Value Files for…    4M http…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">18</span>  <span style="text-decoration: underline;">2</span>026 RVU26A  2026-01-01 2026-03-31 Physician Fee Schedule - Jan…  5.6M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 30 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     year file   date_start date_end   description                     size url  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;fs:&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>  <span style="text-decoration: underline;">2</span>019 RVU19A 2019-01-01 2019-03-31 Physician Fee Schedule - Janu…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>  <span style="text-decoration: underline;">2</span>019 RVU19B 2019-04-01 2019-06-30 Physician Fee Schedule ? Apri…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>  <span style="text-decoration: underline;">2</span>019 RVU19C 2019-07-01 2019-09-30 Physician Fee Schedule ? July…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>  <span style="text-decoration: underline;">2</span>019 RVU19D 2019-10-01 2019-12-31 Physician Fee Schedule - Octo…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>  <span style="text-decoration: underline;">2</span>020 RVU20A 2020-01-01 2020-03-31 Physician Fee Schedule - Janu…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>  <span style="text-decoration: underline;">2</span>020 RVU20B 2020-04-01 2020-06-30 Physician Fee Schedule - Apri…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>  <span style="text-decoration: underline;">2</span>020 RVU20C 2020-07-01 2020-09-30 Physician Fee Schedule - July…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>  <span style="text-decoration: underline;">2</span>020 RVU20D 2020-10-01 2020-12-31 Physician Fee Schedule - Octo…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>  <span style="text-decoration: underline;">2</span>021 RVU21A 2021-01-01 2021-03-31 Physician Fee Schedule - Janu…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>  <span style="text-decoration: underline;">2</span>021 RVU21B 2021-04-01 2021-06-30 Physician Fee Schedule - Apri…    3M http…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 20 more rows</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
