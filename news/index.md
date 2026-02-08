@@ -1,5 +1,11 @@
 # Changelog
 
+## arkrvu 0.0.1.9017
+
+- refactored
+  [`download_table()`](https://andrewallenbruce.github.io/arkrvu/reference/download_table.md)
+  & updated `rvu_link_table`
+
 ## arkrvu 0.0.1.9016
 
 - added zip links for 2019-2021
