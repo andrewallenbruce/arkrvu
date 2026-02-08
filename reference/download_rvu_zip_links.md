@@ -1,6 +1,7 @@
-# Download RVU Zip File Links
+# Download RVU Zip File Link Table
 
-Download RVU Zip File Links
+Downloads the table of RVU source zip file links from the CMS website.
+Used internally to populate and update the `rvu_zip_links` dataset.
 
 ## Usage
 
@@ -12,7 +13,8 @@ download_rvu_zip_links(years)
 
 - years:
 
-  `<int>` years of RVU source files
+  `<int>` year(s) of RVU source file, available in
+  [`rvu_link_table()`](https://andrewallenbruce.github.io/arkrvu/reference/link_tables.md)
 
 ## Value
 
@@ -21,7 +23,7 @@ download_rvu_zip_links(years)
 ## Examples
 
 ``` r
-if (FALSE) { # rlang::is_interactive()
+if (FALSE) {
 download_rvu_zip_links(years = 2024)
 }
 ```

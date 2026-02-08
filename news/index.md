@@ -1,5 +1,11 @@
 # Changelog
 
+## arkrvu 0.0.1.9020
+
+- added
+  [`parse_rvu_zip_links()`](https://andrewallenbruce.github.io/arkrvu/reference/parse_rvu_zip_links.md)
+- added 2017 to `rvu_zip_links` data
+
 ## arkrvu 0.0.1.9019
 
 - renamed functions

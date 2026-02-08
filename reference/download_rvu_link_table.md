@@ -1,6 +1,7 @@
 # Download RVU Link Table
 
-Download RVU Link Table
+Downloads the table of RVU source file links from the CMS website. Used
+internally to populate and update the `rvu_link_table` dataset.
 
 ## Usage
 
@@ -15,7 +16,7 @@ download_rvu_link_table()
 ## Examples
 
 ``` r
-if (FALSE) { # rlang::is_interactive()
+if (FALSE) {
 download_rvu_link_table()
 }
 ```
