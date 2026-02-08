@@ -20,12 +20,14 @@ process_zip_links <- function(x) {
   }
 
   x <- purrr::map(x, \(x) {
-    x <- fastplyr::new_tbl(
+    fastplyr::new_tbl(
       url = zip_link(x),
       info = zip_info(x)
     )
+  })
 
-    x <- x |>
+  x <- purrr::map(x, \(x) {
+    x |>
       collapse::mtt(
         col_name = cheapr::case(
           stringr::str_detect(info, "File Name") ~ "file",
@@ -38,38 +40,41 @@ process_zip_links <- function(x) {
           info,
           "File Name |Description |File Size |Downloads "
         )
-      ) |>
+      )
+  })
+
+  x <- purrr::map(x, \(x) {
+    x |>
       tidyr::pivot_wider(
         names_from = col_name,
         values_from = info
       )
+  }) |>
+    collapse::rowbind(fill = TRUE)
 
-    x <- x |>
-      collapse::mtt(
-        date_start = stringr::str_remove_all(
-          description,
-          "Medicare|Physician|Fee|Schedule|rates|effective|-|release"
-        ) |>
-          stringr::str_squish() |>
-          stringr::str_extract(
-            "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+(\\d{1,2}\\,\\s+)?(\\d{4})"
-          ),
-        mon = lookup[stringr::str_extract(
-          date_start,
-          "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
-        )],
-        day = stringr::str_extract(date_start, "[0-9]{1,2}(?=,)") |>
-          tidyr::replace_na("1") |>
-          strtoi(),
-        year = stringr::str_extract(date_start, "\\d{4}$") |> strtoi(),
-        date_start = clock::date_build(year, mon, day),
-        size = fs::as_fs_bytes(size)
-      )
-    return(x)
-  })
+  x <- x |>
+    collapse::mtt(
+      date_start = stringr::str_remove_all(
+        description,
+        "Medicare|Physician|Fee|Schedule|rates|effective|-|release"
+      ) |>
+        stringr::str_squish() |>
+        stringr::str_extract(
+          "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+(\\d{1,2}\\,\\s+)?(\\d{4})"
+        ),
+      mon = lookup[stringr::str_extract(
+        date_start,
+        "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
+      )],
+      day = stringr::str_extract(date_start, "[0-9]{1,2}(?=,)") |>
+        tidyr::replace_na("1") |>
+        strtoi(),
+      year = stringr::str_extract(date_start, "\\d{4}$") |> strtoi(),
+      date_start = clock::date_build(year, mon, day),
+      size = fs::as_fs_bytes(size)
+    )
 
   x |>
-    collapse::rowbind(fill = TRUE) |>
     collapse::slt(
       year,
       file,

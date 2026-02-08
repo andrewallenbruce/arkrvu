@@ -1,14 +1,16 @@
 source(here::here("data-raw", "data_pins.R"))
 source(here::here("data-raw", "rvu_functions.R"))
 
-x <- download_zip_links(2019)
+x <- download_zip_links(2018)
 x
 
-zip_19 <- process_zip_links(x)
+zip_18 <- process_zip_links(x)
+
+zip_18$year <- vctrs::vec_fill_missing(zip_18$year)
 
 rvu_zip_links <- vctrs::vec_rbind(
   get_pin("rvu_zip_links"),
-  zip_19
+  zip_18
 ) |>
   collapse::roworder(year, file) |>
   collapse::mtt(
@@ -27,6 +29,10 @@ rvu_zip_links <- vctrs::vec_rbind(
     size,
     url
   )
+
+collapse::sbt(rvu_zip_links, year == 2018) |> _$description
+
+download_links() |> collapse::sbt(year == 2018 & grepl("AR", file)) |> _$url
 
 pin_update(
   rvu_zip_links,
