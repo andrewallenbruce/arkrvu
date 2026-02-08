@@ -18,17 +18,14 @@ Imports:
     pins (>= 1.4.0),
     rlang (>= 1.1.7)
 Suggests:
-    brio (>= 1.1.5),
     clock (>= 0.7.4),
-    curl (>= 7.0.0),
     data.table (>= 1.18.2),
     fastplyr (>= 0.9.91),
     fs (>= 1.6.6),
     ivs (>= 0.2.0),
     purrr (>= 1.2.1),
     rvest (>= 1.0.5),
-    stringr (>= 1.6.0),
-    withr (>= 3.0.2)
+    stringr (>= 1.6.0)
 Config/Needs/website: rmarkdown
 Encoding: UTF-8
 LazyData: true

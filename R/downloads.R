@@ -29,34 +29,27 @@ zip_links <- function() {
 #' @keywords internal
 #' @export
 download_table <- function() {
-  url <- "https://www.cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files"
-  path <- withr::local_tempfile()
-  curl::curl_download(url, path, quiet = FALSE)
-  x <- brio::read_lines(path)
+  x <- rvest::read_html(
+    "https://www.cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files"
+  )
 
-  html <- trimws(x) |>
-    grep("pfs-relative-value-files", x = _, value = TRUE, fixed = TRUE) |>
-    grep(
-      "<script type=|<link rel=|drupal-link-system-path=",
-      x = _,
-      value = TRUE,
-      perl = TRUE,
-      invert = TRUE
-    ) |>
-    gsub('"|^<a href=', "", x = _, perl = TRUE) |>
-    gsub("</a>", "", x = _, fixed = TRUE) |>
-    trimws(x = _) |>
-    strsplit(x = _, ">", fixed = TRUE)
+  table <- rvest::html_table(x) |>
+    _[[1]] |>
+    rlang::set_names(c("year", "file")) |>
+    collapse::mtt(
+      year = strtoi(stringr::str_extract(year, "[12]{1}[0-9]{3}")),
+      file = stringr::str_replace(file, stringr::fixed("File Name\n"), "") |>
+        stringr::str_squish()
+    )
 
-  fastplyr::new_tbl(
-    yr = strtoi(substring(
-      gsub("^RVU|^PRREV", "", purrr::map_chr(html, 2)),
-      1L,
-      2L
-    )),
-    year = strtoi(paste0("20", yr)),
-    file = purrr::map_chr(html, 2),
-    url = paste0("https://www.cms.gov", purrr::map_chr(html, 1))
+  urls <- rvest::html_elements(x, css = "a") |>
+    rvest::html_attr("href") |>
+    collapse::funique() |>
+    stringr::str_subset("pfs-relative-value-files[/-]")
+
+  fastplyr::f_bind_cols(
+    table,
+    url = paste0("https://www.cms.gov", urls)
   )
 }
 
