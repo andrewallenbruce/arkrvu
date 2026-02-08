@@ -49,18 +49,16 @@ download_table <- function() {
     strsplit(x = _, ">", fixed = TRUE)
 
   fastplyr::new_tbl(
-    yr = as.integer(substring(
+    yr = strtoi(substring(
       gsub("^RVU|^PRREV", "", purrr::map_chr(html, 2)),
       1L,
       2L
     )),
-    year = as.integer(paste0("20", yr)),
+    year = strtoi(paste0("20", yr)),
     file = purrr::map_chr(html, 2),
     url = paste0("https://www.cms.gov", purrr::map_chr(html, 1))
   )
 }
-
-# pin_update(x, name = "rvu_link_table", title = "RVU File Download Links", description = "RVU File Download Links from CMS.gov")
 
 #' Download RVU Zip File Links
 #' @param years `<int>` years of RVU source files
@@ -71,28 +69,18 @@ download_table <- function() {
 #' @export
 download_zip_links <- function(years) {
   if (missing(years)) {
-    url <- collapse::sbt(download_links(), year %in% years) |> _$url
-  } else {
-    url <- download_links() |> _$url
+    cli::cli_abort("Argument {.arg years} is required.")
   }
 
-  path <- withr::local_tempfile()
-  curl::multi_download(url, path, resume = TRUE)
-  z <- trimws(brio::read_lines(path))
+  url <- collapse::sbt(download_links(), year %in% years) |> _$url
 
-  z <- cheapr::sset(z, cheapr::which_(nzchar(z))) |>
-    grep("files/zip", x = _, fixed = TRUE, value = TRUE) |>
-    gsub('<li class=\"field__item\"><a href=\"', "", x = _, fixed = TRUE) |>
-    gsub("</a></li>", "", x = _, fixed = TRUE) |>
-    gsub("\"|\\+|hreflang", "", x = _, perl = TRUE) |>
-    gsub("=en>", "", x = _, fixed = TRUE) |>
-    gsub(" - Updated ", " ", x = _, fixed = TRUE) |>
-    strsplit(x = _, " ", fixed = TRUE)
+  results <- purrr::map(
+    url,
+    rvest::read_html,
+    .progress = stringr::str_glue(
+      "Downloading {length(url)} Pages"
+    )
+  )
 
-  fastplyr::new_tbl(
-    link = paste0("https://www.cms.gov", purrr::map_chr(z, 1)),
-    file = purrr::map_chr(z, 2),
-    updated = purrr::map_chr(z, 3) |> as.Date(format = "%m/%d/%Y")
-  ) |>
-    collapse::colorder(file, updated, link)
+  return(results)
 }

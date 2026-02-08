@@ -1,14 +1,14 @@
 source(here::here("data-raw", "data_pins.R"))
 source(here::here("data-raw", "rvu_functions.R"))
 
-x <- download_rvu_pages(year = 2022)
+x <- download_zip_links(2019)
 x
 
-zip_22 <- process_rvu_pages(x)
+zip_19 <- process_zip_links(x)
 
 rvu_zip_links <- vctrs::vec_rbind(
   get_pin("rvu_zip_links"),
-  zip_22
+  zip_19
 ) |>
   collapse::roworder(year, file) |>
   collapse::mtt(

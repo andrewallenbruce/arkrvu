@@ -1,86 +1,51 @@
-download_rvu_pages <- function(year = NULL) {
-  if (!is.null(year)) {
-    selected_urls <- dplyr::filter(
-      download_links(),
-      year %in% {{ year }}
-    ) |>
-      dplyr::pull(url)
-  } else {
-    selected_urls <- dplyr::pull(download_links(), url)
-  }
+process_zip_links <- function(x) {
+  lookup <- rlang::set_names(1:12, month.name)
 
-  tictoc::tic(
-    stringr::str_glue(
-      "Downloaded {length(selected_urls)} Pages"
-    )
-  )
-
-  results <- purrr::map(
-    selected_urls,
-    rvest::read_html,
-    .progress = stringr::str_glue(
-      "Downloading {length(selected_urls)} Pages"
-    )
-  )
-
-  tictoc::toc()
-  return(results)
-}
-
-process <- list(
-  zip_link = \(x) {
-    link <- rvest::html_elements(x, css = "a") |>
+  zip_link <- function(x) {
+    x <- rvest::html_elements(x, css = "a") |>
       rvest::html_attr("href") |>
       collapse::funique() |>
       stringr::str_subset(".zip")
 
-    stringr::str_c("https://www.cms.gov", link)
-  },
+    stringr::str_c("https://www.cms.gov", x)
+  }
 
-  zip_info = \(x) {
+  zip_info <- function(x) {
     rvest::html_elements(x, css = ".field") |>
       rvest::html_text2() |>
       collapse::funique() |>
       stringr::str_subset("Dynamic List", negate = TRUE) |>
       stringr::str_subset("File Name|Description|File Size|Downloads") |>
       stringr::str_replace_all("\\n", " ")
-  },
+  }
 
-  lookup = purrr::set_names(1:12, month.name)
-)
-
-process_rvu_pages <- function(x) {
-  purrr::map(x, \(x) {
-    x <- dplyr::tibble(
-      zip_link = process$zip_link(x),
-      zip_info = process$zip_info(x)
+  x <- purrr::map(x, \(x) {
+    x <- fastplyr::new_tbl(
+      url = zip_link(x),
+      info = zip_info(x)
     )
 
     x <- x |>
-      dplyr::mutate(
-        col_name = dplyr::case_when(
-          stringr::str_detect(zip_info, "File Name") ~ "file",
-          stringr::str_detect(zip_info, "Description") ~ "description",
-          stringr::str_detect(zip_info, "File Size") ~ "size",
-          stringr::str_detect(zip_info, "Downloads") ~ "updated",
+      collapse::mtt(
+        col_name = cheapr::case(
+          stringr::str_detect(info, "File Name") ~ "file",
+          stringr::str_detect(info, "Description") ~ "description",
+          stringr::str_detect(info, "File Size") ~ "size",
+          stringr::str_detect(info, "Downloads") ~ "updated",
           .default = NA_character_
         ),
-        zip_info = stringr::str_remove_all(
-          zip_info,
+        info = stringr::str_remove_all(
+          info,
           "File Name |Description |File Size |Downloads "
         )
       ) |>
       tidyr::pivot_wider(
         names_from = col_name,
-        values_from = zip_info
+        values_from = info
       )
 
     x <- x |>
-      dplyr::mutate(
-        updated = stringr::str_extract(
-          updated,
-          "\\d{2}\\/\\d{2}\\/\\d{4}"
-        ),
+      collapse::mtt(
         date_start = stringr::str_remove_all(
           description,
           "Medicare|Physician|Fee|Schedule|rates|effective|-|release"
@@ -89,41 +54,31 @@ process_rvu_pages <- function(x) {
           stringr::str_extract(
             "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+(\\d{1,2}\\,\\s+)?(\\d{4})"
           ),
-        mon = stringr::str_extract(
+        mon = lookup[stringr::str_extract(
           date_start,
           "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
-        ),
-        mon = process$lookup[mon],
-        day = stringr::str_extract(
-          date_start,
-          "[0-9]{1,2}(?=,)"
-        ) |>
+        )],
+        day = stringr::str_extract(date_start, "[0-9]{1,2}(?=,)") |>
           tidyr::replace_na("1") |>
-          as.integer(),
-        year = stringr::str_extract(
-          date_start,
-          "\\d{4}$"
-        ) |>
-          as.integer(),
+          strtoi(),
+        year = stringr::str_extract(date_start, "\\d{4}$") |> strtoi(),
         date_start = clock::date_build(year, mon, day),
-        updated = as.Date(updated, format = "%m/%d/%Y"),
         size = fs::as_fs_bytes(size)
       )
-    x
-  }) |>
-    purrr::list_rbind() |>
-    dplyr::select(
+    return(x)
+  })
+
+  x |>
+    collapse::rowbind(fill = TRUE) |>
+    collapse::slt(
       year,
       file,
       date_start,
-      updated,
       size,
-      zip_link,
+      url,
       description
     ) |>
-    dplyr::arrange(file, dplyr::desc(date_start)) |>
-    collapse::slt(-updated) |>
-    collapse::frename(url = zip_link)
+    fastplyr::f_arrange(file, fastplyr::desc(date_start))
 }
 
 download_rvu_zips <- function(zip_table, directory = "D:/MPFS Files Archive/") {
