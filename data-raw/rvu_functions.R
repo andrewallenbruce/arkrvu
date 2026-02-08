@@ -1,33 +1,20 @@
 process_zip_links <- function(x) {
-  lookup <- rlang::set_names(1:12, month.name)
-
-  zip_link <- function(x) {
-    x <- rvest::html_elements(x, css = "a") |>
-      rvest::html_attr("href") |>
-      collapse::funique() |>
-      stringr::str_subset(".zip")
-
-    stringr::str_c("https://www.cms.gov", x)
-  }
-
-  zip_info <- function(x) {
-    rvest::html_elements(x, css = ".field") |>
-      rvest::html_text2() |>
-      collapse::funique() |>
-      stringr::str_subset("Dynamic List", negate = TRUE) |>
-      stringr::str_subset("File Name|Description|File Size|Downloads") |>
-      stringr::str_replace_all("\\n", " ")
-  }
-
   x <- purrr::map(x, \(x) {
     fastplyr::new_tbl(
-      url = zip_link(x),
-      info = zip_info(x)
-    )
-  })
-
-  x <- purrr::map(x, \(x) {
-    x |>
+      url = stringr::str_c(
+        "https://www.cms.gov",
+        rvest::html_elements(x, css = "a") |>
+          rvest::html_attr("href") |>
+          collapse::funique() |>
+          stringr::str_subset(".zip")
+      ),
+      info = rvest::html_elements(x, css = ".field") |>
+        rvest::html_text2() |>
+        collapse::funique() |>
+        stringr::str_subset("Dynamic List", negate = TRUE) |>
+        stringr::str_subset("File Name|Description|File Size|Downloads") |>
+        stringr::str_replace_all("\\n", " ")
+    ) |>
       collapse::mtt(
         col_name = cheapr::case(
           stringr::str_detect(info, "File Name") ~ "file",
@@ -40,11 +27,7 @@ process_zip_links <- function(x) {
           info,
           "File Name |Description |File Size |Downloads "
         )
-      )
-  })
-
-  x <- purrr::map(x, \(x) {
-    x |>
+      ) |>
       tidyr::pivot_wider(
         names_from = col_name,
         values_from = info
@@ -52,29 +35,24 @@ process_zip_links <- function(x) {
   }) |>
     collapse::rowbind(fill = TRUE)
 
-  x <- x |>
+  month_lookup <- rlang::set_names(1:12, month.name)
+  date_start_regex <- "Medicare|Physician|Fee|Schedule|rates|effective|-|release"
+  month_name_regex <- "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
+  month_date_regex <- "\\s+(\\d{1,2}\\,\\s+)?(\\d{4})"
+
+  x |>
     collapse::mtt(
-      date_start = stringr::str_remove_all(
-        description,
-        "Medicare|Physician|Fee|Schedule|rates|effective|-|release"
-      ) |>
+      date_start = stringr::str_remove_all(description, date_start_regex) |>
         stringr::str_squish() |>
-        stringr::str_extract(
-          "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+(\\d{1,2}\\,\\s+)?(\\d{4})"
-        ),
-      mon = lookup[stringr::str_extract(
-        date_start,
-        "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
-      )],
+        stringr::str_extract(paste0(month_name_regex, month_date_regex)),
+      mon = month_lookup[stringr::str_extract(date_start, month_name_regex)],
       day = stringr::str_extract(date_start, "[0-9]{1,2}(?=,)") |>
         tidyr::replace_na("1") |>
         strtoi(),
-      year = stringr::str_extract(date_start, "\\d{4}$") |> strtoi(),
+      year = strtoi(stringr::str_extract(date_start, "\\d{4}$")),
       date_start = clock::date_build(year, mon, day),
       size = fs::as_fs_bytes(size)
-    )
-
-  x |>
+    ) |>
     collapse::slt(
       year,
       file,

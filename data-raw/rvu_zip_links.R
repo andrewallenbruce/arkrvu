@@ -1,7 +1,7 @@
 source(here::here("data-raw", "data_pins.R"))
 source(here::here("data-raw", "rvu_functions.R"))
 
-x <- download_zip_links(2018)
+x <- download_rvu_zip_links(2018)
 x
 
 zip_18 <- process_zip_links(x)
@@ -32,7 +32,7 @@ rvu_zip_links <- vctrs::vec_rbind(
 
 collapse::sbt(rvu_zip_links, year == 2018) |> _$description
 
-download_links() |> collapse::sbt(year == 2018 & grepl("AR", file)) |> _$url
+rvu_link_table() |> collapse::sbt(year == 2018 & grepl("AR", file)) |> _$url
 
 pin_update(
   rvu_zip_links,

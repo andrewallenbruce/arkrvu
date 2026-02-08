@@ -1,34 +1,46 @@
 #' RVU File Download Links
 #'
-#' @returns list of selected rvu source files
+#' @param years `<int>` years of RVU source files
+#'
+#' @returns `<tibble>` containing year, file, and url of RVU source files
 #'
 #' @examples
-#' download_links()
+#' rvu_link_table()
 #'
 #' @export
-download_links <- function() {
-  get_pin("rvu_link_table")
+rvu_link_table <- function(years) {
+  if (missing(years)) {
+    return(get_pin("rvu_link_table"))
+  }
+
+  collapse::sbt(get_pin("rvu_link_table"), year %in% years)
 }
 
 #' RVU Zip File Download Links
 #'
-#' @returns list of selected rvu source files
+#' @param years `<int>` years of RVU source files
+#'
+#' @returns `<tibble>` containing year, file, and date_start, date_end, description, size and url of RVU zip files
 #'
 #' @examples
-#' zip_links()
+#' rvu_zip_links()
 #'
 #' @export
-zip_links <- function() {
-  get_pin("rvu_zip_links")
+rvu_zip_links <- function(years) {
+  if (missing(years)) {
+    return(get_pin("rvu_zip_links"))
+  }
+
+  collapse::sbt(get_pin("rvu_zip_links"), year %in% years)
 }
 
 #' Download RVU Link Table
 #' @returns `<tibble>` containing year, file, and url of RVU source files
 #' @examplesIf rlang::is_interactive()
-#' download_table()
+#' download_rvu_link_table()
 #' @keywords internal
 #' @export
-download_table <- function() {
+download_rvu_link_table <- function() {
   x <- rvest::read_html(
     "https://www.cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files"
   )
@@ -57,15 +69,15 @@ download_table <- function() {
 #' @param years `<int>` years of RVU source files
 #' @returns `<tibble>` containing year, file, and url of RVU source files
 #' @examplesIf rlang::is_interactive()
-#' download_zip_links(years = 2024)
+#' download_rvu_zip_links(years = 2024)
 #' @keywords internal
 #' @export
-download_zip_links <- function(years) {
+download_rvu_zip_links <- function(years) {
   if (missing(years)) {
     cli::cli_abort("Argument {.arg years} is required.")
   }
 
-  url <- collapse::sbt(download_links(), year %in% years) |> _$url
+  url <- collapse::sbt(rvu_link_table(), year %in% years) |> _$url
 
   results <- purrr::map(
     url,
@@ -74,6 +86,5 @@ download_zip_links <- function(years) {
       "Downloading {length(url)} Pages"
     )
   )
-
   return(results)
 }
