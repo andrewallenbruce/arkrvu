@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9017
+
+* refactored `download_table()` & updated `rvu_link_table`
+
+
 # arkrvu 0.0.1.9016
 
 * added zip links for 2019-2021
