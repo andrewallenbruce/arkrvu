@@ -2,7 +2,16 @@ source(here::here("data-raw", "data_pins.R"))
 source(here::here("data-raw", "rvu_functions.R"))
 
 x <- download_rvu_zip_links(2014)
+
 x
+url <- purrr::discard(x, \(x) inherits(x, "xml_document")) |>
+  unlist(use.names = FALSE)
+
+x <- purrr::keep(x, \(x) inherits(x, "xml_document"))
+
+y <- rvest::read_html(url)
+
+x <- c(x, list(y))
 
 new <- parse_rvu_zip_links(x)
 new
