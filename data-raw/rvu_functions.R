@@ -1,3 +1,26 @@
+add_zip_link <- function(df) {
+  vctrs::vec_rbind(
+    get_pin("rvu_zip_links"),
+    df
+  ) |>
+    collapse::roworder(year, file) |>
+    collapse::mtt(
+      date_end = cheapr::if_else_(
+        cheapr::is_na(date_end),
+        cheapr::lag_(date_start, -1L) - 1L,
+        date_end
+      )
+    ) |>
+    collapse::colorder(
+      year,
+      file,
+      date_start,
+      date_end,
+      description,
+      url
+    )
+}
+
 download_rvu_zips <- function(zip_table, directory = "D:/MPFS Files Archive/") {
   zip_paths <- stringr::str_glue(
     "{directory}{zip_table$file_html}-{basename(zip_table$zip_link)}"

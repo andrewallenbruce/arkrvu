@@ -70,14 +70,12 @@ parse_rvu_zip_links <- function(x) {
         date_start,
         stringr::regex("\\d{4}$")
       )),
-      date_start = clock::date_build(year, mon, day),
-      size = fs::as_fs_bytes(size)
+      date_start = clock::date_build(year, mon, day)
     ) |>
     collapse::slt(
       year,
       file,
       date_start,
-      size,
       url,
       description
     ) |>
