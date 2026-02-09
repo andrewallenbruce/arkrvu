@@ -6,7 +6,7 @@ Used internally to populate and update the `rvu_zip_links` dataset.
 ## Usage
 
 ``` r
-download_rvu_zip_links(years)
+download_rvu_zip_links(years, urls)
 ```
 
 ## Arguments
