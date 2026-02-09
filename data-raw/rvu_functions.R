@@ -1,9 +1,16 @@
+try_read_html <- function(x) {
+  tryCatch(
+    rvest::read_html(x),
+    error = \(e) x
+  )
+}
+
 add_zip_link <- function(df) {
-  vctrs::vec_rbind(
+  fastplyr::f_bind_rows(
     get_pin("rvu_zip_links"),
     df
   ) |>
-    collapse::roworder(year, file) |>
+    fastplyr::f_arrange(year, date_start) |>
     collapse::mtt(
       date_end = cheapr::if_else_(
         cheapr::is_na(date_end),

@@ -77,10 +77,31 @@ download_rvu_zip_links <- function(years) {
 
   results <- purrr::map(
     url,
-    rvest::read_html,
+    \(x) {
+      tryCatch(
+        rvest::read_html(x),
+        error = function(e) {
+          x
+        }
+      )
+    },
     .progress = stringr::str_glue(
       "Downloading {length(url)} Pages"
     )
   )
+
+  url <- purrr::discard(results, \(x) inherits(x, "xml_document")) |>
+    unlist(use.names = FALSE)
+
+  if (length(url) > 0L) {
+    cli::cli_warn("{.pkg {length(url)}} URL(s) errored.")
+    return(
+      list(
+        success = purrr::keep(results, \(x) inherits(x, "xml_document")),
+        error = url
+      )
+    )
+  }
+
   return(results)
 }
