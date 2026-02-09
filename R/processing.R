@@ -21,7 +21,8 @@ parse_rvu_zip_links <- function(x) {
         rvest::html_elements(x, css = "a") |>
           rvest::html_attr("href") |>
           collapse::funique() |>
-          stringr::str_subset(".zip")
+          stringr::str_subset(".zip") |>
+          stringr::str_remove(stringr::fixed(" /apps/ama/license.asp?file="))
       ),
       info = rvest::html_elements(x, css = ".field") |>
         rvest::html_text2() |>

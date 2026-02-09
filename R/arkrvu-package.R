@@ -2,7 +2,6 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @importFrom collapse %!=%
-#' @importFrom collapse %==%
+#' @importFrom collapse %!=% %==% %iin% %!iin%
 ## usethis namespace: end
 NULL

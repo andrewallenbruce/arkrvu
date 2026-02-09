@@ -19,7 +19,7 @@ rvu_link_table <- function(years) {
     return(get_pin("rvu_link_table"))
   }
 
-  collapse::sbt(get_pin("rvu_link_table"), year %in% years)
+  collapse::sbt(get_pin("rvu_link_table"), year %iin% years)
 }
 
 #' @rdname link_tables
@@ -29,5 +29,5 @@ rvu_zip_links <- function(years) {
     return(get_pin("rvu_zip_links"))
   }
 
-  collapse::sbt(get_pin("rvu_zip_links"), year %in% years)
+  collapse::sbt(get_pin("rvu_zip_links"), year %iin% years)
 }

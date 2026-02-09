@@ -4,7 +4,7 @@
 \alias{download_rvu_zip_links}
 \title{Download RVU Zip File Link Table}
 \usage{
-download_rvu_zip_links(years)
+download_rvu_zip_links(years, urls)
 }
 \arguments{
 \item{years}{\verb{<int>} year(s) of RVU source file, available in \code{rvu_link_table()}}

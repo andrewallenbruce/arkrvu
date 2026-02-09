@@ -13,7 +13,10 @@
 #' @export
 download_rvu_link_table <- function() {
   x <- rvest::read_html(
-    "https://www.cms.gov/medicare/payment/fee-schedules/physician/pfs-relative-value-files"
+    paste0(
+      "https://www.cms.gov/medicare/payment/",
+      "fee-schedules/physician/pfs-relative-value-files"
+    )
   )
 
   table <- rvest::html_table(x) |>
@@ -24,8 +27,10 @@ download_rvu_link_table <- function() {
         year,
         stringr::regex("[12]{1}[0-9]{3}")
       )),
-      file = stringr::str_replace(file, stringr::fixed("File Name\n"), "") |>
-        stringr::str_squish()
+      file = stringr::str_squish(stringr::str_remove(
+        file,
+        stringr::fixed("File Name\n")
+      ))
     )
 
   urls <- rvest::html_elements(x, css = "a") |>
@@ -35,7 +40,10 @@ download_rvu_link_table <- function() {
 
   if (nrow(table) != length(urls)) {
     cli::cli_warn(
-      "Length of {.var urls} {.pkg ({length(urls)})} does not match number of {.var table} rows {.pkg ({nrow(table)})}."
+      paste(
+        "Length of {.var urls} {.pkg ({length(urls)})} does not match",
+        "number of {.var table} rows {.pkg ({nrow(table)})}."
+      )
     )
   }
 
@@ -60,48 +68,40 @@ download_rvu_link_table <- function() {
 #' @keywords internal
 #'
 #' @export
-download_rvu_zip_links <- function(years) {
-  if (missing(years)) {
-    cli::cli_abort("Argument {.arg years} is required.")
+download_rvu_zip_links <- function(years, urls) {
+  rlang::check_exclusive(years, urls)
+
+  if (!missing(years)) {
+    urls <- rvu_link_table(years)$url
   }
 
-  links <- rvu_link_table()
-
-  if (any(!years %in% collapse::funique(links$year))) {
-    cli::cli_abort(
-      "One or more {.arg years} not found in {.fn rvu_link_table}."
+  try_read_html <- function(x) {
+    rlang::try_fetch(
+      rvest::read_html(x),
+      error = function(cnd) x
     )
   }
 
-  url <- collapse::sbt(links, year %in% years) |> _$url
-
-  results <- purrr::map(
-    url,
-    \(x) {
-      tryCatch(
-        rvest::read_html(x),
-        error = function(e) {
-          x
-        }
-      )
-    },
+  res <- purrr::map(
+    urls,
+    try_read_html,
     .progress = stringr::str_glue(
-      "Downloading {length(url)} Pages"
+      "Downloading {length(urls)} Pages"
     )
   )
 
-  url <- purrr::discard(results, \(x) inherits(x, "xml_document")) |>
+  urls <- purrr::discard(res, function(x) inherits(x, "xml_document")) |>
     unlist(use.names = FALSE)
 
-  if (length(url) > 0L) {
-    cli::cli_warn("{.pkg {length(url)}} URL(s) errored.")
+  if (rlang::has_length(urls)) {
+    cli::cli_warn("{.pkg {length(urls)}} {.emph url{?s}} errored.")
     return(
       list(
-        success = purrr::keep(results, \(x) inherits(x, "xml_document")),
-        error = url
+        success = purrr::keep(res, function(x) inherits(x, "xml_document")),
+        error = urls
       )
     )
   }
 
-  return(results)
+  return(res)
 }
