@@ -2,6 +2,17 @@ source(here::here("data-raw", "data_pins.R"))
 
 x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
   collapse::mtt(
+    glob_days = cheapr::val_match(
+      glob_days,
+      "000" ~ "0",
+      "010" ~ "1",
+      "090" ~ "9",
+      "MMM" ~ "M",
+      "XXX" ~ "X",
+      "YYY" ~ "Y",
+      "ZZZ" ~ "Z",
+      .default = NA_character_
+    ),
     non_fac_indicator = cheapr::if_else_(
       cheapr::is_na(non_fac_indicator),
       0L,
@@ -58,10 +69,10 @@ saw_names <- c(
   "ind_non",
   "ind_fac",
   "pctc",
-  'glob',
+  "glob",
   "mult",
   "endo",
-  'podp',
+  "podp",
   "surg_bilat",
   "surg_asst",
   "surg_co",
@@ -69,13 +80,6 @@ saw_names <- c(
   "tot_rvu",
   "op_tot"
 )
-
-# hacksaw::count_split(
-#   x,
-#   fuimus::create_vec(colnames(x), enclose = c("c(", ")")) |>
-#     rlang::parse_expr() |>
-#     rlang::eval_tidy()
-# )
 
 saw <- x |>
   hacksaw::count_split(
@@ -104,49 +108,50 @@ saw <- x |>
   purrr::list_rbind(names_to = "column")
 
 collapse::rowbind(
-  collapse::sbt(saw, column != "tot_rvu"),
-  collapse::sbt(saw, column == "tot_rvu" & value == "0")
+  collapse::sbt(saw, column == "tot_rvu" & value == "0"),
+  collapse::sbt(saw, column == "endo" & !cheapr::is_na(value)) |>
+    collapse::fgroup_by(column) |>
+    collapse::fsummarise(n = sum(n)) |>
+    collapse::mtt(value = "1"),
+  collapse::sbt(saw, column != "tot_rvu" & column != "endo")
 ) |>
-  collapse::fcount(column, w = n, add = TRUE) |>
-  print(n = Inf)
-
-
-pprrvu$rvu23a_jan <- x$rvu24a_jan |>
-  dplyr::mutate(
-    date_start = make_date(year),
-    date_end = make_date(year, 3L, 31L),
-    .before = 1
-  )
-
-pprrvu$rvu23b_apr <- pprrvu$rvu23b_apr |>
-  dplyr::mutate(
-    date_start = clock::date_build(year, 4, 1, invalid = "previous"),
-    date_end = clock::date_build(year, 6, 30, invalid = "previous"),
-    .before = 1
-  )
-
-pprrvu$rvu23c_jul <- pprrvu$rvu23c_jul |>
-  dplyr::mutate(
-    date_start = clock::date_build(year, 7, 1, invalid = "previous"),
-    date_end = clock::date_build(year, 9, 30, invalid = "previous"),
-    .before = 1
-  )
-
-pprrvu$rvu23d_oct <- pprrvu$rvu23d_oct |>
-  dplyr::mutate(
-    date_start = clock::date_build(year, 10, 1, invalid = "previous"),
-    date_end = clock::date_build(year, 12, 31, invalid = "previous"),
-    .before = 1
-  )
-
-pprrvu <- pprrvu |>
-  purrr::list_rbind(names_to = "source_file")
-
-#--- PINS ####
-pin_update(
-  pprrvu,
-  name = stringr::str_glue("pprrvu_{year}") |> as.character(),
-  title = stringr::str_glue("PPRRVU {year}") |> as.character()
-)
+  # collapse::fcount(column, w = n, add = TRUE) |>
+  collapse::mtt(P = n / 18499) |>
+  gt::gt(groupname_col = "column", row_group_as_column = TRUE) |>
+  gt::tab_header(title = "RVU Overview") |>
+  gt::fmt_integer(columns = "n") |>
+  gt::fmt_percent(columns = "P", decimals = 0) |>
+  gt::cols_label(
+    value = "Indicator",
+    n = "N"
+  ) |>
+  gt::opt_table_font(
+    font = list(
+      gt::google_font(name = "IBM Plex Sans"),
+      "Helvetica",
+      "Arial",
+      "sans-serif"
+    )
+  ) |>
+  gt::data_color(
+    columns = n,
+    rows = column == "mod",
+    fn = scales::col_numeric(
+      palette = "Greens",
+      domain = c(0, 16323),
+      na.color = "gray"
+    )
+  ) |>
+  gt::data_color(
+    columns = n,
+    rows = column == "stat",
+    fn = scales::col_numeric(
+      palette = "Blues",
+      domain = c(0, 8975),
+      na.color = "gray"
+    )
+  ) |>
+  gt::opt_vertical_padding(scale = 0.65) |>
+  gt::sub_missing(missing_text = "-")
 
 list_pins()

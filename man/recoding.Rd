@@ -2,6 +2,7 @@
 % Please edit documentation in R/recode.R
 \name{recoding}
 \alias{recoding}
+\alias{recode_mod}
 \alias{recode_glob}
 \alias{recode_team}
 \alias{recode_bilat}
@@ -14,6 +15,8 @@
 \alias{recode_podp}
 \title{Recoding Indicators}
 \usage{
+recode_mod(x)
+
 recode_glob(x)
 
 recode_team(x)
@@ -37,7 +40,7 @@ recode_podp(x)
 \arguments{
 \item{x}{\verb{<chr>} vector of indicators}
 
-\item{which}{\verb{<chr>} name of recoding to perform; one of \code{"name"} or \code{"description"}}
+\item{which}{\verb{<chr>} which recoding to perform; one of \code{"name"} or \code{"description"}}
 }
 \value{
 \verb{<chr>} vector of descriptions
@@ -81,6 +84,9 @@ Multiple Procedure indicator of \code{4}.
 }
 
 \examples{
+# Modifier
+recode_mod(c("26", "TC", "53", NA))
+
 # Global Days
 recode_glob(c("000", "010", "090", "MMM", "XXX", "YYY", "ZZZ"))
 
@@ -91,12 +97,22 @@ recode_team(c(0:2, "9"))
 recode_bilat(c(0:3, "9"))
 
 # Multiple Procedure (Mod 51)
-recode_mult(as.character(0:9))
+recode_mult(c(0:7, "9"))
 
 # Co-Surgeon (Mod 62)
-recode_cosurg(c(0:3, "9"))
+recode_cosurg(c(0:2, "9"))
 
 # Assistant Surgery (Mods 80-82, AS)
 recode_asst(c(0:2, "9"))
+
+# Diagnostic Imaging Reduction (mult == `4`)
+recode_diag(c("88", "99"))
+
+# PC/TC Indicator
+recode_pctc(c(0:8, "9"))
+
+# Status Codes
+recode_status(LETTERS)
+recode_status(LETTERS, "description")
 }
 \concept{recode}

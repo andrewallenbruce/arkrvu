@@ -29,11 +29,14 @@
 #'
 #' @param x `<chr>` vector of indicators
 #'
-#' @param which `<chr>` name of recoding to perform; one of `"name"` or `"description"`
+#' @param which `<chr>` which recoding to perform; one of `"name"` or `"description"`
 #'
 #' @returns `<chr>` vector of descriptions
 #'
 #' @examples
+#' # Modifier
+#' recode_mod(c("26", "TC", "53", NA))
+#'
 #' # Global Days
 #' recode_glob(c("000", "010", "090", "MMM", "XXX", "YYY", "ZZZ"))
 #'
@@ -44,14 +47,38 @@
 #' recode_bilat(c(0:3, "9"))
 #'
 #' # Multiple Procedure (Mod 51)
-#' recode_mult(as.character(0:9))
+#' recode_mult(c(0:7, "9"))
 #'
 #' # Co-Surgeon (Mod 62)
-#' recode_cosurg(c(0:3, "9"))
+#' recode_cosurg(c(0:2, "9"))
 #'
 #' # Assistant Surgery (Mods 80-82, AS)
 #' recode_asst(c(0:2, "9"))
+#'
+#' # Diagnostic Imaging Reduction (mult == `4`)
+#' recode_diag(c("88", "99"))
+#'
+#' # PC/TC Indicator
+#' recode_pctc(c(0:8, "9"))
+#'
+#' # Status Codes
+#' recode_status(LETTERS)
+#' recode_status(LETTERS, "description")
 NULL
+
+#' @family recode
+#' @rdname recoding
+#' @export
+recode_mod <- function(x) {
+  cheapr::val_match(
+    x,
+    "26" ~ "Professional Component",
+    "TC" ~ "Technical Component",
+    "53" ~ "Discontinued Procedure",
+    .default = NA_character_
+    # NA_character_ ~ "Global Service"
+  )
+}
 
 #' @family recode
 #' @rdname recoding
