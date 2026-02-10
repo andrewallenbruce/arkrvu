@@ -70,12 +70,12 @@ saw_names <- c(
   "op_tot"
 )
 
-hacksaw::count_split(
-  x,
-  fuimus::create_vec(colnames(x), enclose = c("c(", ")")) |>
-    rlang::parse_expr() |>
-    rlang::eval_tidy()
-)
+# hacksaw::count_split(
+#   x,
+#   fuimus::create_vec(colnames(x), enclose = c("c(", ")")) |>
+#     rlang::parse_expr() |>
+#     rlang::eval_tidy()
+# )
 
 saw <- x |>
   hacksaw::count_split(
@@ -107,6 +107,7 @@ collapse::rowbind(
   collapse::sbt(saw, column != "tot_rvu"),
   collapse::sbt(saw, column == "tot_rvu" & value == "0")
 ) |>
+  collapse::fcount(column, w = n, add = TRUE) |>
   print(n = Inf)
 
 
