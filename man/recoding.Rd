@@ -12,8 +12,7 @@
 \alias{recode_diag}
 \alias{recode_pctc}
 \alias{recode_status}
-\alias{recode_podp}
-\title{Recoding Indicators}
+\title{Recode Indicators}
 \usage{
 recode_mod(x)
 
@@ -34,8 +33,6 @@ recode_diag(x)
 recode_pctc(x)
 
 recode_status(x, which = c("name", "description"))
-
-recode_podp(x)
 }
 \arguments{
 \item{x}{\verb{<chr>} vector of indicators}
@@ -46,7 +43,7 @@ recode_podp(x)
 \verb{<chr>} vector of descriptions
 }
 \description{
-Recoding Indicators
+Recode Indicators
 }
 \section{Multiple Surgery}{
 
@@ -85,7 +82,7 @@ Multiple Procedure indicator of \code{4}.
 
 \examples{
 # Modifier
-recode_mod(c("26", "TC", "53", NA))
+recode_mod(c("26", "TC", "53"))
 
 # Global Days
 recode_glob(c("000", "010", "090", "MMM", "XXX", "YYY", "ZZZ"))
@@ -115,4 +112,3 @@ recode_pctc(c(0:8, "9"))
 recode_status(LETTERS)
 recode_status(LETTERS, "description")
 }
-\concept{recode}

@@ -16,10 +16,14 @@ place_of_srvc <- northstar::search_pos() |>
       NA_character_,
       pos_description
     )
-  )
+  ) |>
+  fastplyr::as_tbl()
 
-class(place_of_srvc) <- c("tbl_df", "tbl", "data.frame")
+place_of_srvc <- cheapr::sset(
+  place_of_srvc,
+  cheapr::row_na_counts(place_of_srvc) == 0L
+)
 
-constructive::construct(place_of_srvc, constructive::opts_tbl_df("tribble"))
+# constructive::construct(place_of_srvc, constructive::opts_tbl_df("tribble"))
 
 usethis::use_data(place_of_srvc, overwrite = TRUE)

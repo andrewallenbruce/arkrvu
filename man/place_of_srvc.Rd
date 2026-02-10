@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{place_of_srvc}}{
 
-A data frame with 99 rows and 4 columns:
+A data frame with 52 rows and 4 columns:
 \describe{
 \item{pos_code}{Place of Service Code}
 \item{pos_type}{Place of Service Type}

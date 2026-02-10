@@ -4,23 +4,30 @@
 \alias{link_tables}
 \alias{rvu_link_table}
 \alias{rvu_zip_links}
-\title{RVU File Information Tables}
+\alias{conversion_factor}
+\title{RVU Information Tables}
 \usage{
 rvu_link_table(years)
 
 rvu_zip_links(years)
+
+conversion_factor(dos)
 }
 \arguments{
 \item{years}{\verb{<int>} RVU source file year}
+
+\item{dos}{\verb{<Date>} Date of Service, in the form YYYY-MM-DD}
 }
 \value{
-\verb{<tibble>} containing information about RVU source files
+\verb{<tibble>} containing RVU information
 }
 \description{
-RVU File Information Tables
+RVU Information Tables
 }
 \examples{
 rvu_link_table()
-
 rvu_zip_links()
+conversion_factor("2023-03-03")
+conversion_factor(make_date(2018:2025))
+conversion_factor()
 }

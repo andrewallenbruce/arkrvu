@@ -1,6 +1,22 @@
 # https://www.cms.gov/sample-pfs-searches
 # https://www.cms.gov/pfs-quick-reference-search-guide
 
+collapse::join(
+  get_pin("rvu_link_table") |> collapse::frename(url_link = url),
+  get_pin("rvu_zip_links") |> collapse::frename(url_zip = url)
+) |>
+  collapse::colorder(
+    year,
+    file,
+    date_start,
+    date_end,
+    description,
+    url_link,
+    url_zip
+  ) |>
+  print(n = Inf)
+
+
 rvu_24 <- tibble::tibble(
   file = c("RVU24A", "RVU24AR", "RVU24B", "RVU24C"),
   source = c("rvu24a_jan", "rvu24ar_jan", "rvu24b_apr", "rvu24c_jul"),
@@ -82,22 +98,6 @@ vctrs::vec_rbind(
 get_pin("pprrvu_2022") |>
   collapse::fcount(source_file, date_start, date_end) |>
   constructive::construct()
-
-#######################################
-d <- get_pin("pprrvu_2022") |> collapse::ss(j = c(4:34))
-
-d$did <- vctrs::vec_duplicate_id(d)
-
-vctrs::vec_slice(d, d$did == 2549) |> dplyr::glimpse()
-
-dupes <- d[
-  d$did |>
-    vctrs::vec_count() |>
-    tibble::as_tibble() |>
-    dplyr::filter(count == 4) |>
-    _$key,
-] |>
-  _$hcpcs
 
 get_pin("pprrvu_2022") |>
   collapse::ss(j = c(1, 4:34)) |>

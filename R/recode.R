@@ -1,4 +1,4 @@
-#' Recoding Indicators
+#' Recode Indicators
 #'
 #' @name recoding
 #'
@@ -35,7 +35,7 @@
 #'
 #' @examples
 #' # Modifier
-#' recode_mod(c("26", "TC", "53", NA))
+#' recode_mod(c("26", "TC", "53"))
 #'
 #' # Global Days
 #' recode_glob(c("000", "010", "090", "MMM", "XXX", "YYY", "ZZZ"))
@@ -66,7 +66,6 @@
 #' recode_status(LETTERS, "description")
 NULL
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_mod <- function(x) {
@@ -80,7 +79,6 @@ recode_mod <- function(x) {
   )
 }
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_glob <- function(x) {
@@ -97,7 +95,6 @@ recode_glob <- function(x) {
   )
 }
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_team <- function(x) {
@@ -111,7 +108,6 @@ recode_team <- function(x) {
   )
 }
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_bilat <- function(x) {
@@ -126,7 +122,6 @@ recode_bilat <- function(x) {
   )
 }
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_mult <- function(x) {
@@ -145,7 +140,6 @@ recode_mult <- function(x) {
   )
 }
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_cosurg <- function(x) {
@@ -159,7 +153,6 @@ recode_cosurg <- function(x) {
   )
 }
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_asst <- function(x) {
@@ -173,7 +166,6 @@ recode_asst <- function(x) {
   )
 }
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_diag <- function(x) {
@@ -185,7 +177,6 @@ recode_diag <- function(x) {
   )
 }
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_pctc <- function(x) {
@@ -205,7 +196,6 @@ recode_pctc <- function(x) {
   )
 }
 
-#' @family recode
 #' @rdname recoding
 #' @export
 recode_status <- function(x, which = c("name", "description")) {
@@ -251,28 +241,5 @@ recode_status <- function(x, which = c("name", "description")) {
       "X" ~ "Not in statutory definition of Physician Services. No RVUs or payment amounts, no payment made.",
       .default = NA_character_
     )
-  )
-}
-
-#' @family recode
-#' @rdname recoding
-#' @export
-recode_podp <- function(x) {
-  cheapr::val_match(
-    x,
-    "01" ~ "Must be performed under General supervision",
-    "02" ~ "Must be performed under Direct supervision",
-    "03" ~ "Must be performed under Personal supervision",
-    "04" ~ "Must be performed under General supervision unless performed by Qualified, Independent Psychologist or Clinical Psychologist",
-    "05" ~ "Must be performed under General supervision unless performed by Qualified Audiologist",
-    "06" ~ "Must be performed by Physician or Qualified Electrophysiological Clinical Specialist (ABPTS-certified) permitted to provide procedure under State law",
-    "21" ~ "May be performed by Certified Technician under General supervision; otherwise, Direct supervision",
-    "22" ~ "May be performed by Technician with online real-time Physician contact",
-    "66" ~ "May be performed by Physician or ABPTS-certified physical therapist with certification in procedure",
-    "6A" ~ "In addition to Level 66 rule, ABPTS-certified PT may supervise another PT, but only ABPTS-certified PT may bill",
-    "77" ~ "Must be performed by either ABPTS-certified PT, Uncertified PT under Direct supervision, or Certified Technician under General supervision",
-    "7A" ~ "In addition to Level 77 rule, ABPTS-certified PT may supervise another PT, but only ABPTS-certified PT may bill",
-    "09" ~ "Concept does not apply",
-    .default = NA_character_
   )
 }
