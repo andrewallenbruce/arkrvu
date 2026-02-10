@@ -1,5 +1,10 @@
 # Changelog
 
+## arkrvu 0.0.1.9026
+
+- added
+  [`recode_mod()`](https://andrewallenbruce.github.io/arkrvu/reference/recoding.md)
+
 ## arkrvu 0.0.1.9025
 
 - added recoding helpers

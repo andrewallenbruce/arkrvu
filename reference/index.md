@@ -11,7 +11,8 @@
   : Make a date object
 - [`raw_source()`](https://andrewallenbruce.github.io/arkrvu/reference/raw_source.md)
   : RVU Raw Source Files
-- [`recode_glob()`](https://andrewallenbruce.github.io/arkrvu/reference/recoding.md)
+- [`recode_mod()`](https://andrewallenbruce.github.io/arkrvu/reference/recoding.md)
+  [`recode_glob()`](https://andrewallenbruce.github.io/arkrvu/reference/recoding.md)
   [`recode_team()`](https://andrewallenbruce.github.io/arkrvu/reference/recoding.md)
   [`recode_bilat()`](https://andrewallenbruce.github.io/arkrvu/reference/recoding.md)
   [`recode_mult()`](https://andrewallenbruce.github.io/arkrvu/reference/recoding.md)
