@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9026
+
+* added `recode_mod()`
+
+
 # arkrvu 0.0.1.9025
 
 * added recoding helpers
