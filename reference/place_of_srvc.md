@@ -12,7 +12,7 @@ place_of_srvc
 
 ### `place_of_srvc`
 
-A data frame with 99 rows and 4 columns:
+A data frame with 52 rows and 4 columns:
 
 - pos_code:
 

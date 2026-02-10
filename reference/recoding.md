@@ -1,6 +1,6 @@
-# Recoding Indicators
+# Recode Indicators
 
-Recoding Indicators
+Recode Indicators
 
 ## Usage
 
@@ -24,8 +24,6 @@ recode_diag(x)
 recode_pctc(x)
 
 recode_status(x, which = c("name", "description"))
-
-recode_podp(x)
 ```
 
 ## Arguments
@@ -79,9 +77,8 @@ a Multiple Procedure indicator of `4`.
 
 ``` r
 # Modifier
-recode_mod(c("26", "TC", "53", NA))
+recode_mod(c("26", "TC", "53"))
 #> [1] "Professional Component" "Technical Component"    "Discontinued Procedure"
-#> [4] NA                      
 
 # Global Days
 recode_glob(c("000", "010", "090", "MMM", "XXX", "YYY", "ZZZ"))
