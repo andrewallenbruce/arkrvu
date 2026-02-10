@@ -1,11 +1,40 @@
-source(here::here("data-raw", "pins_functions.R"))
-source(here::here("data-raw", "rvu_functions.R"))
+source(here::here("data-raw", "data_pins.R"))
 
-year <- 2020
-link_table <- get_pin("rvu_link_table") # download_links()
-rvu_pages <- download_rvu_pages(link_table, year = year)
-zip_table <- process_rvu_pages(rvu_pages, link_table, year = year)
-zip_paths <- download_rvu_zips(zip_table, directory = "D:/MPFS Files Archive/")
+download_rvu_zips <- function(years, directory) {
+  urls <- rvu_zip_links(years)$url
+  file <- rvu_zip_links(years)$file
+
+  dir <- tempdir()
+  paths <- stringr::str_glue("{dir}{file}.zip")
+
+  curl::multi_download(
+    urls = urls,
+    destfile = paths,
+    resume = TRUE,
+    multi_timeout = Inf
+  )
+
+  csvs <- paths |>
+    purrr::map(zip::zip_list) |>
+    purrr::set_names(basename(paths)) |>
+    purrr::list_rbind(names_to = "file") |>
+    dplyr::tibble() |>
+    dplyr::mutate(size = fs::as_fs_bytes(uncompressed_size)) |>
+    dplyr::select(
+      file,
+      sub_file = filename,
+      timestamp,
+      size
+    ) |>
+    dplyr::filter(grepl(".csv", sub_file)) |>
+    dplyr::arrange(sub_file)
+
+  purrr::pwalk(list(zipfile = paths, exdir = dir), zip::unzip)
+
+  csvs <- fs::dir_ls(dir, glob = "*.csv")
+  unlink(dir, recursive = TRUE)
+}
+
 zip_list <- unpack_rvu_zips(
   zip_paths,
   directory = "D:/MPFS Files Archive/unzipped/"

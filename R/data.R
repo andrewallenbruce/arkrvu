@@ -13,3 +13,17 @@
 #' }
 #' @keywords internal
 "conv_fct"
+
+#' Place of Service
+#'
+#' @format ## `place_of_srvc`
+#' A data frame with 99 rows and 4 columns:
+#' \describe{
+#'   \item{pos_code}{Place of Service Code}
+#'   \item{pos_type}{Place of Service Type}
+#'   \item{pos_name}{Place of Service Name}
+#'   \item{pos_description}{Place of Service Description}
+#'   ...
+#' }
+#' @keywords internal
+"place_of_srvc"

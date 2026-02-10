@@ -5,7 +5,8 @@ conv_fct <- tibble::tibble(
     make_date(2010L, 6L, 1L),
     make_date(2015L, 7L, 1L),
     make_date(2024L, 3L, 9L)
-  ),
+  ) |>
+    sort(),
   cf = c(
     31.0010,
     NA_real_,
@@ -47,7 +48,6 @@ conv_fct <- tibble::tibble(
 )
 
 conv_fct <- conv_fct |>
-  collapse::roworder(date_start) |>
   collapse::mtt(
     date_end = cheapr::lag_(date_start, -1L) - 1L,
     date_end = cheapr::val_match(

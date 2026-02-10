@@ -1,5 +1,7 @@
 source(here::here("data-raw", "data_pins.R"))
-source(here::here("data-raw", "rvu_functions.R"))
+
+# Only need 2012 - Present
+# https://www.novitas-solutions.com/webcenter/portal/MedicareJH/FeeLookup
 
 x <- download_rvu_zip_links(years = 2009)
 x
