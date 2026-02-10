@@ -1,5 +1,11 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9024
+
+* added `place_of_srvc` internal dataset
+* updated `conv_fct` internal dataset
+
+
 # arkrvu 0.0.1.9023
 
 * added 2009-2010 to `rvu_zip_links`
