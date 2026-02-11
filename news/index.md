@@ -1,5 +1,10 @@
 # Changelog
 
+## arkrvu 0.0.1.9029
+
+- refactored
+  [`hcpcs_category()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+
 ## arkrvu 0.0.1.9028
 
 - added `hcpcs/cpt_level()` & `hcpcs/cpt_category()`

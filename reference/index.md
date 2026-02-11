@@ -2,16 +2,16 @@
 
 ## All functions
 
-- [`is_hcpcs()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
-  [`is_hcpcs_level_I()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
-  [`is_hcpcs_level_II()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
-  [`is_cpt_category_I()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
-  [`is_cpt_category_II()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
-  [`is_cpt_category_III()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
-  [`hcpcs_category()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
-  [`cpt_category()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
-  [`hcpcs_level()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
-  [`cpt_level()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs_checks.md)
+- [`is_hcpcs()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`is_hcpcs_level_I()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`is_hcpcs_level_II()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`is_cpt_category_I()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`is_cpt_category_II()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`is_cpt_category_III()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`hcpcs_category()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`cpt_category()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`hcpcs_level()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`cpt_level()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
   : Validate HCPCS Codes
 - [`rvu_link_table()`](https://andrewallenbruce.github.io/arkrvu/reference/link_tables.md)
   [`rvu_zip_links()`](https://andrewallenbruce.github.io/arkrvu/reference/link_tables.md)
