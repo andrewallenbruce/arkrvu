@@ -111,7 +111,7 @@ check_nchars <- function(
 #' @returns `<lgl>` `TRUE` if valid, otherwise `FALSE`
 #'
 #' @examples
-#' x <- c('T1503', 'G0478', '81301', '69641', '0583F', '0779T', NA)
+#' x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA)
 #'
 #' is_hcpcs(x)
 #'
@@ -124,16 +124,24 @@ check_nchars <- function(
 #' is_cpt_category_I(x)
 #' is_cpt_category_II(x)
 #' is_cpt_category_III(x)
+#'
+#' fastplyr::new_tbl(
+#'    x = c("39503", "99215", "99140", "69990", "70010",
+#'          "0222U", "V5299", "7010F", "0074T"),
+#'    level = hcpcs_level(x)) |>
+#' collapse::mtt(
+#'     level = cheapr::if_else_(level == "CPT", cpt_level(x), level),
+#'     category = cheapr::if_else_(level != "HCPCS II", cpt_category(x), hcpcs_category(x)))
 NULL
 
 #' @rdname hcpcs_checks
 #' @export
 is_hcpcs <- function(hcpcs) {
   check_nchars(hcpcs)
-
   grepl(
     "^[A-CEGHJ-MP-V0-9]\\d{3}[AFMTU0-9]$",
-    toupper(hcpcs),
+    hcpcs,
+    ignore.case = TRUE,
     perl = TRUE
   )
 }
@@ -141,30 +149,109 @@ is_hcpcs <- function(hcpcs) {
 #' @rdname hcpcs_checks
 #' @export
 is_hcpcs_level_I <- function(hcpcs) {
-  is_hcpcs(hcpcs) & grepl("^\\d{4}[AFMTU0-9]$", toupper(hcpcs), perl = TRUE)
+  is_hcpcs(hcpcs) &
+    grepl("^\\d{4}[AFMTU0-9]$", hcpcs, ignore.case = TRUE, perl = TRUE)
 }
 
 #' @rdname hcpcs_checks
 #' @export
 is_hcpcs_level_II <- function(hcpcs) {
-  is_hcpcs(hcpcs) & grepl("^[A-CEGHJ-MP-V]\\d{4}$", toupper(hcpcs), perl = TRUE)
+  is_hcpcs(hcpcs) &
+    grepl("^[A-CEGHJ-MP-V]\\d{4}$", hcpcs, ignore.case = TRUE, perl = TRUE)
 }
 
 #' @rdname hcpcs_checks
 #' @export
 is_cpt_category_I <- function(hcpcs) {
   is_hcpcs_level_I(hcpcs) &
-    grepl("^\\d{4}[AMU0-9]$", toupper(hcpcs), perl = TRUE)
+    grepl("^\\d{4}[AMU0-9]$", hcpcs, ignore.case = TRUE, perl = TRUE)
 }
 
 #' @rdname hcpcs_checks
 #' @export
 is_cpt_category_II <- function(hcpcs) {
-  is_hcpcs_level_I(hcpcs) & grepl("^\\d{4}[F]$", toupper(hcpcs), perl = TRUE)
+  is_hcpcs_level_I(hcpcs) &
+    grepl("^\\d{4}[F]$", hcpcs, ignore.case = TRUE, perl = TRUE)
 }
 
 #' @rdname hcpcs_checks
 #' @export
 is_cpt_category_III <- function(hcpcs) {
-  is_hcpcs_level_I(hcpcs) & grepl("^\\d{4}[T]$", toupper(hcpcs), perl = TRUE)
+  is_hcpcs_level_I(hcpcs) &
+    grepl("^\\d{4}[T]$", hcpcs, ignore.case = TRUE, perl = TRUE)
+}
+
+cpt <- list(
+  EM = as.character(99202:99499),
+  ANES = c(stringr::str_pad(100:1999, width = 5, pad = "0"), 99100:99140),
+  SURG = as.character(10004:69990),
+  RAD = as.character(70010:79999),
+  PATH = c(
+    80047:89398,
+    stringr::str_pad(paste0(1:222, "U"), width = 5, pad = "0")
+  ),
+  MED = as.character(c(90281:99199, 99500:99607))
+)
+
+#' @rdname hcpcs_checks
+#' @export
+hcpcs_category <- function(hcpcs) {
+  cheapr::val_match(
+    substr(hcpcs, 1L, 1L),
+    "A" ~ "Transport/Med-Surg Supply/Misc-Exp",
+    "B" ~ "Enteral/Parenteral Therapy",
+    "C" ~ "Temporary (Hospital OPPS)",
+    "D" ~ "Dental",
+    "E" ~ "DME",
+    "G" ~ "Temporary (Professional Services)",
+    "H" ~ "Rehabilitative",
+    "J" ~ "Non-Oral/Chemotherapy Drugs",
+    "K" ~ "Temporary (DME Regional Carriers)",
+    "L" ~ "Orthotic/Prosthetic",
+    "M" ~ "Medical",
+    "P" ~ "Path/Lab",
+    "Q" ~ "Temporary Codes",
+    "R" ~ "Diagnostic Radiology",
+    "S" ~ "Private Payer",
+    "T" ~ "State Medicaid Agency",
+    "V" ~ "Vision/Hearing",
+    .default = NA_character_
+  )
+}
+
+#' @rdname hcpcs_checks
+#' @export
+cpt_category <- function(hcpcs) {
+  cheapr::case(
+    hcpcs %in_% cpt$EM ~ "E&M",
+    hcpcs %in_% cpt$ANES ~ "Anesthesiology",
+    hcpcs %in_% cpt$SURG ~ "Surgery",
+    hcpcs %in_% cpt$RAD ~ "Radiology",
+    hcpcs %in_% cpt$PATH ~ "Path/Lab",
+    hcpcs %in_% cpt$MED ~ "Medicine",
+    endsWith(hcpcs, "F") ~ "Performance Measurement",
+    endsWith(hcpcs, "T") ~ "New Technology",
+    .default = NA_character_
+  )
+}
+
+#' @rdname hcpcs_checks
+#' @export
+hcpcs_level <- function(hcpcs) {
+  cheapr::case(
+    is_hcpcs_level_I(hcpcs) ~ "CPT",
+    is_hcpcs_level_II(hcpcs) ~ "HCPCS II",
+    .default = NA_character_
+  )
+}
+
+#' @rdname hcpcs_checks
+#' @export
+cpt_level <- function(hcpcs) {
+  cheapr::case(
+    is_cpt_category_I(hcpcs) ~ "CPT I",
+    is_cpt_category_II(hcpcs) ~ "CPT II",
+    is_cpt_category_III(hcpcs) ~ "CPT III",
+    .default = NA_character_
+  )
 }
