@@ -1,6 +1,9 @@
-#' Check that input is 5 characters long
-#' @param x `<chr>` string
-#' @inheritParams rlang::args_error_context
+#' @noRd
+grepl_ <- function(x, pattern) {
+  grepl(pattern, x, ignore.case = TRUE, perl = TRUE)
+}
+
+# @inheritParams rlang::args_error_context
 #' @noRd
 check_nchars <- function(
   x,
@@ -104,7 +107,7 @@ check_nchars <- function(
 #'
 #' @source [AMA Category III Codes](https://www.ama-assn.org/practice-management/cpt/category-iii-codes)
 #'
-#' @name hcpcs_checks
+#' @name hcpcs
 #'
 #' @param hcpcs `<chr>` vector of possible HCPCS codes
 #'
@@ -134,66 +137,44 @@ check_nchars <- function(
 #'     category = cheapr::if_else_(level != "HCPCS II", cpt_category(x), hcpcs_category(x)))
 NULL
 
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 is_hcpcs <- function(hcpcs) {
-  check_nchars(hcpcs)
-  grepl(
-    "^[A-CEGHJ-MP-V0-9]\\d{3}[AFMTU0-9]$",
-    hcpcs,
-    ignore.case = TRUE,
-    perl = TRUE
-  )
+  grepl_(hcpcs, "^[A-CEGHJ-MP-V0-9]\\d{3}[AFMTU0-9]$")
 }
 
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 is_hcpcs_level_I <- function(hcpcs) {
-  is_hcpcs(hcpcs) &
-    grepl("^\\d{4}[AFMTU0-9]$", hcpcs, ignore.case = TRUE, perl = TRUE)
+  is_hcpcs(hcpcs) & grepl_(hcpcs, "^\\d{4}[AFMTU0-9]$")
 }
 
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 is_hcpcs_level_II <- function(hcpcs) {
-  is_hcpcs(hcpcs) &
-    grepl("^[A-CEGHJ-MP-V]\\d{4}$", hcpcs, ignore.case = TRUE, perl = TRUE)
+  is_hcpcs(hcpcs) & grepl_(hcpcs, "^[A-CEGHJ-MP-V]\\d{4}$")
 }
 
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 is_cpt_category_I <- function(hcpcs) {
-  is_hcpcs_level_I(hcpcs) &
-    grepl("^\\d{4}[AMU0-9]$", hcpcs, ignore.case = TRUE, perl = TRUE)
+  is_hcpcs_level_I(hcpcs) & grepl_(hcpcs, "^\\d{4}[AMU0-9]$")
 }
 
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 is_cpt_category_II <- function(hcpcs) {
   is_hcpcs_level_I(hcpcs) &
     grepl("^\\d{4}[F]$", hcpcs, ignore.case = TRUE, perl = TRUE)
 }
 
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 is_cpt_category_III <- function(hcpcs) {
-  is_hcpcs_level_I(hcpcs) &
-    grepl("^\\d{4}[T]$", hcpcs, ignore.case = TRUE, perl = TRUE)
+  is_hcpcs_level_I(hcpcs) & grepl_(hcpcs, "^\\d{4}[T]$")
 }
 
-cpt <- list(
-  EM = as.character(99202:99499),
-  ANES = c(stringr::str_pad(100:1999, width = 5, pad = "0"), 99100:99140),
-  SURG = as.character(10004:69990),
-  RAD = as.character(70010:79999),
-  PATH = c(
-    80047:89398,
-    stringr::str_pad(paste0(1:222, "U"), width = 5, pad = "0")
-  ),
-  MED = as.character(c(90281:99199, 99500:99607))
-)
-
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 hcpcs_category <- function(hcpcs) {
   cheapr::val_match(
@@ -219,23 +200,29 @@ hcpcs_category <- function(hcpcs) {
   )
 }
 
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 cpt_category <- function(hcpcs) {
   cheapr::case(
-    hcpcs %in_% cpt$EM ~ "E&M",
-    hcpcs %in_% cpt$ANES ~ "Anesthesiology",
-    hcpcs %in_% cpt$SURG ~ "Surgery",
-    hcpcs %in_% cpt$RAD ~ "Radiology",
-    hcpcs %in_% cpt$PATH ~ "Path/Lab",
-    hcpcs %in_% cpt$MED ~ "Medicine",
+    grepl_(hcpcs, "^99[2-4][0-9]{2}$") ~ "E&M",
+    grepl_(hcpcs, "^[09]{2}[0-9]{3}$") ~ "Anesthesiology",
+    grepl_(hcpcs, "^[1-6][0-9]{4}$") ~ "Surgery",
+    grepl_(hcpcs, "^7[0-9]{4}$") ~ "Radiology",
+    grepl_(hcpcs, "^8[0-9]{4}$") ~ "Pathology",
+    grepl_(hcpcs, "^9[0-9]{4}$") ~ "Medicine", # INCORRECT
+    endsWith(hcpcs, "A") ~ "Immunization",
     endsWith(hcpcs, "F") ~ "Performance Measurement",
+    endsWith(
+      hcpcs,
+      "M"
+    ) ~ "Multianalyte Assay With Algorithmic Analysis",
     endsWith(hcpcs, "T") ~ "New Technology",
+    grepl_(hcpcs, "^0[012][0-9]{2}U$") ~ "Proprietary Laboratory Analysis",
     .default = NA_character_
   )
 }
 
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 hcpcs_level <- function(hcpcs) {
   cheapr::case(
@@ -245,7 +232,7 @@ hcpcs_level <- function(hcpcs) {
   )
 }
 
-#' @rdname hcpcs_checks
+#' @rdname hcpcs
 #' @export
 cpt_level <- function(hcpcs) {
   cheapr::case(

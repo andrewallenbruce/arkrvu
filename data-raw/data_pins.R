@@ -19,6 +19,8 @@ delete_pins <- function(pin_names) {
   pins::pin_delete(board, names = pin_names)
 }
 
+bin_ <- function(x) cheapr::if_else_(cheapr::is_na(x), 0L, 1L)
+
 add_zip_link <- function(df) {
   fastplyr::f_bind_rows(
     get_pin("rvu_zip_links"),

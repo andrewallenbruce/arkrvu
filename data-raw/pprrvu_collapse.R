@@ -13,21 +13,9 @@ x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
       "ZZZ" ~ "Z",
       .default = NA_character_
     ),
-    non_fac_indicator = cheapr::if_else_(
-      cheapr::is_na(non_fac_indicator),
-      0L,
-      1L
-    ),
-    facility_indicator = cheapr::if_else_(
-      cheapr::is_na(facility_indicator),
-      0L,
-      1L
-    ),
-    not_used_for_medicare_payment = cheapr::if_else_(
-      cheapr::is_na(not_used_for_medicare_payment),
-      0L,
-      1L
-    ),
+    non_fac_indicator = bin_(non_fac_indicator),
+    facility_indicator = bin_(facility_indicator),
+    not_used_for_medicare_payment = bin_(not_used_for_medicare_payment),
     tot_op = pre_op + intra_op + post_op,
     tot_rvu = non_facility_total + facility_total
   ) |>
@@ -116,7 +104,7 @@ collapse::rowbind(
   collapse::sbt(saw, column != "tot_rvu" & column != "endo")
 ) |>
   # collapse::fcount(column, w = n, add = TRUE) |>
-  collapse::mtt(P = n / 18499) |>
+  collapse::mtt(P = n / 18499L) |>
   gt::gt(groupname_col = "column", row_group_as_column = TRUE) |>
   gt::tab_header(title = "RVU Overview") |>
   gt::fmt_integer(columns = "n") |>
@@ -153,5 +141,3 @@ collapse::rowbind(
   ) |>
   gt::opt_vertical_padding(scale = 0.65) |>
   gt::sub_missing(missing_text = "-")
-
-list_pins()
