@@ -1,5 +1,9 @@
 # Changelog
 
+## arkrvu 0.0.1.9028
+
+- added `hcpcs/cpt_level()` & `hcpcs/cpt_category()`
+
 ## arkrvu 0.0.1.9027
 
 - added HCPCS checks

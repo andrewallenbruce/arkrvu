@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">arkrvu</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9027</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9028</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Validate HCPCS Codes</h1>
-      <small class="dont-index">Source: <a href="https://github.com/andrewallenbruce/arkrvu/blob/master/R/checks.R" class="external-link"><code>R/checks.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/andrewallenbruce/arkrvu/blob/master/R/hcpcs.R" class="external-link"><code>R/hcpcs.R</code></a></small>
       <div class="d-none name"><code>hcpcs_checks.Rd</code></div>
     </div>
 
@@ -59,7 +59,15 @@
 <span></span>
 <span><span class="fu">is_cpt_category_II</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">is_cpt_category_III</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">is_cpt_category_III</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">hcpcs_category</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">cpt_category</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">hcpcs_level</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">cpt_level</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -168,7 +176,7 @@ requirements:</p><ul><li><p>Necessary devices/drugs have received FDA clearance/
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'T1503'</span>, <span class="st">'G0478'</span>, <span class="st">'81301'</span>, <span class="st">'69641'</span>, <span class="st">'0583F'</span>, <span class="st">'0779T'</span>, <span class="cn">NA</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"T1503"</span>, <span class="st">"G0478"</span>, <span class="st">"81301"</span>, <span class="st">"69641"</span>, <span class="st">"0583F"</span>, <span class="st">"0779T"</span>, <span class="cn">NA</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">is_hcpcs</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE</span>
@@ -189,6 +197,26 @@ requirements:</p><ul><li><p>Necessary devices/drugs have received FDA clearance/
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE</span>
 <span class="r-in"><span><span class="fu">is_cpt_category_III</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">fastplyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/fastplyr/man/new_tbl.html" class="external-link">new_tbl</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"39503"</span>, <span class="st">"99215"</span>, <span class="st">"99140"</span>, <span class="st">"69990"</span>, <span class="st">"70010"</span>,</span></span>
+<span class="r-in"><span>         <span class="st">"0222U"</span>, <span class="st">"V5299"</span>, <span class="st">"7010F"</span>, <span class="st">"0074T"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   level <span class="op">=</span> <span class="fu">hcpcs_level</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span><span class="fu">collapse</span><span class="fu">::</span><span class="fu"><a href="https://fastverse.org/collapse/reference/ftransform.html" class="external-link">mtt</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    level <span class="op">=</span> <span class="fu">cheapr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/cheapr/man/if_else.html" class="external-link">if_else_</a></span><span class="op">(</span><span class="va">level</span> <span class="op">==</span> <span class="st">"CPT"</span>, <span class="fu">cpt_level</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="va">level</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    category <span class="op">=</span> <span class="fu">cheapr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/cheapr/man/if_else.html" class="external-link">if_else_</a></span><span class="op">(</span><span class="va">level</span> <span class="op">!=</span> <span class="st">"HCPCS II"</span>, <span class="fu">cpt_category</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu">hcpcs_category</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 9 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   x     level    category               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 39503 CPT I    Surgery                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 99215 CPT I    E&amp;M                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 99140 CPT I    Anesthesiology         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 69990 CPT I    Surgery                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 70010 CPT I    Radiology              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 0222U CPT I    Path/Lab               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> V5299 HCPCS II Vision/Hearing         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> 7010F CPT II   Performance Measurement</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">9</span> 0074T CPT III  New Technology         </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

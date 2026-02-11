@@ -16,6 +16,14 @@ is_cpt_category_I(hcpcs)
 is_cpt_category_II(hcpcs)
 
 is_cpt_category_III(hcpcs)
+
+hcpcs_category(hcpcs)
+
+cpt_category(hcpcs)
+
+hcpcs_level(hcpcs)
+
+cpt_level(hcpcs)
 ```
 
 ## Source
@@ -143,7 +151,7 @@ I requirements:
 ## Examples
 
 ``` r
-x <- c('T1503', 'G0478', '81301', '69641', '0583F', '0779T', NA)
+x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA)
 
 is_hcpcs(x)
 #> [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE
@@ -164,4 +172,24 @@ is_cpt_category_II(x)
 #> [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
 is_cpt_category_III(x)
 #> [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE
+
+fastplyr::new_tbl(
+   x = c("39503", "99215", "99140", "69990", "70010",
+         "0222U", "V5299", "7010F", "0074T"),
+   level = hcpcs_level(x)) |>
+collapse::mtt(
+    level = cheapr::if_else_(level == "CPT", cpt_level(x), level),
+    category = cheapr::if_else_(level != "HCPCS II", cpt_category(x), hcpcs_category(x)))
+#> # A tibble: 9 × 3
+#>   x     level    category               
+#>   <chr> <chr>    <chr>                  
+#> 1 39503 CPT I    Surgery                
+#> 2 99215 CPT I    E&M                    
+#> 3 99140 CPT I    Anesthesiology         
+#> 4 69990 CPT I    Surgery                
+#> 5 70010 CPT I    Radiology              
+#> 6 0222U CPT I    Path/Lab               
+#> 7 V5299 HCPCS II Vision/Hearing         
+#> 8 7010F CPT II   Performance Measurement
+#> 9 0074T CPT III  New Technology         
 ```
