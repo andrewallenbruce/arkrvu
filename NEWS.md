@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9029
+
+* refactored `hcpcs_category()`
+
+
 # arkrvu 0.0.1.9028
 
 * added `hcpcs/cpt_level()` & `hcpcs/cpt_category()`
