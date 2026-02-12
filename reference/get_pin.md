@@ -1,6 +1,6 @@
-# Get pinned dataset from mount_board()
+# Load [pins](https://pins.rstudio.com/reference/pins-package.html)
 
-Get pinned dataset from mount_board()
+Load [pins](https://pins.rstudio.com/reference/pins-package.html)
 
 ## Usage
 
@@ -12,12 +12,14 @@ get_pin(pin, ...)
 
 - pin:
 
-  `<chr>` string name of pinned dataset
+  `<chr>` pin name, see
+  [`list_pins()`](https://andrewallenbruce.github.io/arkrvu/reference/list_pins.md)
 
 - ...:
 
-  additional arguments passed to mount_board()
+  additional arguments passed to
+  [`mount_board()`](https://andrewallenbruce.github.io/arkrvu/reference/mount_board.md)
 
 ## Value
 
-`<tibble>` or `<data.frame>`
+`<tibble>` containing pinned dataset

@@ -1,6 +1,6 @@
-# List pins from mount_board()
+# List [pins](https://pins.rstudio.com/reference/pins-package.html)
 
-List pins from mount_board()
+List [pins](https://pins.rstudio.com/reference/pins-package.html)
 
 ## Usage
 
@@ -12,7 +12,8 @@ list_pins(...)
 
 - ...:
 
-  arguments to pass to mount_board()
+  arguments to pass to
+  [`mount_board()`](https://andrewallenbruce.github.io/arkrvu/reference/mount_board.md)
 
 ## Value
 

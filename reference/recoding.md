@@ -5,7 +5,7 @@ Recode Indicators
 ## Usage
 
 ``` r
-recode_mod(x)
+recode_mod(x, which = c("name", "description"))
 
 recode_glob(x)
 
@@ -21,7 +21,7 @@ recode_asst(x)
 
 recode_diag(x)
 
-recode_pctc(x)
+recode_pctc(x, which = c("name", "description"))
 
 recode_status(x, which = c("name", "description"))
 ```
@@ -81,7 +81,7 @@ recode_mod(c("26", "TC", "53"))
 #> [1] "Professional Component" "Technical Component"    "Discontinued Procedure"
 
 # Global Days
-recode_glob(c("000", "010", "090", "MMM", "XXX", "YYY", "ZZZ"))
+recode_glob(c(0, 1, 9, "M", "X", "Y", "Z"))
 #> [1] "Endoscopic or minor procedure with related Preoperative and Postoperative RVUs on the day of the procedure only included in the fee schedule payment amount. E&M services on the day of the procedure generally not payable."                                                  
 #> [2] "Minor procedure with Preoperative RVUs on the day of the procedure and Postoperative RVUs during a 10-day postoperative period included in the fee schedule amount. E&M services on the day of the procedure and during the 10-day postoperative period generally not payable."
 #> [3] "Major surgery with a 1-day Preoperative period and 90-day Postoperative period included in fee schedule amount."                                                                                                                                                               
@@ -131,60 +131,32 @@ recode_asst(c(0:2, "9"))
 #> [3] "No Payment Restriction; Assistant can be paid"                       
 #> [4] "Concept does not apply"                                              
 
-# Diagnostic Imaging Reduction (mult == `4`)
-recode_diag(c("88", "99"))
+# Diagnostic Imaging Reduction (mult == 4)
+recode_mult("4")
+#> [1] "Special rules for the technical component (TC) of diagnostic imaging procedures apply if procedure is billed with another diagnostic imaging procedure in the same family (per the diagnostic imaging family indicator, below). If procedure is reported in the same session on the same day as another procedure with the same family indicator, rank the procedures by fee schedule amount for the TC. Pay 100% for the highest priced procedure, and 50% for each subsequent procedure. Base the payment for subsequent procedures on the lower of (a) the actual charge, or (b) the fee schedule amount reduced by the appropriate percentage. Subject to 50% reduction of the TC diagnostic imaging (effective for services July 1, 2010 and after). Subject to 25% reduction of the PC of diagnostic imaging (effective for services January 1, 2012 through December 31, 2016). Subject to 5% reduction of the PC of diagnostic imaging (effective for services January 1, 2017 and after)."
+recode_diag(c(88, "99"))
 #> [1] "Subject to Reduction of TC or PC Diagnostic Imaging"
 #> [2] "Concept does not apply"                             
 
 # PC/TC Indicator
 recode_pctc(c(0:8, "9"))
-#>  [1] "Physician Service: PC/TC does not apply"                                                                                                                                                                                                                                                                                                                                                    
-#>  [2] "Diagnostic Tests for Radiology Services: Have both a PC and TC. Mods 26/TC can be used."                                                                                                                                                                                                                                                                                                    
-#>  [3] "Professional Component Only: Standalone code. Describes PC of diagnostic tests for which there is a code that describes TC of diagnostic test only and another code that describes the Global test."                                                                                                                                                                                        
-#>  [4] "Technical Component Only: Standalone code. Mods 26/TC cannot be used. Describe TC of diagnostic tests for which there is a code that describes PC of the diagnostic test only. Also identifies codes that are covered only as diagnostic tests and do not have a PC code."                                                                                                                  
-#>  [5] "Global Test Only: Standalone code. Mods 26/TC cannot be used. Describes diagnostic tests for which there are codes that describe PC of the test only, and the TC of the test only. Total RVUs is sum of total RVUs for PC and TC only codes combined."                                                                                                                                      
-#>  [6] "Incident-To:  Mods 26/TC cannot be used. Services provided by personnel working under physician supervision. Payment may not be made when provided to hospital inpatients or outpatients."                                                                                                                                                                                                  
-#>  [7] "Lab Physician Interpretation: Mod TC cannot be used. Clinical Lab codes for which separate payment for interpretations by laboratory physicians may be made. Actual performance of tests paid by lab fee schedule."                                                                                                                                                                         
-#>  [8] "Physical Therapy: Payment may not be made if provided to hospital outpatient/inpatient by independently practicing physical or occupational therapist."                                                                                                                                                                                                                                     
-#>  [9] "Physician Interpretation: Identifies PC of Clinical Lab codes for which separate payment made only if physician interprets abnormal smear for hospital inpatient. No TC billing recognized, payment for test made to hospital. No payment for CPT 85060 furnished to hospital outpatients or non-hospital patients. Physician interpretation paid through clinical laboratory fee schedule."
-#> [10] "PCTC Concept does not apply"                                                                                                                                                                                                                                                                                                                                                                
+#>  [1] "Physician Service"                      
+#>  [2] "Diagnostic Tests for Radiology Services"
+#>  [3] "Professional Component Only"            
+#>  [4] "Technical Component Only"               
+#>  [5] "Global Test Only"                       
+#>  [6] "Incident-To"                            
+#>  [7] "Lab Physician Interpretation"           
+#>  [8] "Physical Therapy"                       
+#>  [9] "Physician Interpretation"               
+#> [10] NA                                       
 
 # Status Codes
-recode_status(LETTERS)
+recode_status(LETTERS[c(1:10, 13:14, 16, 18, 20, 24)])
 #>  [1] "Active"                 "Payment Bundle"         "Carrier Priced"        
 #>  [4] "Deleted Codes"          "Regulatory Exclusion"   "Deleted/Discontinued"  
 #>  [7] "Not Valid for Medicare" "Deleted Modifier"       "Not Valid for Medicare"
-#> [10] "Anesthesia Service"     NA                       NA                      
-#> [13] "Measurement Code"       "Restricted Coverage"    NA                      
-#> [16] "Non-Covered Service"    NA                       "Bundled/Excluded Code" 
-#> [19] NA                       "Injections"             NA                      
-#> [22] NA                       NA                       "Statutory Exclusion"   
-#> [25] NA                       NA                      
-recode_status(LETTERS, "description")
-#>  [1] "Separately paid if covered. RVUs and payment amounts. Carriers responsible for coverage decisions in absence of an NCD."                                                                                                           
-#>  [2] "Payment bundled into payment for other services not specified. No RVUs, no payment made. When covered, payment subsumed by payment for services to which they are incident."                                                       
-#>  [3] "Carriers establish RVUs and payment following documentation review."                                                                                                                                                               
-#>  [4] "Deleted effective with beginning of year."                                                                                                                                                                                         
-#>  [5] "Excluded by regulation. No RVUs, no payment made. When covered, payment made under reasonable charge procedures."                                                                                                                  
-#>  [6] "Not subject to 90 day grace period"                                                                                                                                                                                                
-#>  [7] "Another code used for payment. Subject to a 90 day grace period."                                                                                                                                                                  
-#>  [8] "Had TC/26 mod in previous year, TC/26 component now deleted."                                                                                                                                                                      
-#>  [9] "Another code used for payment. Not subject to a 90-day grace period."                                                                                                                                                              
-#> [10] "No RVUs or payment amounts. Only identifies anesthesia services."                                                                                                                                                                  
-#> [11] NA                                                                                                                                                                                                                                  
-#> [12] NA                                                                                                                                                                                                                                  
-#> [13] "Used for reporting purposes only."                                                                                                                                                                                                 
-#> [14] "Not covered by Medicare."                                                                                                                                                                                                          
-#> [15] NA                                                                                                                                                                                                                                  
-#> [16] "No RVUs, no payment made. If covered as Incident To and provided on same day as physician service, payment bundled into payment for Incident To service. If covered as other than Incident To, paid under other payment provision."
-#> [17] NA                                                                                                                                                                                                                                  
-#> [18] "Special coverage instructions apply. If covered, service is contractor priced. Assigned to limited number of codes covered in unusual circumstances. Majority of codes are dental codes."                                          
-#> [19] NA                                                                                                                                                                                                                                  
-#> [20] "RVUs and payment amounts. Paid only if no other payable services billed on same date by same provider. If payable services billed, bundled into payment."                                                                          
-#> [21] NA                                                                                                                                                                                                                                  
-#> [22] NA                                                                                                                                                                                                                                  
-#> [23] NA                                                                                                                                                                                                                                  
-#> [24] "Not in statutory definition of Physician Services. No RVUs or payment amounts, no payment made."                                                                                                                                   
-#> [25] NA                                                                                                                                                                                                                                  
-#> [26] NA                                                                                                                                                                                                                                  
+#> [10] "Anesthesia Service"     "Measurement Code"       "Restricted Coverage"   
+#> [13] "Non-Covered Service"    "Bundled/Excluded Code"  "Injections"            
+#> [16] "Statutory Exclusion"   
 ```
