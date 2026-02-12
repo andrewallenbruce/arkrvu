@@ -1,3 +1,24 @@
+#' @noRd
+grepl_ <- function(x, pattern) {
+  grepl(pattern, x, ignore.case = TRUE, perl = TRUE)
+}
+
+# @inheritParams rlang::args_error_context
+#' @noRd
+check_nchars <- function(
+  x,
+  arg = rlang::caller_arg(x),
+  call = rlang::caller_env()
+) {
+  if (any(nchar(x) != 5L, na.rm = TRUE)) {
+    cli::cli_abort(
+      "{.arg {arg}} must be 5 characters long.",
+      arg = arg,
+      call = call
+    )
+  }
+}
+
 #' Make a date object
 #'
 #' @param y `<integer>` year
@@ -22,13 +43,9 @@ make_date <- function(y, m = 1L, d = 1L, ...) {
 }
 
 #' Mount [pins][pins::pins-package] board
-#'
 #' @param source `<chr>` `"local"` or `"remote"`
-#'
 #' @returns `<pins_board_folder>` or `<pins_board_url>`
-#'
 #' @keywords internal
-#'
 #' @export
 mount_board <- function(source = c("local", "remote")) {
   switch(
@@ -43,8 +60,8 @@ mount_board <- function(source = c("local", "remote")) {
   )
 }
 
-#' List pins from mount_board()
-#' @param ... arguments to pass to mount_board()
+#' List [pins][pins::pins-package]
+#' @param ... arguments to pass to [mount_board()]
 #' @returns `<chr>` vector of named pins
 #' @keywords internal
 #' @export
@@ -54,16 +71,42 @@ list_pins <- function(...) {
   pins::pin_list(board)
 }
 
-#' Get pinned dataset from mount_board()
-#' @param pin `<chr>` string name of pinned dataset
-#' @param ... additional arguments passed to mount_board()
-#' @returns `<tibble>` or `<data.frame>`
+#' Load [pins][pins::pins-package]
+#' @param pin `<chr>` pin name, see [list_pins()]
+#' @param ... additional arguments passed to [mount_board()]
+#' @returns `<tibble>` containing pinned dataset
 #' @keywords internal
 #' @export
 get_pin <- function(pin, ...) {
   board <- mount_board(...)
-
   pin <- rlang::arg_match0(pin, list_pins())
-
   pins::pin_read(board, pin)
+}
+
+#' Create/Update [pins][pins::pins-package]
+#' @param data data to pin
+#' @param pin `<chr>` pin name, see [list_pins()]
+#' @param ... additional arguments passed to [pins::pin_write()]
+#' @returns nothing, called for side effects
+#' @noRd
+update_pin <- function(data, pin, title, ...) {
+  board <- mount_board()
+  board |>
+    pins::pin_write(
+      x = data,
+      name = pin,
+      type = "rds",
+      title = title,
+      ...
+    )
+  board |> pins::write_board_manifest()
+}
+
+#' Delete internal [pins][pins::pins-package]
+#' @param pin `<chr>` pin name, see [list_pins()]
+#' @returns nothing, called for side effects
+#' @noRd
+delete_pins <- function(pin) {
+  board <- mount_board()
+  pins::pin_delete(board, names = pin)
 }

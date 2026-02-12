@@ -1,24 +1,3 @@
-#' @noRd
-grepl_ <- function(x, pattern) {
-  grepl(pattern, x, ignore.case = TRUE, perl = TRUE)
-}
-
-# @inheritParams rlang::args_error_context
-#' @noRd
-check_nchars <- function(
-  x,
-  arg = rlang::caller_arg(x),
-  call = rlang::caller_env()
-) {
-  if (any(nchar(x) != 5L, na.rm = TRUE)) {
-    cli::cli_abort(
-      "{.arg {arg}} must be 5 characters long.",
-      arg = arg,
-      call = call
-    )
-  }
-}
-
 #' Validate HCPCS Codes
 #'
 #' @section HCPCS Codes:

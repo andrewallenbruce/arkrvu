@@ -2,17 +2,17 @@
 % Please edit documentation in R/utils.R
 \name{list_pins}
 \alias{list_pins}
-\title{List pins from mount_board()}
+\title{List \link[pins:pins-package]{pins}}
 \usage{
 list_pins(...)
 }
 \arguments{
-\item{...}{arguments to pass to mount_board()}
+\item{...}{arguments to pass to \code{\link[=mount_board]{mount_board()}}}
 }
 \value{
 \verb{<chr>} vector of named pins
 }
 \description{
-List pins from mount_board()
+List \link[pins:pins-package]{pins}
 }
 \keyword{internal}

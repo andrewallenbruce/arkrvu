@@ -2,19 +2,19 @@
 % Please edit documentation in R/utils.R
 \name{get_pin}
 \alias{get_pin}
-\title{Get pinned dataset from mount_board()}
+\title{Load \link[pins:pins-package]{pins}}
 \usage{
 get_pin(pin, ...)
 }
 \arguments{
-\item{pin}{\verb{<chr>} string name of pinned dataset}
+\item{pin}{\verb{<chr>} pin name, see \code{\link[=list_pins]{list_pins()}}}
 
-\item{...}{additional arguments passed to mount_board()}
+\item{...}{additional arguments passed to \code{\link[=mount_board]{mount_board()}}}
 }
 \value{
-\verb{<tibble>} or \verb{<data.frame>}
+\verb{<tibble>} containing pinned dataset
 }
 \description{
-Get pinned dataset from mount_board()
+Load \link[pins:pins-package]{pins}
 }
 \keyword{internal}
