@@ -32,41 +32,12 @@
 #' @param which `<chr>` which recoding to perform; one of `"name"` or `"description"`
 #'
 #' @returns `<chr>` vector of descriptions
-#'
-#' @examples
-#' # Modifier
-#' recode_mod(c("26", "TC", "53"))
-#'
-#' # Global Days
-#' recode_glob(c(0, 1, 9, "M", "X", "Y", "Z"))
-#'
-#' # Team Surgery (Mod 66)
-#' recode_team(c(0:2, "9"))
-#'
-#' # Bilateral Surgery (Mod 50)
-#' recode_bilat(c(0:3, "9"))
-#'
-#' # Multiple Procedure (Mod 51)
-#' recode_mult(c(0:7, "9"))
-#'
-#' # Co-Surgeon (Mod 62)
-#' recode_cosurg(c(0:2, "9"))
-#'
-#' # Assistant Surgery (Mods 80-82, AS)
-#' recode_asst(c(0:2, "9"))
-#'
-#' # Diagnostic Imaging Reduction (mult == 4)
-#' recode_mult("4")
-#' recode_diag(c(88, "99"))
-#'
-#' # PC/TC Indicator
-#' recode_pctc(c(0:8, "9"))
-#'
-#' # Status Codes
-#' recode_status(LETTERS[c(1:10, 13:14, 16, 18, 20, 24)])
 NULL
 
 #' @rdname recoding
+#' @examples
+#' # Modifier
+#' recode_mod(c("26", "TC", "53"))
 #' @export
 recode_mod <- function(x, which = c("name", "description")) {
   switch(
@@ -89,49 +60,82 @@ recode_mod <- function(x, which = c("name", "description")) {
 }
 
 #' @rdname recoding
+#' @examples
+#' # Global Days
+#' recode_glob(c(0, 1, 9, "M", "Y", "Z"))
 #' @export
-recode_glob <- function(x) {
-  cheapr::val_match(
-    x,
-    "0" ~ "Endoscopic or minor procedure with related Preoperative and Postoperative RVUs on the day of the procedure only included in the fee schedule payment amount. E&M services on the day of the procedure generally not payable.",
-    "1" ~ "Minor procedure with Preoperative RVUs on the day of the procedure and Postoperative RVUs during a 10-day postoperative period included in the fee schedule amount. E&M services on the day of the procedure and during the 10-day postoperative period generally not payable.",
-    "9" ~ "Major surgery with a 1-day Preoperative period and 90-day Postoperative period included in fee schedule amount.",
-    "M" ~ "Maternity codes. Usual Global period does not apply.",
-    "X" ~ "Global concept does not apply.",
-    "Y" ~ "Carrier determines if Global concept applies and, if appropriate, establishes Postoperative period.",
-    "Z" ~ "Code related to another service and is always included in Global period of other service.",
-    .default = NA_character_
+recode_glob <- function(x, which = c("name", "description")) {
+  switch(
+    match.arg(which),
+    name = cheapr::val_match(
+      x,
+      "0" ~ "Minor Procedure (Day-Of Postop)",
+      "1" ~ "Minor Procedure (10-Day Postop) ",
+      "9" ~ "Major Surgery (90-Day Postop)",
+      "M" ~ "Maternity Code",
+      "Y" ~ "Carrier-Determined",
+      "Z" ~ "Included in Other Service's Global Period",
+      .default = NA_character_
+    ),
+    description = cheapr::val_match(
+      x,
+      "0" ~ "Endoscopic or minor procedure with related Preoperative and Postoperative RVUs on the day of the procedure only included in the fee schedule payment amount. E&M services on the day of the procedure generally not payable.",
+      "1" ~ "Minor procedure with Preoperative RVUs on the day of the procedure and Postoperative RVUs during a 10-day postoperative period included in the fee schedule amount. E&M services on the day of the procedure and during the 10-day postoperative period generally not payable.",
+      "9" ~ "Major surgery with a 1-day Preoperative period and 90-day Postoperative period included in fee schedule amount.",
+      "M" ~ "Maternity codes. Usual Global period does not apply.",
+      "Y" ~ "Carrier determines if Global concept applies and, if appropriate, establishes Postoperative period.",
+      "Z" ~ "Code related to another service and is always included in Global period of other service.",
+      .default = NA_character_
+    )
   )
 }
 
 #' @rdname recoding
+#' @examples
+#' # Team Surgery (Mod 66)
+#' recode_team(0:2)
 #' @export
 recode_team <- function(x) {
   cheapr::val_match(
     x,
     "0" ~ "Not Permitted",
-    "1" ~ "Medical Necessity Documentation Required",
+    "1" ~ "Requires Medical Necessity Documentation",
     "2" ~ "Permitted",
-    "9" ~ "Concept does not apply",
     .default = NA_character_
   )
 }
 
 #' @rdname recoding
+#' @examples
+#' # Bilateral Surgery (Mod 50)
+#' recode_bilat(0:3)
 #' @export
-recode_bilat <- function(x) {
-  cheapr::val_match(
-    x,
-    "0" ~ "Adjustment does not apply. If reported with mod 50 or RT and LT, payment for the two sides is the lower of (a) total charge for both sides (b) 100% of fee schedule amount for a single code. Adjustment is inappropriate because (a) of physiology or anatomy, or (b) code description states it is a unilateral procedure and there is an existing code for the bilateral procedure.",
-    "1" ~ "Adjustment applies. If reported with bilateral modifier or twice on same day by any other means (with RT and LT mods, or with a 2 in the units field), base payment on lower of: (a) total charge for both sides or (b) 150% of fee schedule amount for a single code. If reported as bilateral procedure and reported with other procedure codes on same day, apply bilateral adjustment before applying any multiple procedure rules.",
-    "2" ~ "Adjustment does not apply. RVUs already based on procedure as a bilateral procedure. If reported with mod -50 or twice on same day by any other means, base payment on lower of (a) total charge for both sides, or (b) 100% of fee schedule for a single code.",
-    "3" ~ "Adjustment does not apply. If reported with mod 50 or for both sides on same day by any other means, base payment for each side or organ or site of paired organ on lower of (a) charge for each side or (b) 100% of fee schedule amount for each side. If reported as bilateral procedure and with other procedure codes on same day, determine fee schedule amount for a bilateral procedure before applying any multiple procedure rules. Services in this category are generally radiology procedures or other diagnostic tests which are not subject to the special payment rules for other bilateral surgeries.",
-    "9" ~ "Concept does not apply",
-    .default = NA_character_
+recode_bilat <- function(x, which = c("name", "description")) {
+  switch(
+    match.arg(which),
+    name = cheapr::val_match(
+      x,
+      "0" ~ "No Adjustment",
+      "1" ~ "Adjustment",
+      "2" ~ "No Adjustment",
+      "3" ~ "No Adjustment",
+      .default = NA_character_
+    ),
+    description = cheapr::val_match(
+      x,
+      "0" ~ "If reported with mod 50 or RT and LT, payment for the two sides is the lower of (a) total charge for both sides (b) 100% of fee schedule amount for a single code. Adjustment is inappropriate because (a) of physiology or anatomy, or (b) code description states it is a unilateral procedure and there is an existing code for the bilateral procedure.",
+      "1" ~ "If reported with bilateral modifier or twice on same day by any other means (with RT and LT mods, or with a 2 in the units field), base payment on lower of: (a) total charge for both sides or (b) 150% of fee schedule amount for a single code. If reported as bilateral procedure and reported with other procedure codes on same day, apply bilateral adjustment before applying any multiple procedure rules.",
+      "2" ~ "RVUs already based on procedure as a bilateral procedure. If reported with mod -50 or twice on same day by any other means, base payment on lower of (a) total charge for both sides, or (b) 100% of fee schedule for a single code.",
+      "3" ~ "If reported with mod 50 or for both sides on same day by any other means, base payment for each side or organ or site of paired organ on lower of (a) charge for each side or (b) 100% of fee schedule amount for each side. If reported as bilateral procedure and with other procedure codes on same day, determine fee schedule amount for a bilateral procedure before applying any multiple procedure rules. Services in this category are generally radiology procedures or other diagnostic tests which are not subject to the special payment rules for other bilateral surgeries.",
+      .default = NA_character_
+    )
   )
 }
 
 #' @rdname recoding
+#' @examples
+#' # Multiple Procedure (Mod 51)
+#' recode_mult(0:7)
 #' @export
 recode_mult <- function(x) {
   cheapr::val_match(
@@ -144,49 +148,58 @@ recode_mult <- function(x) {
     "5" ~ "Subject to 50% of the practice expense component for certain therapy services.",
     "6" ~ "Subject to 25% reduction of the second highest and subsequent procedures to the TC of diagnostic cardiovascular services, effective for services January 1, 2013, and thereafter.",
     "7" ~ "Subject to 20% reduction of the second highest and subsequent procedures to the TC of diagnostic ophthalmology services, effective for services January 1, 2013, and thereafter.",
-    "9" ~ "Concept does not apply",
     .default = NA_character_
   )
 }
 
 #' @rdname recoding
+#' @examples
+#' # Co-Surgeon (Mod 62)
+#' recode_cosurg(0:2)
 #' @export
 recode_cosurg <- function(x) {
   cheapr::val_match(
     x,
     "0" ~ "Not Permitted",
-    "1" ~ "Medical Necessity Documentation Required",
+    "1" ~ "Requires Medical Necessity Documentation",
     "2" ~ "Permitted",
-    "9" ~ "Concept does not apply",
     .default = NA_character_
   )
 }
 
 #' @rdname recoding
+#' @examples
+#' # Assistant Surgery (Mods 80-82, AS)
+#' recode_asst(0:2)
 #' @export
 recode_asst <- function(x) {
   cheapr::val_match(
     x,
-    "0" ~ "Payment Restriction unless Medical Necessity documentation submitted",
-    "1" ~ "Payment Restriction; Assistant cannot be paid",
-    "2" ~ "No Payment Restriction; Assistant can be paid",
-    "9" ~ "Concept does not apply",
+    "0" ~ "Requires Medical Necessity Documentation",
+    "1" ~ "Assistant Not Paid",
+    "2" ~ "Assistant Paid",
     .default = NA_character_
   )
 }
 
 #' @rdname recoding
+#' @examples
+#' # Diagnostic Imaging Reduction (mult == 4)
+#' recode_mult(4)
+#' recode_diag(1)
 #' @export
 recode_diag <- function(x) {
-  cheapr::val_match(
-    x,
-    "88" ~ "Subject to Reduction of TC or PC Diagnostic Imaging",
-    "99" ~ "Concept does not apply",
-    .default = NA_character_
+  cheapr::if_else_(
+    x == "1",
+    "TC/PC Diagnostic Imaging Reduction",
+    NA_character_
   )
 }
 
 #' @rdname recoding
+#' @examples
+#' # PC/TC Indicator
+#' recode_pctc(0:8)
 #' @export
 recode_pctc <- function(x, which = c("name", "description")) {
   switch(
@@ -202,7 +215,6 @@ recode_pctc <- function(x, which = c("name", "description")) {
       "6" ~ "Lab Physician Interpretation",
       "7" ~ "Physical Therapy",
       "8" ~ "Physician Interpretation",
-      "9" ~ NA_character_,
       .default = NA_character_
     ),
     description = cheapr::val_match(
@@ -216,13 +228,15 @@ recode_pctc <- function(x, which = c("name", "description")) {
       "6" ~ "Mod TC cannot be used. Clinical Lab codes for which separate payment for interpretations by laboratory physicians may be made. Actual performance of tests paid by lab fee schedule.",
       "7" ~ "Payment may not be made if provided to hospital outpatient/inpatient by independently practicing physical or occupational therapist.",
       "8" ~ "Identifies PC of Clinical Lab codes for which separate payment made only if physician interprets abnormal smear for hospital inpatient. No TC billing recognized, payment for test made to hospital. No payment for CPT 85060 furnished to hospital outpatients or non-hospital patients. Physician interpretation paid through clinical laboratory fee schedule.",
-      "9" ~ "Concept does not apply",
       .default = NA_character_
     )
   )
 }
 
 #' @rdname recoding
+#' @examples
+#' # Status Codes
+#' recode_status(LETTERS[c(1:10, 13:14, 16, 18, 20, 24)])
 #' @export
 recode_status <- function(x, which = c("name", "description")) {
   switch(

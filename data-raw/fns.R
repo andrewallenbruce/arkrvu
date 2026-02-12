@@ -1,4 +1,28 @@
+to_na <- function(x) cheapr::if_else_(x == "9", NA_character_, x)
+
 bin_ <- function(x) cheapr::if_else_(cheapr::is_na(x), 0L, 1L)
+
+classify_hcpcs <- function(x) {
+  collapse::mtt(
+    x,
+    hcpcs_type = hcpcs_level(hcpcs),
+    hcpcs_type = cheapr::if_else_(
+      hcpcs_type == "HCPCS I",
+      cpt_category(hcpcs),
+      hcpcs_type
+    ),
+    hcpcs_section = cheapr::if_else_(
+      hcpcs_type != "HCPCS II",
+      cpt_section(hcpcs),
+      hcpcs_section(hcpcs)
+    )
+  ) |>
+    collapse::colorder(
+      hcpcs,
+      hcpcs_type,
+      hcpcs_section
+    )
+}
 
 add_zip_link <- function(df) {
   fastplyr::f_bind_rows(

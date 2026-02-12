@@ -1,4 +1,4 @@
-source(here::here("data-raw", "data_pins.R"))
+source(here::here("data-raw", "fns.R"))
 
 x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
   collapse::mtt(
@@ -8,11 +8,23 @@ x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
       "010" ~ "1",
       "090" ~ "9",
       "MMM" ~ "M",
-      "XXX" ~ "X",
+      "XXX" ~ NA_character_,
       "YYY" ~ "Y",
       "ZZZ" ~ "Z",
       .default = NA_character_
     ),
+    diagnostic_imaging_family_indicator = cheapr::val_match(
+      diagnostic_imaging_family_indicator,
+      "99" ~ NA_character_,
+      "88" ~ "1",
+      .default = NA_character_
+    ),
+    pctc_ind = to_na(pctc_ind),
+    mult_proc = to_na(mult_proc),
+    bilat_surg = to_na(bilat_surg),
+    asst_surg = to_na(asst_surg),
+    co_surg = to_na(co_surg),
+    team_surg = to_na(team_surg),
     non_fac_indicator = bin_(non_fac_indicator),
     facility_indicator = bin_(facility_indicator),
     not_used_for_medicare_payment = bin_(not_used_for_medicare_payment),
@@ -40,17 +52,20 @@ x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
     op_pre = pre_op,
     op_intra = intra_op,
     op_post = post_op,
-    op_tot = tot_op,
+    tot_op,
     surg_bilat = bilat_surg,
     surg_asst = asst_surg,
     surg_co = co_surg,
     surg_team = team_surg,
     endo = endo_base,
-    cf = conv_factor,
-    podp = physician_supervision_of_diagnostic_procedures
-  )
+    diag = diagnostic_imaging_family_indicator,
+    cf = conv_factor
+  ) |>
+  classify_hcpcs()
 
 saw_names <- c(
+  "hcpcs_type",
+  "hcpcs_section",
   "mod",
   "stat",
   "not_med",
@@ -60,17 +75,19 @@ saw_names <- c(
   "glob",
   "mult",
   "endo",
-  "podp",
+  "diag",
   "surg_bilat",
   "surg_asst",
   "surg_co",
   "surg_team",
   "tot_rvu",
-  "op_tot"
+  "tot_op"
 )
 
 saw <- x |>
   hacksaw::count_split(
+    hcpcs_type,
+    hcpcs_section,
     mod,
     stat,
     not_med,
@@ -80,38 +97,73 @@ saw <- x |>
     glob,
     mult,
     endo,
-    podp,
+    diag,
     surg_bilat,
     surg_asst,
     surg_co,
     surg_team,
     tot_rvu,
-    op_tot
+    tot_op
   ) |>
   purrr::set_names(saw_names) |>
   purrr::map(function(x) {
     collapse::rnm(x, "value", cols = 1) |>
       collapse::mtt(value = as.character(value))
   }) |>
-  purrr::list_rbind(names_to = "column")
+  purrr::list_rbind(names_to = "column") |>
+  collapse::sbt(!cheapr::is_na(value))
 
-collapse::rowbind(
-  collapse::sbt(saw, column == "tot_rvu" & value == "0"),
-  collapse::sbt(saw, column == "endo" & !cheapr::is_na(value)) |>
+cols <- c("tot_op", "not_med", "ind_non", "ind_fac", "endo", "diag")
+
+saw <- collapse::rowbind(
+  collapse::sbt(saw, column != "endo"),
+  collapse::sbt(saw, column == "endo") |>
     collapse::fgroup_by(column) |>
     collapse::fsummarise(n = sum(n)) |>
-    collapse::mtt(value = "1"),
-  collapse::sbt(saw, column != "tot_rvu" & column != "endo")
+    collapse::mtt(value = "1")
 ) |>
   # collapse::fcount(column, w = n, add = TRUE) |>
   collapse::mtt(P = n / 18499L) |>
+  collapse::sbt(
+    !(column == "tot_rvu" & value != 0) &
+      !(column %in% cols & value == "0")
+  ) |>
+  print(n = Inf)
+
+collapse::sbt(
+  saw,
+  column %iin% c("tot_rvu", cols)
+) |>
+  collapse::roworder(-n) |>
+  collapse::rowbind(
+    collapse::sbt(
+      saw,
+      column %!iin%
+        c("tot_rvu", cols)
+    )
+  ) |>
+  collapse::mtt(
+    desc = cheapr::case(
+      column == "stat" ~ recode_status(value),
+      column == "mod" ~ recode_mod(value),
+      column == "pctc" ~ recode_pctc(value),
+      column == "glob" ~ recode_glob(value),
+      # column == "mult" ~ recode_mult(value),
+      column == "surg_bilat" ~ recode_bilat(value),
+      column == "surg_asst" ~ recode_asst(value),
+      column == "surg_co" ~ recode_cosurg(value),
+      column == "surg_team" ~ recode_team(value),
+      .default = NA_character_
+    )
+  ) |>
   gt::gt(groupname_col = "column", row_group_as_column = TRUE) |>
-  gt::tab_header(title = "RVU Overview") |>
+  gt::tab_header(title = "2024 RVU Overview") |>
   gt::fmt_integer(columns = "n") |>
   gt::fmt_percent(columns = "P", decimals = 0) |>
   gt::cols_label(
-    value = "Indicator",
-    n = "N"
+    value = "Category",
+    n = "Count",
+    desc = "Description",
   ) |>
   gt::opt_table_font(
     font = list(
@@ -123,10 +175,10 @@ collapse::rowbind(
   ) |>
   gt::data_color(
     columns = n,
-    rows = column == "mod",
+    rows = column == "hcpcs_section",
     fn = scales::col_numeric(
       palette = "Greens",
-      domain = c(0, 16323),
+      domain = c(0, 6000),
       na.color = "gray"
     )
   ) |>
@@ -135,7 +187,7 @@ collapse::rowbind(
     rows = column == "stat",
     fn = scales::col_numeric(
       palette = "Blues",
-      domain = c(0, 8975),
+      domain = c(8, 8975),
       na.color = "gray"
     )
   ) |>
