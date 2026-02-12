@@ -3,15 +3,15 @@
 \name{hcpcs}
 \alias{hcpcs}
 \alias{is_hcpcs}
-\alias{is_hcpcs_level_I}
-\alias{is_hcpcs_level_II}
-\alias{is_cpt_category_I}
-\alias{is_cpt_category_II}
-\alias{is_cpt_category_III}
-\alias{hcpcs_category}
-\alias{cpt_category}
+\alias{is_hcpcs_I}
+\alias{is_hcpcs_II}
+\alias{is_cpt_I}
+\alias{is_cpt_II}
+\alias{is_cpt_III}
 \alias{hcpcs_level}
-\alias{cpt_level}
+\alias{cpt_category}
+\alias{hcpcs_section}
+\alias{cpt_section}
 \title{Validate HCPCS Codes}
 \source{
 \href{https://www.ama-assn.org/practice-management/cpt/category-ii-codes}{AMA Category II Codes}
@@ -21,23 +21,23 @@
 \usage{
 is_hcpcs(hcpcs)
 
-is_hcpcs_level_I(hcpcs)
+is_hcpcs_I(hcpcs)
 
-is_hcpcs_level_II(hcpcs)
+is_hcpcs_II(hcpcs)
 
-is_cpt_category_I(hcpcs)
+is_cpt_I(hcpcs)
 
-is_cpt_category_II(hcpcs)
+is_cpt_II(hcpcs)
 
-is_cpt_category_III(hcpcs)
-
-hcpcs_category(hcpcs)
-
-cpt_category(hcpcs)
+is_cpt_III(hcpcs)
 
 hcpcs_level(hcpcs)
 
-cpt_level(hcpcs)
+cpt_category(hcpcs)
+
+hcpcs_section(hcpcs)
+
+cpt_section(hcpcs)
 }
 \arguments{
 \item{hcpcs}{\verb{<chr>} vector of possible HCPCS codes}
@@ -156,25 +156,27 @@ requirements:
 }
 
 \examples{
-x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA)
+x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA, "1164")
+y <- c("39503", "99215", "99140", "70010", "0222U", "V5299", "7010F")
 
 is_hcpcs(x)
-
-x[which(is_hcpcs(x))]
-
-try(is_hcpcs("1164"))
-
-is_hcpcs_level_I(x)
-is_hcpcs_level_II(x)
-is_cpt_category_I(x)
-is_cpt_category_II(x)
-is_cpt_category_III(x)
+is_hcpcs_I(x)
+is_hcpcs_II(x)
+is_cpt_I(x)
+is_cpt_II(x)
+is_cpt_III(x)
 
 fastplyr::new_tbl(
-   x = c("39503", "99215", "99140", "69990", "70010",
-         "0222U", "V5299", "7010F", "0074T"),
-   level = hcpcs_level(x)) |>
-collapse::mtt(
-    level = cheapr::if_else_(level == "CPT", cpt_level(x), level),
-    category = cheapr::if_else_(level != "HCPCS II", cpt_category(x), hcpcs_category(x)))
+  hcpcs = c(x, y),
+  type = hcpcs_level(hcpcs)) |>
+  collapse::mtt(
+    type = cheapr::if_else_(
+      type == "HCPCS I",
+      cpt_category(hcpcs),
+      type),
+    section = cheapr::if_else_(
+      type != "HCPCS II",
+      cpt_section(hcpcs),
+      hcpcs_section(hcpcs))) |>
+  collapse::roworder(type, hcpcs)
 }

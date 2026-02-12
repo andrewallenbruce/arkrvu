@@ -114,27 +114,29 @@ check_nchars <- function(
 #' @returns `<lgl>` `TRUE` if valid, otherwise `FALSE`
 #'
 #' @examples
-#' x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA)
+#' x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA, "1164")
+#' y <- c("39503", "99215", "99140", "70010", "0222U", "V5299", "7010F")
 #'
 #' is_hcpcs(x)
-#'
-#' x[which(is_hcpcs(x))]
-#'
-#' try(is_hcpcs("1164"))
-#'
-#' is_hcpcs_level_I(x)
-#' is_hcpcs_level_II(x)
-#' is_cpt_category_I(x)
-#' is_cpt_category_II(x)
-#' is_cpt_category_III(x)
+#' is_hcpcs_I(x)
+#' is_hcpcs_II(x)
+#' is_cpt_I(x)
+#' is_cpt_II(x)
+#' is_cpt_III(x)
 #'
 #' fastplyr::new_tbl(
-#'    x = c("39503", "99215", "99140", "69990", "70010",
-#'          "0222U", "V5299", "7010F", "0074T"),
-#'    level = hcpcs_level(x)) |>
-#' collapse::mtt(
-#'     level = cheapr::if_else_(level == "CPT", cpt_level(x), level),
-#'     category = cheapr::if_else_(level != "HCPCS II", cpt_category(x), hcpcs_category(x)))
+#'   hcpcs = c(x, y),
+#'   type = hcpcs_level(hcpcs)) |>
+#'   collapse::mtt(
+#'     type = cheapr::if_else_(
+#'       type == "HCPCS I",
+#'       cpt_category(hcpcs),
+#'       type),
+#'     section = cheapr::if_else_(
+#'       type != "HCPCS II",
+#'       cpt_section(hcpcs),
+#'       hcpcs_section(hcpcs))) |>
+#'   collapse::roworder(type, hcpcs)
 NULL
 
 #' @rdname hcpcs
@@ -145,38 +147,58 @@ is_hcpcs <- function(hcpcs) {
 
 #' @rdname hcpcs
 #' @export
-is_hcpcs_level_I <- function(hcpcs) {
-  is_hcpcs(hcpcs) & grepl_(hcpcs, "^\\d{4}[AFMTU0-9]$")
+is_hcpcs_I <- function(hcpcs) {
+  grepl_(hcpcs, "^\\d{4}[AFMTU0-9]$")
 }
 
 #' @rdname hcpcs
 #' @export
-is_hcpcs_level_II <- function(hcpcs) {
-  is_hcpcs(hcpcs) & grepl_(hcpcs, "^[A-CEGHJ-MP-V]\\d{4}$")
+is_hcpcs_II <- function(hcpcs) {
+  grepl_(hcpcs, "^[A-CEGHJ-MP-V]\\d{4}$")
 }
 
 #' @rdname hcpcs
 #' @export
-is_cpt_category_I <- function(hcpcs) {
-  is_hcpcs_level_I(hcpcs) & grepl_(hcpcs, "^\\d{4}[AMU0-9]$")
+is_cpt_I <- function(hcpcs) {
+  grepl_(hcpcs, "^\\d{4}[AMU0-9]$")
 }
 
 #' @rdname hcpcs
 #' @export
-is_cpt_category_II <- function(hcpcs) {
-  is_hcpcs_level_I(hcpcs) &
-    grepl("^\\d{4}[F]$", hcpcs, ignore.case = TRUE, perl = TRUE)
+is_cpt_II <- function(hcpcs) {
+  grepl_(hcpcs, "^\\d{4}F$")
 }
 
 #' @rdname hcpcs
 #' @export
-is_cpt_category_III <- function(hcpcs) {
-  is_hcpcs_level_I(hcpcs) & grepl_(hcpcs, "^\\d{4}[T]$")
+is_cpt_III <- function(hcpcs) {
+  grepl_(hcpcs, "^\\d{4}T$")
 }
 
 #' @rdname hcpcs
 #' @export
-hcpcs_category <- function(hcpcs) {
+hcpcs_level <- function(hcpcs) {
+  cheapr::case(
+    is_hcpcs_I(hcpcs) ~ "HCPCS I",
+    is_hcpcs_II(hcpcs) ~ "HCPCS II",
+    .default = NA_character_
+  )
+}
+
+#' @rdname hcpcs
+#' @export
+cpt_category <- function(hcpcs) {
+  cheapr::case(
+    is_cpt_I(hcpcs) ~ "CPT I",
+    is_cpt_II(hcpcs) ~ "CPT II",
+    is_cpt_III(hcpcs) ~ "CPT III",
+    .default = NA_character_
+  )
+}
+
+#' @rdname hcpcs
+#' @export
+hcpcs_section <- function(hcpcs) {
   cheapr::val_match(
     substr(hcpcs, 1L, 1L),
     "A" ~ "Transport/Med-Surg Supply/Misc-Exp",
@@ -202,14 +224,19 @@ hcpcs_category <- function(hcpcs) {
 
 #' @rdname hcpcs
 #' @export
-cpt_category <- function(hcpcs) {
+cpt_section <- function(hcpcs) {
   cheapr::case(
     grepl_(hcpcs, "^99[2-4][0-9]{2}$") ~ "E&M",
-    grepl_(hcpcs, "^[09]{2}[0-9]{3}$") ~ "Anesthesiology",
+    grepl_(hcpcs, "^991[0-4][0-9]$") |
+      grepl_(hcpcs, "^00[1-9][0-9]{2}$") |
+      grepl_(hcpcs, "^01[0-9]{3}$") ~ "Anesthesiology",
     grepl_(hcpcs, "^[1-6][0-9]{4}$") ~ "Surgery",
     grepl_(hcpcs, "^7[0-9]{4}$") ~ "Radiology",
     grepl_(hcpcs, "^8[0-9]{4}$") ~ "Pathology",
-    grepl_(hcpcs, "^9[0-9]{4}$") ~ "Medicine", # INCORRECT
+    grepl_(hcpcs, "^9[0-8][0-9]{3}$") |
+      grepl_(hcpcs, "^99[01][0-9]{2}$") |
+      grepl_(hcpcs, "^99[56][0-9]{2}$") ~ "Medicine",
+    grepl_(hcpcs, "^0[012][0-9]{2}U$") ~ "Proprietary Laboratory Analysis",
     endsWith(hcpcs, "A") ~ "Immunization",
     endsWith(hcpcs, "F") ~ "Performance Measurement",
     endsWith(
@@ -217,28 +244,6 @@ cpt_category <- function(hcpcs) {
       "M"
     ) ~ "Multianalyte Assay With Algorithmic Analysis",
     endsWith(hcpcs, "T") ~ "New Technology",
-    grepl_(hcpcs, "^0[012][0-9]{2}U$") ~ "Proprietary Laboratory Analysis",
-    .default = NA_character_
-  )
-}
-
-#' @rdname hcpcs
-#' @export
-hcpcs_level <- function(hcpcs) {
-  cheapr::case(
-    is_hcpcs_level_I(hcpcs) ~ "CPT",
-    is_hcpcs_level_II(hcpcs) ~ "HCPCS II",
-    .default = NA_character_
-  )
-}
-
-#' @rdname hcpcs
-#' @export
-cpt_level <- function(hcpcs) {
-  cheapr::case(
-    is_cpt_category_I(hcpcs) ~ "CPT I",
-    is_cpt_category_II(hcpcs) ~ "CPT II",
-    is_cpt_category_III(hcpcs) ~ "CPT III",
     .default = NA_character_
   )
 }
