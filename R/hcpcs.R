@@ -180,25 +180,45 @@ cpt_category <- function(hcpcs) {
 hcpcs_section <- function(hcpcs) {
   cheapr::val_match(
     substr(hcpcs, 1L, 1L),
-    "A" ~ "Transport/Med-Surg Supply/Misc-Exp",
-    "B" ~ "Enteral/Parenteral Therapy",
-    "C" ~ "Temporary (Hospital OPPS)",
+    "A" ~ "Transportation/Medical and Surgical Supplies",
+    "B" ~ "Enteral and Parenteral Therapy",
+    "C" ~ "Hospital OPPS (Temporary)",
     "D" ~ "Dental",
     "E" ~ "DME",
-    "G" ~ "Temporary (Professional Services)",
+    "G" ~ "Procedures/Professional Services (Temporary)",
     "H" ~ "Rehabilitative",
     "J" ~ "Non-Oral/Chemotherapy Drugs",
-    "K" ~ "Temporary (DME Regional Carriers)",
+    "K" ~ "DME (Temporary)",
     "L" ~ "Orthotic/Prosthetic",
-    "M" ~ "Medical",
+    "M" ~ "Medical/Quality",
     "P" ~ "Path/Lab",
-    "Q" ~ "Temporary Codes",
+    "Q" ~ "Miscellaneous (Temporary)",
     "R" ~ "Diagnostic Radiology",
-    "S" ~ "Private Payer",
+    "S" ~ "Private Payer (Temporary)",
     "T" ~ "State Medicaid Agency",
-    "V" ~ "Vision/Hearing",
+    "U" ~ "Coronavirus Lab Tests",
+    "V" ~ "Vision/Hearing/Speech",
     .default = NA_character_
   )
+}
+
+#' @noRd
+is_cpt_anes <- function(hcpcs) {
+  grepl_(hcpcs, "^991[0-4][0-9]$") |
+    grepl_(hcpcs, "^00[1-9][0-9]{2}$") |
+    grepl_(hcpcs, "^01[0-9]{3}$")
+}
+
+#' @noRd
+is_cpt_med <- function(hcpcs) {
+  grepl_(hcpcs, "^9[0-8][0-9]{3}$") |
+    grepl_(hcpcs, "^99[01][0-9]{2}$") |
+    grepl_(hcpcs, "^99[56][0-9]{2}$")
+}
+
+#' @noRd
+is_cpt_maaa <- function(hcpcs) {
+  endsWith(hcpcs, "M")
 }
 
 #' @rdname hcpcs
@@ -206,22 +226,15 @@ hcpcs_section <- function(hcpcs) {
 cpt_section <- function(hcpcs) {
   cheapr::case(
     grepl_(hcpcs, "^99[2-4][0-9]{2}$") ~ "E&M",
-    grepl_(hcpcs, "^991[0-4][0-9]$") |
-      grepl_(hcpcs, "^00[1-9][0-9]{2}$") |
-      grepl_(hcpcs, "^01[0-9]{3}$") ~ "Anesthesiology",
+    is_cpt_anes(hcpcs) ~ "Anesthesiology",
     grepl_(hcpcs, "^[1-6][0-9]{4}$") ~ "Surgery",
     grepl_(hcpcs, "^7[0-9]{4}$") ~ "Radiology",
     grepl_(hcpcs, "^8[0-9]{4}$") ~ "Pathology",
-    grepl_(hcpcs, "^9[0-8][0-9]{3}$") |
-      grepl_(hcpcs, "^99[01][0-9]{2}$") |
-      grepl_(hcpcs, "^99[56][0-9]{2}$") ~ "Medicine",
+    is_cpt_anes(hcpcs) ~ "Medicine",
     grepl_(hcpcs, "^0[012][0-9]{2}U$") ~ "Proprietary Laboratory Analysis",
     endsWith(hcpcs, "A") ~ "Immunization",
     endsWith(hcpcs, "F") ~ "Performance Measurement",
-    endsWith(
-      hcpcs,
-      "M"
-    ) ~ "Multianalyte Assay With Algorithmic Analysis",
+    is_cpt_maaa(hcpcs) ~ "Multianalyte Assay With Algorithmic Analysis",
     endsWith(hcpcs, "T") ~ "New Technology",
     .default = NA_character_
   )

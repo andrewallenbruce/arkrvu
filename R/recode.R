@@ -38,7 +38,7 @@
 #' recode_mod(c("26", "TC", "53"))
 #'
 #' # Global Days
-#' recode_glob(c("000", "010", "090", "MMM", "XXX", "YYY", "ZZZ"))
+#' recode_glob(c(0, 1, 9, "M", "X", "Y", "Z"))
 #'
 #' # Team Surgery (Mod 66)
 #' recode_team(c(0:2, "9"))
@@ -55,27 +55,36 @@
 #' # Assistant Surgery (Mods 80-82, AS)
 #' recode_asst(c(0:2, "9"))
 #'
-#' # Diagnostic Imaging Reduction (mult == `4`)
-#' recode_diag(c("88", "99"))
+#' # Diagnostic Imaging Reduction (mult == 4)
+#' recode_mult("4")
+#' recode_diag(c(88, "99"))
 #'
 #' # PC/TC Indicator
 #' recode_pctc(c(0:8, "9"))
 #'
 #' # Status Codes
-#' recode_status(LETTERS)
-#' recode_status(LETTERS, "description")
+#' recode_status(LETTERS[c(1:10, 13:14, 16, 18, 20, 24)])
 NULL
 
 #' @rdname recoding
 #' @export
-recode_mod <- function(x) {
-  cheapr::val_match(
-    x,
-    "26" ~ "Professional Component",
-    "TC" ~ "Technical Component",
-    "53" ~ "Discontinued Procedure",
-    .default = NA_character_
-    # NA_character_ ~ "Global Service"
+recode_mod <- function(x, which = c("name", "description")) {
+  switch(
+    match.arg(which),
+    name = cheapr::val_match(
+      x,
+      "26" ~ "Professional Component",
+      "TC" ~ "Technical Component",
+      "53" ~ "Discontinued Procedure",
+      .default = NA_character_
+    ),
+    description = cheapr::val_match(
+      x,
+      "26" ~ "Certain procedures are a combination of a physician or other qualified health care professional component and a technical component. When the physician or other qualified health care professional component is reported separately, the service may be identified by adding modifier 26 to the usual procedure number.",
+      "TC" ~ "Under certain circumstances, a charge may be made for the technical component alone. Under those circumstances the technical component charge is identified by adding modifier TC to the usual procedure number. Technical component charges are institutional charges and not billed separately by physicians; however, portable x-ray suppliers only bill for technical component and should utilize modifier TC. The charge data from portable x-ray suppliers will then be used to build customary and prevailing profiles.",
+      "53" ~ "Under certain circumstances, the physician or other qualified health care professional may elect to terminate a surgical or diagnostic procedure. Due to extenuating circumstances or those that threaten the well being of the patient, it may be necessary to indicate that a surgical or diagnostic procedure was started but discontinued. This circumstance may be reported by adding modifier 53 to the code reported by the individual for the discontinued procedure.",
+      .default = NA_character_
+    )
   )
 }
 
@@ -84,13 +93,13 @@ recode_mod <- function(x) {
 recode_glob <- function(x) {
   cheapr::val_match(
     x,
-    "000" ~ "Endoscopic or minor procedure with related Preoperative and Postoperative RVUs on the day of the procedure only included in the fee schedule payment amount. E&M services on the day of the procedure generally not payable.",
-    "010" ~ "Minor procedure with Preoperative RVUs on the day of the procedure and Postoperative RVUs during a 10-day postoperative period included in the fee schedule amount. E&M services on the day of the procedure and during the 10-day postoperative period generally not payable.",
-    "090" ~ "Major surgery with a 1-day Preoperative period and 90-day Postoperative period included in fee schedule amount.",
-    "MMM" ~ "Maternity codes. Usual Global period does not apply.",
-    "XXX" ~ "Global concept does not apply.",
-    "YYY" ~ "Carrier determines if Global concept applies and, if appropriate, establishes Postoperative period.",
-    "ZZZ" ~ "Code related to another service and is always included in Global period of other service.",
+    "0" ~ "Endoscopic or minor procedure with related Preoperative and Postoperative RVUs on the day of the procedure only included in the fee schedule payment amount. E&M services on the day of the procedure generally not payable.",
+    "1" ~ "Minor procedure with Preoperative RVUs on the day of the procedure and Postoperative RVUs during a 10-day postoperative period included in the fee schedule amount. E&M services on the day of the procedure and during the 10-day postoperative period generally not payable.",
+    "9" ~ "Major surgery with a 1-day Preoperative period and 90-day Postoperative period included in fee schedule amount.",
+    "M" ~ "Maternity codes. Usual Global period does not apply.",
+    "X" ~ "Global concept does not apply.",
+    "Y" ~ "Carrier determines if Global concept applies and, if appropriate, establishes Postoperative period.",
+    "Z" ~ "Code related to another service and is always included in Global period of other service.",
     .default = NA_character_
   )
 }
@@ -179,20 +188,37 @@ recode_diag <- function(x) {
 
 #' @rdname recoding
 #' @export
-recode_pctc <- function(x) {
-  cheapr::val_match(
-    x,
-    "0" ~ "Physician Service: PC/TC does not apply",
-    "1" ~ "Diagnostic Tests for Radiology Services: Have both a PC and TC. Mods 26/TC can be used.",
-    "2" ~ "Professional Component Only: Standalone code. Describes PC of diagnostic tests for which there is a code that describes TC of diagnostic test only and another code that describes the Global test.",
-    "3" ~ "Technical Component Only: Standalone code. Mods 26/TC cannot be used. Describe TC of diagnostic tests for which there is a code that describes PC of the diagnostic test only. Also identifies codes that are covered only as diagnostic tests and do not have a PC code.",
-    "4" ~ "Global Test Only: Standalone code. Mods 26/TC cannot be used. Describes diagnostic tests for which there are codes that describe PC of the test only, and the TC of the test only. Total RVUs is sum of total RVUs for PC and TC only codes combined.",
-    "5" ~ "Incident-To:  Mods 26/TC cannot be used. Services provided by personnel working under physician supervision. Payment may not be made when provided to hospital inpatients or outpatients.",
-    "6" ~ "Lab Physician Interpretation: Mod TC cannot be used. Clinical Lab codes for which separate payment for interpretations by laboratory physicians may be made. Actual performance of tests paid by lab fee schedule.",
-    "7" ~ "Physical Therapy: Payment may not be made if provided to hospital outpatient/inpatient by independently practicing physical or occupational therapist.",
-    "8" ~ "Physician Interpretation: Identifies PC of Clinical Lab codes for which separate payment made only if physician interprets abnormal smear for hospital inpatient. No TC billing recognized, payment for test made to hospital. No payment for CPT 85060 furnished to hospital outpatients or non-hospital patients. Physician interpretation paid through clinical laboratory fee schedule.",
-    "9" ~ "PCTC Concept does not apply",
-    .default = NA_character_
+recode_pctc <- function(x, which = c("name", "description")) {
+  switch(
+    match.arg(which),
+    name = cheapr::val_match(
+      x,
+      "0" ~ "Physician Service",
+      "1" ~ "Diagnostic Tests for Radiology Services",
+      "2" ~ "Professional Component Only",
+      "3" ~ "Technical Component Only",
+      "4" ~ "Global Test Only",
+      "5" ~ "Incident-To",
+      "6" ~ "Lab Physician Interpretation",
+      "7" ~ "Physical Therapy",
+      "8" ~ "Physician Interpretation",
+      "9" ~ NA_character_,
+      .default = NA_character_
+    ),
+    description = cheapr::val_match(
+      x,
+      "0" ~ "PC/TC does not apply",
+      "1" ~ "Have both a PC and TC. Mods 26/TC can be used.",
+      "2" ~ "Standalone code. Describes PC of diagnostic tests for which there is a code that describes TC of diagnostic test only and another code that describes the Global test.",
+      "3" ~ "Standalone code. Mods 26/TC cannot be used. Describe TC of diagnostic tests for which there is a code that describes PC of the diagnostic test only. Also identifies codes that are covered only as diagnostic tests and do not have a PC code.",
+      "4" ~ "Standalone code. Mods 26/TC cannot be used. Describes diagnostic tests for which there are codes that describe PC of the test only, and the TC of the test only. Total RVUs is sum of total RVUs for PC and TC only codes combined.",
+      "5" ~ "Mods 26/TC cannot be used. Services provided by personnel working under physician supervision. Payment may not be made when provided to hospital inpatients or outpatients.",
+      "6" ~ "Mod TC cannot be used. Clinical Lab codes for which separate payment for interpretations by laboratory physicians may be made. Actual performance of tests paid by lab fee schedule.",
+      "7" ~ "Payment may not be made if provided to hospital outpatient/inpatient by independently practicing physical or occupational therapist.",
+      "8" ~ "Identifies PC of Clinical Lab codes for which separate payment made only if physician interprets abnormal smear for hospital inpatient. No TC billing recognized, payment for test made to hospital. No payment for CPT 85060 furnished to hospital outpatients or non-hospital patients. Physician interpretation paid through clinical laboratory fee schedule.",
+      "9" ~ "Concept does not apply",
+      .default = NA_character_
+    )
   )
 }
 
@@ -201,7 +227,7 @@ recode_pctc <- function(x) {
 recode_status <- function(x, which = c("name", "description")) {
   switch(
     match.arg(which),
-    "name" = cheapr::val_match(
+    name = cheapr::val_match(
       x,
       "A" ~ "Active",
       "B" ~ "Payment Bundle",
@@ -221,7 +247,7 @@ recode_status <- function(x, which = c("name", "description")) {
       "X" ~ "Statutory Exclusion",
       .default = NA_character_
     ),
-    "description" = cheapr::val_match(
+    description = cheapr::val_match(
       x,
       "A" ~ "Separately paid if covered. RVUs and payment amounts. Carriers responsible for coverage decisions in absence of an NCD.",
       "B" ~ "Payment bundled into payment for other services not specified. No RVUs, no payment made. When covered, payment subsumed by payment for services to which they are incident.",

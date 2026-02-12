@@ -14,7 +14,7 @@
 \alias{recode_status}
 \title{Recode Indicators}
 \usage{
-recode_mod(x)
+recode_mod(x, which = c("name", "description"))
 
 recode_glob(x)
 
@@ -30,7 +30,7 @@ recode_asst(x)
 
 recode_diag(x)
 
-recode_pctc(x)
+recode_pctc(x, which = c("name", "description"))
 
 recode_status(x, which = c("name", "description"))
 }
@@ -85,7 +85,7 @@ Multiple Procedure indicator of \code{4}.
 recode_mod(c("26", "TC", "53"))
 
 # Global Days
-recode_glob(c("000", "010", "090", "MMM", "XXX", "YYY", "ZZZ"))
+recode_glob(c(0, 1, 9, "M", "X", "Y", "Z"))
 
 # Team Surgery (Mod 66)
 recode_team(c(0:2, "9"))
@@ -102,13 +102,13 @@ recode_cosurg(c(0:2, "9"))
 # Assistant Surgery (Mods 80-82, AS)
 recode_asst(c(0:2, "9"))
 
-# Diagnostic Imaging Reduction (mult == `4`)
-recode_diag(c("88", "99"))
+# Diagnostic Imaging Reduction (mult == 4)
+recode_mult("4")
+recode_diag(c(88, "99"))
 
 # PC/TC Indicator
 recode_pctc(c(0:8, "9"))
 
 # Status Codes
-recode_status(LETTERS)
-recode_status(LETTERS, "description")
+recode_status(LETTERS[c(1:10, 13:14, 16, 18, 20, 24)])
 }
