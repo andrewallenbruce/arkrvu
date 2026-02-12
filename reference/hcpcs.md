@@ -7,23 +7,23 @@ Validate HCPCS Codes
 ``` r
 is_hcpcs(hcpcs)
 
-is_hcpcs_level_I(hcpcs)
+is_hcpcs_I(hcpcs)
 
-is_hcpcs_level_II(hcpcs)
+is_hcpcs_II(hcpcs)
 
-is_cpt_category_I(hcpcs)
+is_cpt_I(hcpcs)
 
-is_cpt_category_II(hcpcs)
+is_cpt_II(hcpcs)
 
-is_cpt_category_III(hcpcs)
-
-hcpcs_category(hcpcs)
-
-cpt_category(hcpcs)
+is_cpt_III(hcpcs)
 
 hcpcs_level(hcpcs)
 
-cpt_level(hcpcs)
+cpt_category(hcpcs)
+
+hcpcs_section(hcpcs)
+
+cpt_section(hcpcs)
 ```
 
 ## Source
@@ -151,45 +151,51 @@ I requirements:
 ## Examples
 
 ``` r
-x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA)
+x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA, "1164")
+y <- c("39503", "99215", "99140", "70010", "0222U", "V5299", "7010F")
 
 is_hcpcs(x)
-#> [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE
-
-x[which(is_hcpcs(x))]
-#> [1] "T1503" "G0478" "81301" "69641" "0583F" "0779T"
-
-try(is_hcpcs("1164"))
-#> [1] FALSE
-
-is_hcpcs_level_I(x)
-#> [1] FALSE FALSE  TRUE  TRUE  TRUE  TRUE FALSE
-is_hcpcs_level_II(x)
-#> [1]  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE
-is_cpt_category_I(x)
-#> [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE
-is_cpt_category_II(x)
-#> [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
-is_cpt_category_III(x)
-#> [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE
+#> [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE
+is_hcpcs_I(x)
+#> [1] FALSE FALSE  TRUE  TRUE  TRUE  TRUE FALSE FALSE
+is_hcpcs_II(x)
+#> [1]  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE
+is_cpt_I(x)
+#> [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE
+is_cpt_II(x)
+#> [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE
+is_cpt_III(x)
+#> [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
 
 fastplyr::new_tbl(
-   x = c("39503", "99215", "99140", "69990", "70010",
-         "0222U", "V5299", "7010F", "0074T"),
-   level = hcpcs_level(x)) |>
-collapse::mtt(
-    level = cheapr::if_else_(level == "CPT", cpt_level(x), level),
-    category = cheapr::if_else_(level != "HCPCS II", cpt_category(x), hcpcs_category(x)))
-#> # A tibble: 9 × 3
-#>   x     level    category                       
-#>   <chr> <chr>    <chr>                          
-#> 1 39503 CPT I    Surgery                        
-#> 2 99215 CPT I    E&M                            
-#> 3 99140 CPT I    Anesthesiology                 
-#> 4 69990 CPT I    Surgery                        
-#> 5 70010 CPT I    Radiology                      
-#> 6 0222U CPT I    Proprietary Laboratory Analysis
-#> 7 V5299 HCPCS II Vision/Hearing                 
-#> 8 7010F CPT II   Performance Measurement        
-#> 9 0074T CPT III  New Technology                 
+  hcpcs = c(x, y),
+  type = hcpcs_level(hcpcs)) |>
+  collapse::mtt(
+    type = cheapr::if_else_(
+      type == "HCPCS I",
+      cpt_category(hcpcs),
+      type),
+    section = cheapr::if_else_(
+      type != "HCPCS II",
+      cpt_section(hcpcs),
+      hcpcs_section(hcpcs))) |>
+  collapse::roworder(type, hcpcs)
+#> # A tibble: 15 × 3
+#>    hcpcs type     section                          
+#>    <chr> <chr>    <chr>                            
+#>  1 0222U CPT I    Proprietary Laboratory Analysis  
+#>  2 39503 CPT I    Surgery                          
+#>  3 69641 CPT I    Surgery                          
+#>  4 70010 CPT I    Radiology                        
+#>  5 81301 CPT I    Pathology                        
+#>  6 99140 CPT I    Anesthesiology                   
+#>  7 99215 CPT I    E&M                              
+#>  8 0583F CPT II   Performance Measurement          
+#>  9 7010F CPT II   Performance Measurement          
+#> 10 0779T CPT III  New Technology                   
+#> 11 G0478 HCPCS II Temporary (Professional Services)
+#> 12 T1503 HCPCS II State Medicaid Agency            
+#> 13 V5299 HCPCS II Vision/Hearing                   
+#> 14 1164  NA       NA                               
+#> 15 NA    NA       NA                               
 ```

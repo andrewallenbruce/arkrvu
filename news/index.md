@@ -1,9 +1,12 @@
 # Changelog
 
+## arkrvu 0.0.1.9030
+
+- HCPCS: refactored regexes, renamed functions
+
 ## arkrvu 0.0.1.9029
 
-- refactored
-  [`hcpcs_category()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+- refactored `hcpcs_category()`
 
 ## arkrvu 0.0.1.9028
 
