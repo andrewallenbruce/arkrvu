@@ -7,11 +7,11 @@ Recode Indicators
 ``` r
 recode_mod(x, which = c("name", "description"))
 
-recode_glob(x)
+recode_glob(x, which = c("name", "description"))
 
 recode_team(x)
 
-recode_bilat(x)
+recode_bilat(x, which = c("name", "description"))
 
 recode_mult(x)
 
@@ -79,34 +79,24 @@ a Multiple Procedure indicator of `4`.
 # Modifier
 recode_mod(c("26", "TC", "53"))
 #> [1] "Professional Component" "Technical Component"    "Discontinued Procedure"
-
 # Global Days
-recode_glob(c(0, 1, 9, "M", "X", "Y", "Z"))
-#> [1] "Endoscopic or minor procedure with related Preoperative and Postoperative RVUs on the day of the procedure only included in the fee schedule payment amount. E&M services on the day of the procedure generally not payable."                                                  
-#> [2] "Minor procedure with Preoperative RVUs on the day of the procedure and Postoperative RVUs during a 10-day postoperative period included in the fee schedule amount. E&M services on the day of the procedure and during the 10-day postoperative period generally not payable."
-#> [3] "Major surgery with a 1-day Preoperative period and 90-day Postoperative period included in fee schedule amount."                                                                                                                                                               
-#> [4] "Maternity codes. Usual Global period does not apply."                                                                                                                                                                                                                          
-#> [5] "Global concept does not apply."                                                                                                                                                                                                                                                
-#> [6] "Carrier determines if Global concept applies and, if appropriate, establishes Postoperative period."                                                                                                                                                                           
-#> [7] "Code related to another service and is always included in Global period of other service."                                                                                                                                                                                     
-
+recode_glob(c(0, 1, 9, "M", "Y", "Z"))
+#> [1] "Minor Procedure (Day-Of Postop)"          
+#> [2] "Minor Procedure (10-Day Postop) "         
+#> [3] "Major Surgery (90-Day Postop)"            
+#> [4] "Maternity Code"                           
+#> [5] "Carrier-Determined"                       
+#> [6] "Included in Other Service's Global Period"
 # Team Surgery (Mod 66)
-recode_team(c(0:2, "9"))
+recode_team(0:2)
 #> [1] "Not Permitted"                           
-#> [2] "Medical Necessity Documentation Required"
+#> [2] "Requires Medical Necessity Documentation"
 #> [3] "Permitted"                               
-#> [4] "Concept does not apply"                  
-
 # Bilateral Surgery (Mod 50)
-recode_bilat(c(0:3, "9"))
-#> [1] "Adjustment does not apply. If reported with mod 50 or RT and LT, payment for the two sides is the lower of (a) total charge for both sides (b) 100% of fee schedule amount for a single code. Adjustment is inappropriate because (a) of physiology or anatomy, or (b) code description states it is a unilateral procedure and there is an existing code for the bilateral procedure."                                                                                                                                                                                                                               
-#> [2] "Adjustment applies. If reported with bilateral modifier or twice on same day by any other means (with RT and LT mods, or with a 2 in the units field), base payment on lower of: (a) total charge for both sides or (b) 150% of fee schedule amount for a single code. If reported as bilateral procedure and reported with other procedure codes on same day, apply bilateral adjustment before applying any multiple procedure rules."                                                                                                                                                                              
-#> [3] "Adjustment does not apply. RVUs already based on procedure as a bilateral procedure. If reported with mod -50 or twice on same day by any other means, base payment on lower of (a) total charge for both sides, or (b) 100% of fee schedule for a single code."                                                                                                                                                                                                                                                                                                                                                      
-#> [4] "Adjustment does not apply. If reported with mod 50 or for both sides on same day by any other means, base payment for each side or organ or site of paired organ on lower of (a) charge for each side or (b) 100% of fee schedule amount for each side. If reported as bilateral procedure and with other procedure codes on same day, determine fee schedule amount for a bilateral procedure before applying any multiple procedure rules. Services in this category are generally radiology procedures or other diagnostic tests which are not subject to the special payment rules for other bilateral surgeries."
-#> [5] "Concept does not apply"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-
+recode_bilat(0:3)
+#> [1] "No Adjustment" "Adjustment"    "No Adjustment" "No Adjustment"
 # Multiple Procedure (Mod 51)
-recode_mult(c(0:7, "9"))
+recode_mult(0:7)
 #> [1] "No adjustment. If procedure is reported on the same day as another procedure, base the payment on the lower of (a) the actual charge, or (b) the fee schedule amount for the procedure."                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 #> [2] "Standard adjustment. If reported on the same day as another procedure with an indicator of 1, 2, or 3, rank the procedures by fee schedule amount and apply the appropriate reduction to this code (100%, 50%, 25%, 25%, 25%, and by report). Base payment on the lower of (a) the actual charge, or (b) the fee schedule amount reduced by the appropriate percentage."                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 #> [3] "Standard adjustment. If reported on the same day as another procedure with an indicator of 1, 2, or 3, rank the procedures by fee schedule amount and apply the appropriate reduction to this code (100%, 50%, 50%, 50%, 50% and by report). Base payment on the lower of (a) the actual charge, or (b) the fee schedule amount reduced by the appropriate percentage."                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
@@ -115,42 +105,32 @@ recode_mult(c(0:7, "9"))
 #> [6] "Subject to 50% of the practice expense component for certain therapy services."                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 #> [7] "Subject to 25% reduction of the second highest and subsequent procedures to the TC of diagnostic cardiovascular services, effective for services January 1, 2013, and thereafter."                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 #> [8] "Subject to 20% reduction of the second highest and subsequent procedures to the TC of diagnostic ophthalmology services, effective for services January 1, 2013, and thereafter."                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-#> [9] "Concept does not apply"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-
 # Co-Surgeon (Mod 62)
-recode_cosurg(c(0:2, "9"))
+recode_cosurg(0:2)
 #> [1] "Not Permitted"                           
-#> [2] "Medical Necessity Documentation Required"
+#> [2] "Requires Medical Necessity Documentation"
 #> [3] "Permitted"                               
-#> [4] "Concept does not apply"                  
-
 # Assistant Surgery (Mods 80-82, AS)
-recode_asst(c(0:2, "9"))
-#> [1] "Payment Restriction unless Medical Necessity documentation submitted"
-#> [2] "Payment Restriction; Assistant cannot be paid"                       
-#> [3] "No Payment Restriction; Assistant can be paid"                       
-#> [4] "Concept does not apply"                                              
-
+recode_asst(0:2)
+#> [1] "Requires Medical Necessity Documentation"
+#> [2] "Assistant Not Paid"                      
+#> [3] "Assistant Paid"                          
 # Diagnostic Imaging Reduction (mult == 4)
-recode_mult("4")
+recode_mult(4)
 #> [1] "Special rules for the technical component (TC) of diagnostic imaging procedures apply if procedure is billed with another diagnostic imaging procedure in the same family (per the diagnostic imaging family indicator, below). If procedure is reported in the same session on the same day as another procedure with the same family indicator, rank the procedures by fee schedule amount for the TC. Pay 100% for the highest priced procedure, and 50% for each subsequent procedure. Base the payment for subsequent procedures on the lower of (a) the actual charge, or (b) the fee schedule amount reduced by the appropriate percentage. Subject to 50% reduction of the TC diagnostic imaging (effective for services July 1, 2010 and after). Subject to 25% reduction of the PC of diagnostic imaging (effective for services January 1, 2012 through December 31, 2016). Subject to 5% reduction of the PC of diagnostic imaging (effective for services January 1, 2017 and after)."
-recode_diag(c(88, "99"))
-#> [1] "Subject to Reduction of TC or PC Diagnostic Imaging"
-#> [2] "Concept does not apply"                             
-
+recode_diag(1)
+#> [1] "TC/PC Diagnostic Imaging Reduction"
 # PC/TC Indicator
-recode_pctc(c(0:8, "9"))
-#>  [1] "Physician Service"                      
-#>  [2] "Diagnostic Tests for Radiology Services"
-#>  [3] "Professional Component Only"            
-#>  [4] "Technical Component Only"               
-#>  [5] "Global Test Only"                       
-#>  [6] "Incident-To"                            
-#>  [7] "Lab Physician Interpretation"           
-#>  [8] "Physical Therapy"                       
-#>  [9] "Physician Interpretation"               
-#> [10] NA                                       
-
+recode_pctc(0:8)
+#> [1] "Physician Service"                      
+#> [2] "Diagnostic Tests for Radiology Services"
+#> [3] "Professional Component Only"            
+#> [4] "Technical Component Only"               
+#> [5] "Global Test Only"                       
+#> [6] "Incident-To"                            
+#> [7] "Lab Physician Interpretation"           
+#> [8] "Physical Therapy"                       
+#> [9] "Physician Interpretation"               
 # Status Codes
 recode_status(LETTERS[c(1:10, 13:14, 16, 18, 20, 24)])
 #>  [1] "Active"                 "Payment Bundle"         "Carrier Priced"        
