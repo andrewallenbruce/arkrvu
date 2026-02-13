@@ -121,7 +121,7 @@ NULL
 #' @rdname hcpcs
 #' @export
 is_hcpcs <- function(hcpcs) {
-  grepl_(hcpcs, "^[A-CEGHJ-MP-V0-9]\\d{3}[AFMTU0-9]$")
+  grepl_(hcpcs, "^[A-EGHJ-MP-V]\\d{3}[AFMTU0-9]$")
 }
 
 #' @rdname hcpcs
@@ -133,7 +133,7 @@ is_hcpcs_I <- function(hcpcs) {
 #' @rdname hcpcs
 #' @export
 is_hcpcs_II <- function(hcpcs) {
-  grepl_(hcpcs, "^[A-CEGHJ-MP-V]\\d{4}$")
+  grepl_(hcpcs, "^[A-EGHJ-MP-V]\\d{4}$")
 }
 
 #' @rdname hcpcs
@@ -230,7 +230,7 @@ cpt_section <- function(hcpcs) {
     grepl_(hcpcs, "^[1-6][0-9]{4}$") ~ "Surgery",
     grepl_(hcpcs, "^7[0-9]{4}$") ~ "Radiology",
     grepl_(hcpcs, "^8[0-9]{4}$") ~ "Pathology",
-    is_cpt_anes(hcpcs) ~ "Medicine",
+    is_cpt_med(hcpcs) ~ "Medicine",
     grepl_(hcpcs, "^0[012][0-9]{2}U$") ~ "Proprietary Laboratory Analysis",
     endsWith(hcpcs, "A") ~ "Immunization",
     endsWith(hcpcs, "F") ~ "Performance Measurement",

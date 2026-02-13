@@ -2,21 +2,28 @@ source(here::here("data-raw", "fns.R"))
 
 x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
   collapse::mtt(
-    glob_days = glob_(glob_days),
+    glob_days = glob_(glob_days) |> cheapr::as_factor(),
     diagnostic_imaging_family_indicator = diag_(
       diagnostic_imaging_family_indicator
-    ),
-    pctc_ind = to_na(pctc_ind),
-    mult_proc = to_na(mult_proc),
-    bilat_surg = to_na(bilat_surg),
-    asst_surg = to_na(asst_surg),
-    co_surg = to_na(co_surg),
-    team_surg = to_na(team_surg),
-    non_fac_indicator = bin_(non_fac_indicator),
-    facility_indicator = bin_(facility_indicator),
-    not_used_for_medicare_payment = bin_(not_used_for_medicare_payment),
-    tot_op = pre_op + intra_op + post_op,
-    tot_rvu = non_facility_total + facility_total
+    ) |>
+      cheapr::as_factor(),
+    pctc_ind = to_na(pctc_ind) |> cheapr::as_factor(),
+    mult_proc = to_na(mult_proc) |> cheapr::as_factor(),
+    bilat_surg = to_na(bilat_surg) |> cheapr::as_factor(),
+    asst_surg = to_na(asst_surg) |> cheapr::as_factor(),
+    co_surg = to_na(co_surg) |> cheapr::as_factor(),
+    team_surg = to_na(team_surg) |> cheapr::as_factor(),
+    non_fac_indicator = bin_(non_fac_indicator) |> cheapr::as_factor(),
+    facility_indicator = bin_(facility_indicator) |> cheapr::as_factor(),
+    not_used_for_medicare_payment = bin_(not_used_for_medicare_payment) |>
+      cheapr::as_factor(),
+    has_op = (pre_op + intra_op + post_op) |> cheapr::as_factor(),
+    has_rvu = cheapr::if_else_(
+      (non_facility_total + facility_total) > 0L,
+      1L,
+      0L
+    ) |>
+      cheapr::as_factor()
   ) |>
   collapse::slt(
     hcpcs,
@@ -30,7 +37,7 @@ x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
     rvu_mp = mp_rvu,
     tot_non = non_facility_total,
     tot_fac = facility_total,
-    tot_rvu,
+    has_rvu,
     ind_non = non_fac_indicator,
     ind_fac = facility_indicator,
     pctc = pctc_ind,
@@ -39,7 +46,7 @@ x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
     op_pre = pre_op,
     op_intra = intra_op,
     op_post = post_op,
-    tot_op,
+    has_op,
     surg_bilat = bilat_surg,
     surg_asst = asst_surg,
     surg_co = co_surg,
@@ -50,9 +57,41 @@ x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
   ) |>
   classify_hcpcs()
 
+cheapr::sset_row(x, x$has_rvu == 1L) |>
+  fastplyr::as_tbl() |>
+  collapse::fcount(level, section) |>
+  collapse::roworder(-N)
+
+
+cheapr::sset_row(x, x$has_rvu == 0L) |>
+  fastplyr::as_tbl() |>
+  collapse::fcount(level, section) |>
+  collapse::roworder(-N)
+
+ov <- cheapr::overview(x)
+
+ov$numeric |>
+  fastplyr::as_tbl() |>
+  collapse::slt(
+    column = col,
+    unique = n_unique,
+    mean,
+    p0,
+    p25,
+    p75,
+    p100,
+    sd,
+    hist
+  )
+
+ov$categorical |>
+  fastplyr::as_tbl() |>
+  collapse::slt(column = col, missing = n_missing, unique = n_unique, min, max)
+
+
 saw_names <- c(
-  "hcpcs_type",
-  "hcpcs_section",
+  "level",
+  "section",
   "mod",
   "stat",
   "not_med",
@@ -67,14 +106,14 @@ saw_names <- c(
   "surg_asst",
   "surg_co",
   "surg_team",
-  "tot_rvu",
-  "tot_op"
+  "has_rvu",
+  "has_op"
 )
 
 saw <- x |>
   hacksaw::count_split(
-    hcpcs_type,
-    hcpcs_section,
+    level,
+    section,
     mod,
     stat,
     not_med,
@@ -89,8 +128,8 @@ saw <- x |>
     surg_asst,
     surg_co,
     surg_team,
-    tot_rvu,
-    tot_op
+    has_rvu,
+    has_op
   ) |>
   purrr::set_names(saw_names) |>
   purrr::map(function(x) {
@@ -100,7 +139,7 @@ saw <- x |>
   purrr::list_rbind(names_to = "column") |>
   collapse::sbt(!cheapr::is_na(value))
 
-cols <- c("tot_op", "not_med", "ind_non", "ind_fac", "endo", "diag")
+cols <- c("has_op", "not_med", "ind_non", "ind_fac", "endo", "diag")
 
 saw <- collapse::rowbind(
   collapse::sbt(saw, column != "endo"),
@@ -111,22 +150,22 @@ saw <- collapse::rowbind(
 ) |>
   # collapse::fcount(column, w = n, add = TRUE) |>
   collapse::mtt(P = n / 18499L) |>
-  collapse::sbt(
-    !(column == "tot_rvu" & value != 0) &
-      !(column %in% cols & value == "0")
-  ) |>
+  # collapse::sbt(
+  #   !(column == "has_rvu" & value != 0) &
+  #     !(column %in% cols & value == "0")
+  # ) |>
   print(n = Inf)
 
 collapse::sbt(
   saw,
-  column %iin% c("tot_rvu", cols)
+  column %iin% c("has_rvu", cols)
 ) |>
   collapse::roworder(-n) |>
   collapse::rowbind(
     collapse::sbt(
       saw,
       column %!iin%
-        c("tot_rvu", cols)
+        c("has_rvu", cols)
     )
   ) |>
   collapse::mtt(
@@ -135,7 +174,7 @@ collapse::sbt(
       column == "mod" ~ recode_mod(value),
       column == "pctc" ~ recode_pctc(value),
       column == "glob" ~ recode_glob(value),
-      # column == "mult" ~ recode_mult(value),
+      column == "mult" ~ recode_mult(value),
       column == "surg_bilat" ~ recode_bilat(value),
       column == "surg_asst" ~ recode_asst(value),
       column == "surg_co" ~ recode_cosurg(value),

@@ -21,22 +21,22 @@ diag_ <- function(x) cheapr::if_else_(x == "88", "1", NA_character_)
 classify_hcpcs <- function(x) {
   collapse::mtt(
     x,
-    hcpcs_type = hcpcs_level(hcpcs),
-    hcpcs_type = cheapr::if_else_(
-      hcpcs_type == "HCPCS I",
+    level = hcpcs_level(hcpcs),
+    level = cheapr::if_else_(
+      level == "HCPCS I",
       cpt_category(hcpcs),
-      hcpcs_type
+      level
     ),
-    hcpcs_section = cheapr::if_else_(
-      hcpcs_type != "HCPCS II",
+    section = cheapr::if_else_(
+      level != "HCPCS II",
       cpt_section(hcpcs),
       hcpcs_section(hcpcs)
     )
   ) |>
     collapse::colorder(
       hcpcs,
-      hcpcs_type,
-      hcpcs_section
+      level,
+      section
     )
 }
 
