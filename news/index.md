@@ -1,5 +1,9 @@
 # Changelog
 
+## arkrvu 0.0.1.9034
+
+- fixed bug in HCPCS regexes
+
 ## arkrvu 0.0.1.9033
 
 - clean up
