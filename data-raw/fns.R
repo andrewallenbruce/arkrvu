@@ -2,6 +2,22 @@ to_na <- function(x) cheapr::if_else_(x == "9", NA_character_, x)
 
 bin_ <- function(x) cheapr::if_else_(cheapr::is_na(x), 0L, 1L)
 
+glob_ <- function(x) {
+  cheapr::val_match(
+    x,
+    "000" ~ "0",
+    "010" ~ "1",
+    "090" ~ "9",
+    "MMM" ~ "M",
+    "XXX" ~ NA_character_,
+    "YYY" ~ "Y",
+    "ZZZ" ~ "Z",
+    .default = NA_character_
+  )
+}
+
+diag_ <- function(x) cheapr::if_else_(x == "88", "1", NA_character_)
+
 classify_hcpcs <- function(x) {
   collapse::mtt(
     x,

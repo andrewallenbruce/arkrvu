@@ -1,5 +1,4 @@
-source(here::here("data-raw", "pins_functions.R"))
-source(here::here("data-raw", "rvu_functions.R"))
+source(here::here("data-raw", "fns.R"))
 library(collapse)
 
 # --- LOAD ----

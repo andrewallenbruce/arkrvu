@@ -2,22 +2,9 @@ source(here::here("data-raw", "fns.R"))
 
 x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
   collapse::mtt(
-    glob_days = cheapr::val_match(
-      glob_days,
-      "000" ~ "0",
-      "010" ~ "1",
-      "090" ~ "9",
-      "MMM" ~ "M",
-      "XXX" ~ NA_character_,
-      "YYY" ~ "Y",
-      "ZZZ" ~ "Z",
-      .default = NA_character_
-    ),
-    diagnostic_imaging_family_indicator = cheapr::val_match(
-      diagnostic_imaging_family_indicator,
-      "99" ~ NA_character_,
-      "88" ~ "1",
-      .default = NA_character_
+    glob_days = glob_(glob_days),
+    diagnostic_imaging_family_indicator = diag_(
+      diagnostic_imaging_family_indicator
     ),
     pctc_ind = to_na(pctc_ind),
     mult_proc = to_na(mult_proc),

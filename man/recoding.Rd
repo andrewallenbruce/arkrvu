@@ -22,7 +22,7 @@ recode_team(x)
 
 recode_bilat(x, which = c("name", "description"))
 
-recode_mult(x)
+recode_mult(x, which = c("name", "description"))
 
 recode_cosurg(x)
 
@@ -83,23 +83,33 @@ Multiple Procedure indicator of \code{4}.
 \examples{
 # Modifier
 recode_mod(c("26", "TC", "53"))
+
 # Global Days
 recode_glob(c(0, 1, 9, "M", "Y", "Z"))
+
 # Team Surgery (Mod 66)
 recode_team(0:2)
+
 # Bilateral Surgery (Mod 50)
 recode_bilat(0:3)
+
 # Multiple Procedure (Mod 51)
 recode_mult(0:7)
+
 # Co-Surgeon (Mod 62)
 recode_cosurg(0:2)
+
 # Assistant Surgery (Mods 80-82, AS)
 recode_asst(0:2)
+
 # Diagnostic Imaging Reduction (mult == 4)
 recode_mult(4)
 recode_diag(1)
+
 # PC/TC Indicator
 recode_pctc(0:8)
+
 # Status Codes
 recode_status(LETTERS[c(1:10, 13:14, 16, 18, 20, 24)])
+
 }
