@@ -8,6 +8,7 @@
 \alias{is_cpt_I}
 \alias{is_cpt_II}
 \alias{is_cpt_III}
+\alias{hcpcs_type}
 \alias{hcpcs_level}
 \alias{cpt_category}
 \alias{hcpcs_section}
@@ -30,6 +31,8 @@ is_cpt_I(hcpcs)
 is_cpt_II(hcpcs)
 
 is_cpt_III(hcpcs)
+
+hcpcs_type(hcpcs)
 
 hcpcs_level(hcpcs)
 

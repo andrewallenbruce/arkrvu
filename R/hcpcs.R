@@ -156,6 +156,16 @@ is_cpt_III <- function(hcpcs) {
 
 #' @rdname hcpcs
 #' @export
+hcpcs_type <- function(hcpcs) {
+  cheapr::case(
+    is_hcpcs_I(hcpcs) ~ "CPT",
+    is_hcpcs_II(hcpcs) ~ "HCPCS",
+    .default = NA_character_
+  )
+}
+
+#' @rdname hcpcs
+#' @export
 hcpcs_level <- function(hcpcs) {
   cheapr::case(
     is_hcpcs_I(hcpcs) ~ "HCPCS I",
@@ -180,24 +190,24 @@ cpt_category <- function(hcpcs) {
 hcpcs_section <- function(hcpcs) {
   cheapr::val_match(
     substr(hcpcs, 1L, 1L),
-    "A" ~ "Transportation/Medical and Surgical Supplies",
-    "B" ~ "Enteral and Parenteral Therapy",
-    "C" ~ "Hospital OPPS (Temporary)",
+    "A" ~ "Transport, Supplies",
+    "B" ~ "Enteral, Parenteral",
+    "C" ~ "OPPS",
     "D" ~ "Dental",
     "E" ~ "DME",
-    "G" ~ "Procedures/Professional Services (Temporary)",
+    "G" ~ "Professional",
     "H" ~ "Rehabilitative",
-    "J" ~ "Non-Oral/Chemotherapy Drugs",
-    "K" ~ "DME (Temporary)",
-    "L" ~ "Orthotic/Prosthetic",
-    "M" ~ "Medical/Quality",
+    "J" ~ "Non-Oral, Chemotherapy Drugs",
+    "K" ~ "DME",
+    "L" ~ "Orthotic, Prosthetic",
+    "M" ~ "Medical, Quality",
     "P" ~ "Path/Lab",
-    "Q" ~ "Miscellaneous (Temporary)",
-    "R" ~ "Diagnostic Radiology",
-    "S" ~ "Private Payer (Temporary)",
-    "T" ~ "State Medicaid Agency",
-    "U" ~ "Coronavirus Lab Tests",
-    "V" ~ "Vision/Hearing/Speech",
+    "Q" ~ "Misc",
+    "R" ~ "Diag. Radiology",
+    "S" ~ "Private Payer",
+    "T" ~ "Medicaid",
+    "U" ~ "Corona Labs",
+    "V" ~ "Vision-Hearing-Speech",
     .default = NA_character_
   )
 }
@@ -231,10 +241,10 @@ cpt_section <- function(hcpcs) {
     grepl_(hcpcs, "^7[0-9]{4}$") ~ "Radiology",
     grepl_(hcpcs, "^8[0-9]{4}$") ~ "Pathology",
     is_cpt_med(hcpcs) ~ "Medicine",
-    grepl_(hcpcs, "^0[012][0-9]{2}U$") ~ "Proprietary Laboratory Analysis",
+    grepl_(hcpcs, "^0[012][0-9]{2}U$") ~ "Laboratory",
     endsWith(hcpcs, "A") ~ "Immunization",
     endsWith(hcpcs, "F") ~ "Performance Measurement",
-    is_cpt_maaa(hcpcs) ~ "Multianalyte Assay With Algorithmic Analysis",
+    is_cpt_maaa(hcpcs) ~ "MAAA", # "Multianalyte Assay With Algorithmic Analysis",
     endsWith(hcpcs, "T") ~ "New Technology",
     .default = NA_character_
   )

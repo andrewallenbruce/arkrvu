@@ -102,7 +102,7 @@ recode_team <- function(x) {
   cheapr::val_match(
     x,
     "0" ~ "Not Permitted",
-    "1" ~ "Requires Medical Necessity Documentation",
+    "1" ~ "Requires Medical Necessity",
     "2" ~ "Permitted",
     .default = NA_character_
   )
@@ -182,7 +182,7 @@ recode_cosurg <- function(x) {
   cheapr::val_match(
     x,
     "0" ~ "Not Permitted",
-    "1" ~ "Requires Medical Necessity Documentation",
+    "1" ~ "Requires Medical Necessity",
     "2" ~ "Permitted",
     .default = NA_character_
   )
@@ -197,7 +197,7 @@ recode_cosurg <- function(x) {
 recode_asst <- function(x) {
   cheapr::val_match(
     x,
-    "0" ~ "Requires Medical Necessity Documentation",
+    "0" ~ "Requires Medical Necessity",
     "1" ~ "Assistant Not Paid",
     "2" ~ "Assistant Paid",
     .default = NA_character_

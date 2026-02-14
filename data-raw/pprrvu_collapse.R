@@ -1,29 +1,31 @@
 source(here::here("data-raw", "fns.R"))
+library(collapse)
 
 x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
-  collapse::mtt(
-    glob_days = glob_(glob_days) |> cheapr::as_factor(),
-    diagnostic_imaging_family_indicator = diag_(
-      diagnostic_imaging_family_indicator
-    ) |>
-      cheapr::as_factor(),
-    pctc_ind = to_na(pctc_ind) |> cheapr::as_factor(),
-    mult_proc = to_na(mult_proc) |> cheapr::as_factor(),
-    bilat_surg = to_na(bilat_surg) |> cheapr::as_factor(),
-    asst_surg = to_na(asst_surg) |> cheapr::as_factor(),
-    co_surg = to_na(co_surg) |> cheapr::as_factor(),
-    team_surg = to_na(team_surg) |> cheapr::as_factor(),
-    non_fac_indicator = bin_(non_fac_indicator) |> cheapr::as_factor(),
-    facility_indicator = bin_(facility_indicator) |> cheapr::as_factor(),
-    not_used_for_medicare_payment = bin_(not_used_for_medicare_payment) |>
-      cheapr::as_factor(),
-    has_op = (pre_op + intra_op + post_op) |> cheapr::as_factor(),
-    has_rvu = cheapr::if_else_(
-      (non_facility_total + facility_total) > 0L,
-      1L,
-      0L
-    ) |>
-      cheapr::as_factor()
+  fastplyr::f_mutate(
+    fastplyr::across(
+      c(
+        pctc_ind,
+        mult_proc,
+        bilat_surg,
+        asst_surg,
+        co_surg,
+        team_surg
+      ),
+      nine_
+    ),
+    fastplyr::across(
+      c(
+        non_fac_indicator,
+        facility_indicator,
+        not_used_for_medicare_payment
+      ),
+      bin_
+    ),
+    glob_days = glob_(glob_days),
+    diag = diag_(diagnostic_imaging_family_indicator),
+    has_op = has_op(pre_op, intra_op, post_op),
+    has_rvu = has_rvu_(non_facility_total, facility_total)
   ) |>
   collapse::slt(
     hcpcs,
@@ -52,44 +54,63 @@ x <- raw_source(2024, "pprrvu")$rvu24a_jan |>
     surg_co = co_surg,
     surg_team = team_surg,
     endo = endo_base,
-    diag = diagnostic_imaging_family_indicator,
+    diag,
     cf = conv_factor
   ) |>
-  classify_hcpcs()
-
-cheapr::sset_row(x, x$has_rvu == 1L) |>
-  fastplyr::as_tbl() |>
-  collapse::fcount(level, section) |>
-  collapse::roworder(-N)
-
-
-cheapr::sset_row(x, x$has_rvu == 0L) |>
-  fastplyr::as_tbl() |>
-  collapse::fcount(level, section) |>
-  collapse::roworder(-N)
-
-ov <- cheapr::overview(x)
-
-ov$numeric |>
-  fastplyr::as_tbl() |>
-  collapse::slt(
-    column = col,
-    unique = n_unique,
-    mean,
-    p0,
-    p25,
-    p75,
-    p100,
-    sd,
-    hist
+  classify_hcpcs() |>
+  fastplyr::f_mutate(
+    fastplyr::across(
+      c(
+        mod,
+        stat,
+        not_med,
+        has_rvu,
+        ind_fac,
+        ind_non,
+        pctc,
+        glob,
+        mult,
+        has_op,
+        surg_bilat,
+        surg_asst,
+        surg_co,
+        surg_team,
+        diag
+      ),
+      cheapr::as_factor
+    )
   )
 
-ov$categorical |>
-  fastplyr::as_tbl() |>
-  collapse::slt(column = col, missing = n_missing, unique = n_unique, min, max)
+x
 
+collapse::rsplit(x, ~has_rvu) |>
+  rlang::set_names(c("no_rvu", "has_rvu")) |>
+  purrr::map(function(df) {
+    df |>
+      collapse::fcount(type, section) |>
+      collapse::roworder(type, -N)
+  })
+
+o <- cheapr::overview(x)
+
+o$numeric |>
+  fastplyr::as_tbl() |>
+  collapse::slt(column = col, unique = n_unique, mean:hist)
+
+o$categorical |>
+  fastplyr::as_tbl() |>
+  collapse::mtt(min = providertwo:::clean_title(min)) |>
+  collapse::slt(
+    column = col,
+    missing = n_missing,
+    unique = n_unique,
+    min,
+    max
+  ) |>
+  print(n = Inf)
 
 saw_names <- c(
+  "type",
   "level",
   "section",
   "mod",
@@ -112,6 +133,7 @@ saw_names <- c(
 
 saw <- x |>
   hacksaw::count_split(
+    type,
     level,
     section,
     mod,
@@ -148,12 +170,11 @@ saw <- collapse::rowbind(
     collapse::fsummarise(n = sum(n)) |>
     collapse::mtt(value = "1")
 ) |>
-  # collapse::fcount(column, w = n, add = TRUE) |>
   collapse::mtt(P = n / 18499L) |>
-  # collapse::sbt(
-  #   !(column == "has_rvu" & value != 0) &
-  #     !(column %in% cols & value == "0")
-  # ) |>
+  collapse::sbt(
+    !(column == "has_rvu" & value != 0) &
+      !(column %in% cols & value == "0")
+  ) |>
   print(n = Inf)
 
 collapse::sbt(
@@ -169,16 +190,17 @@ collapse::sbt(
     )
   ) |>
   collapse::mtt(
-    desc = cheapr::case(
-      column == "stat" ~ recode_status(value),
-      column == "mod" ~ recode_mod(value),
-      column == "pctc" ~ recode_pctc(value),
-      column == "glob" ~ recode_glob(value),
-      column == "mult" ~ recode_mult(value),
-      column == "surg_bilat" ~ recode_bilat(value),
-      column == "surg_asst" ~ recode_asst(value),
-      column == "surg_co" ~ recode_cosurg(value),
-      column == "surg_team" ~ recode_team(value),
+    desc = cheapr::val_match(
+      column,
+      "stat" ~ recode_status(value),
+      "mod" ~ recode_mod(value),
+      "pctc" ~ recode_pctc(value),
+      "glob" ~ recode_glob(value),
+      "mult" ~ recode_mult(value),
+      "surg_bilat" ~ recode_bilat(value),
+      "surg_asst" ~ recode_asst(value),
+      "surg_co" ~ recode_cosurg(value),
+      "surg_team" ~ recode_team(value),
       .default = NA_character_
     )
   ) |>
@@ -201,7 +223,7 @@ collapse::sbt(
   ) |>
   gt::data_color(
     columns = n,
-    rows = column == "hcpcs_section",
+    rows = column == "section",
     fn = scales::col_numeric(
       palette = "Greens",
       domain = c(0, 6000),

@@ -1,6 +1,10 @@
-to_na <- function(x) cheapr::if_else_(x == "9", NA_character_, x)
+nine_ <- function(x) {
+  cheapr::if_else_(x == "9", NA_character_, x) |> cheapr::as_factor()
+}
 
-bin_ <- function(x) cheapr::if_else_(cheapr::is_na(x), 0L, 1L)
+bin_ <- function(x) {
+  cheapr::if_else_(cheapr::is_na(x), 0L, 1L) |> cheapr::as_factor()
+}
 
 glob_ <- function(x) {
   cheapr::val_match(
@@ -13,14 +17,26 @@ glob_ <- function(x) {
     "YYY" ~ "Y",
     "ZZZ" ~ "Z",
     .default = NA_character_
-  )
+  ) |>
+    cheapr::as_factor()
 }
 
-diag_ <- function(x) cheapr::if_else_(x == "88", "1", NA_character_)
+diag_ <- function(x) {
+  cheapr::as_factor(cheapr::if_else_(x == "88", "1", NA_character_))
+}
+
+has_rvu_ <- function(nf, fac) {
+  cheapr::as_factor(cheapr::if_else_((nf + fac) > 0L, 1L, 0L))
+}
+
+has_op <- function(pre, intra, post) {
+  (pre + intra + post) |> cheapr::as_factor()
+}
 
 classify_hcpcs <- function(x) {
-  collapse::mtt(
+  fastplyr::f_mutate(
     x,
+    type = hcpcs_type(hcpcs),
     level = hcpcs_level(hcpcs),
     level = cheapr::if_else_(
       level == "HCPCS I",
@@ -33,8 +49,13 @@ classify_hcpcs <- function(x) {
       hcpcs_section(hcpcs)
     )
   ) |>
+    fastplyr::f_mutate(fastplyr::across(
+      c(type, level, section),
+      cheapr::as_factor
+    )) |>
     collapse::colorder(
       hcpcs,
+      type,
       level,
       section
     )
