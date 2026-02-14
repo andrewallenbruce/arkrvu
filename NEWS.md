@@ -1,5 +1,11 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9035
+
+* exported `hcpcs_type()`
+* refined recode output
+
+
 # arkrvu 0.0.1.9034
 
 * fixed bug in HCPCS regexes
