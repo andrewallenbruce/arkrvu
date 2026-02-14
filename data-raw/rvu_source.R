@@ -1,11 +1,11 @@
-source(here::here("data-raw", "data_pins.R"))
+source(here::here("data-raw", "fns.R"))
 
-download_rvu_zips <- function(years, directory) {
+download_rvu_zips <- function(years) {
   urls <- rvu_zip_links(years)$url
   file <- rvu_zip_links(years)$file
 
   dir <- tempdir()
-  paths <- stringr::str_glue("{dir}{file}.zip")
+  paths <- stringr::str_glue("{dir}\\{file}.zip")
 
   curl::multi_download(
     urls = urls,
@@ -14,25 +14,40 @@ download_rvu_zips <- function(years, directory) {
     multi_timeout = Inf
   )
 
-  csvs <- paths |>
-    purrr::map(zip::zip_list) |>
-    purrr::set_names(basename(paths)) |>
+  zips <- purrr::map(fs::dir_ls(dir, glob = "*.zip"), zip::zip_list)
+  zip_paths <- names(zips)
+
+  zips <- zips |>
+    purrr::set_names(basename(names(zips))) |>
     purrr::list_rbind(names_to = "file") |>
     dplyr::tibble() |>
     dplyr::mutate(size = fs::as_fs_bytes(uncompressed_size)) |>
     dplyr::select(
       file,
-      sub_file = filename,
+      subfile = filename,
       timestamp,
       size
     ) |>
-    dplyr::filter(grepl(".csv", sub_file)) |>
-    dplyr::arrange(sub_file)
+    dplyr::filter(grepl(".csv", subfile)) |>
+    collapse::rsplit(~file)
 
-  purrr::pwalk(list(zipfile = paths, exdir = dir), zip::unzip)
+  purrr::pwalk(list(zipfile = zip_paths, exdir = dir), zip::unzip)
 
   csvs <- fs::dir_ls(dir, glob = "*.csv")
+
+  res <- purrr::map(csvs, \(x) {
+    data.table::fread(
+      input = x,
+      colClasses = "character",
+      showProgress = FALSE
+    ) |>
+      fastplyr::as_tbl()
+  }) |>
+    rlang::set_names(basename(csvs))
+
   unlink(dir, recursive = TRUE)
+
+  return(res)
 }
 
 zip_list <- unpack_rvu_zips(

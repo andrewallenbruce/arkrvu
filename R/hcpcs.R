@@ -90,6 +90,8 @@
 #'
 #' @param hcpcs `<chr>` vector of possible HCPCS codes
 #'
+#' @param df `<data.frame>` containing a column named `hcpcs`
+#'
 #' @returns `<lgl>` `TRUE` if valid, otherwise `FALSE`
 #'
 #' @examples
@@ -103,19 +105,8 @@
 #' is_cpt_II(x)
 #' is_cpt_III(x)
 #'
-#' fastplyr::new_tbl(
-#'   hcpcs = c(x, y),
-#'   type = hcpcs_level(hcpcs)) |>
-#'   collapse::mtt(
-#'     type = cheapr::if_else_(
-#'       type == "HCPCS I",
-#'       cpt_category(hcpcs),
-#'       type),
-#'     section = cheapr::if_else_(
-#'       type != "HCPCS II",
-#'       cpt_section(hcpcs),
-#'       hcpcs_section(hcpcs))) |>
-#'   collapse::roworder(type, hcpcs)
+#' fastplyr::new_tbl(hcpcs = c(x, y)) |>
+#'    classify_hcpcs()
 NULL
 
 #' @rdname hcpcs
@@ -248,4 +239,36 @@ cpt_section <- function(hcpcs) {
     endsWith(hcpcs, "T") ~ "New Technology",
     .default = NA_character_
   )
+}
+
+#' @rdname hcpcs
+#' @export
+classify_hcpcs <- function(df) {
+  stopifnot(is.data.frame(df))
+
+  fastplyr::f_mutate(
+    df,
+    type = hcpcs_type(hcpcs),
+    level = hcpcs_level(hcpcs),
+    level = cheapr::if_else_(
+      level == "HCPCS I",
+      cpt_category(hcpcs),
+      level
+    ),
+    section = cheapr::if_else_(
+      level != "HCPCS II",
+      cpt_section(hcpcs),
+      hcpcs_section(hcpcs)
+    )
+  ) |>
+    fastplyr::f_mutate(fastplyr::across(
+      c(type, level, section),
+      cheapr::as_factor
+    )) |>
+    collapse::colorder(
+      hcpcs,
+      type,
+      level,
+      section
+    )
 }

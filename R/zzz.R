@@ -10,5 +10,9 @@ utils::globalVariables(c(
   "day",
   "mon",
   "size",
+  "hcpcs",
+  "level",
+  "type",
+  "section",
   NULL
 ))

@@ -1,9 +1,9 @@
 nine_ <- function(x) {
-  cheapr::if_else_(x == "9", NA_character_, x) |> cheapr::as_factor()
+  cheapr::as_factor(cheapr::if_else_(x == "9", NA_character_, x))
 }
 
 bin_ <- function(x) {
-  cheapr::if_else_(cheapr::is_na(x), 0L, 1L) |> cheapr::as_factor()
+  cheapr::as_factor(cheapr::if_else_(cheapr::is_na(x), 0L, 1L))
 }
 
 glob_ <- function(x) {
@@ -31,34 +31,6 @@ has_rvu_ <- function(nf, fac) {
 
 has_op <- function(pre, intra, post) {
   (pre + intra + post) |> cheapr::as_factor()
-}
-
-classify_hcpcs <- function(x) {
-  fastplyr::f_mutate(
-    x,
-    type = hcpcs_type(hcpcs),
-    level = hcpcs_level(hcpcs),
-    level = cheapr::if_else_(
-      level == "HCPCS I",
-      cpt_category(hcpcs),
-      level
-    ),
-    section = cheapr::if_else_(
-      level != "HCPCS II",
-      cpt_section(hcpcs),
-      hcpcs_section(hcpcs)
-    )
-  ) |>
-    fastplyr::f_mutate(fastplyr::across(
-      c(type, level, section),
-      cheapr::as_factor
-    )) |>
-    collapse::colorder(
-      hcpcs,
-      type,
-      level,
-      section
-    )
 }
 
 add_zip_link <- function(df) {

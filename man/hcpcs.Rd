@@ -13,6 +13,7 @@
 \alias{cpt_category}
 \alias{hcpcs_section}
 \alias{cpt_section}
+\alias{classify_hcpcs}
 \title{Validate HCPCS Codes}
 \source{
 \href{https://www.ama-assn.org/practice-management/cpt/category-ii-codes}{AMA Category II Codes}
@@ -41,9 +42,13 @@ cpt_category(hcpcs)
 hcpcs_section(hcpcs)
 
 cpt_section(hcpcs)
+
+classify_hcpcs(df)
 }
 \arguments{
 \item{hcpcs}{\verb{<chr>} vector of possible HCPCS codes}
+
+\item{df}{\verb{<data.frame>} containing a column named \code{hcpcs}}
 }
 \value{
 \verb{<lgl>} \code{TRUE} if valid, otherwise \code{FALSE}
@@ -169,17 +174,6 @@ is_cpt_I(x)
 is_cpt_II(x)
 is_cpt_III(x)
 
-fastplyr::new_tbl(
-  hcpcs = c(x, y),
-  type = hcpcs_level(hcpcs)) |>
-  collapse::mtt(
-    type = cheapr::if_else_(
-      type == "HCPCS I",
-      cpt_category(hcpcs),
-      type),
-    section = cheapr::if_else_(
-      type != "HCPCS II",
-      cpt_section(hcpcs),
-      hcpcs_section(hcpcs))) |>
-  collapse::roworder(type, hcpcs)
+fastplyr::new_tbl(hcpcs = c(x, y)) |>
+   classify_hcpcs()
 }
