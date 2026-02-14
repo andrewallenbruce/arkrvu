@@ -1,6 +1,6 @@
 source(here::here("data-raw", "fns.R"))
 
-o <- cheapr::overview(x)
+o <- cheapr::overview(x$no_rvu)
 
 o$numeric |>
   fastplyr::as_tbl() |>
