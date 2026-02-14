@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9036
+
+* added `classify_hcpcs()`
+
+
 # arkrvu 0.0.1.9035
 
 * exported `hcpcs_type()`
