@@ -8,6 +8,7 @@
   [`is_cpt_I()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
   [`is_cpt_II()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
   [`is_cpt_III()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`hcpcs_type()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
   [`hcpcs_level()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
   [`cpt_category()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
   [`hcpcs_section()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)

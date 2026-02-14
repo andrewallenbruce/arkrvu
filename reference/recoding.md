@@ -91,9 +91,8 @@ recode_glob(c(0, 1, 9, "M", "Y", "Z"))
 
 # Team Surgery (Mod 66)
 recode_team(0:2)
-#> [1] "Not Permitted"                           
-#> [2] "Requires Medical Necessity Documentation"
-#> [3] "Permitted"                               
+#> [1] "Not Permitted"              "Requires Medical Necessity"
+#> [3] "Permitted"                 
 
 # Bilateral Surgery (Mod 50)
 recode_bilat(0:3)
@@ -108,15 +107,13 @@ recode_mult(0:7)
 
 # Co-Surgeon (Mod 62)
 recode_cosurg(0:2)
-#> [1] "Not Permitted"                           
-#> [2] "Requires Medical Necessity Documentation"
-#> [3] "Permitted"                               
+#> [1] "Not Permitted"              "Requires Medical Necessity"
+#> [3] "Permitted"                 
 
 # Assistant Surgery (Mods 80-82, AS)
 recode_asst(0:2)
-#> [1] "Requires Medical Necessity Documentation"
-#> [2] "Assistant Not Paid"                      
-#> [3] "Assistant Paid"                          
+#> [1] "Requires Medical Necessity" "Assistant Not Paid"        
+#> [3] "Assistant Paid"            
 
 # Diagnostic Imaging Reduction (mult == 4)
 recode_mult(4)

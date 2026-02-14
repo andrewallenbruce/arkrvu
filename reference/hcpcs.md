@@ -17,6 +17,8 @@ is_cpt_II(hcpcs)
 
 is_cpt_III(hcpcs)
 
+hcpcs_type(hcpcs)
+
 hcpcs_level(hcpcs)
 
 cpt_category(hcpcs)
@@ -181,21 +183,21 @@ fastplyr::new_tbl(
       hcpcs_section(hcpcs))) |>
   collapse::roworder(type, hcpcs)
 #> # A tibble: 15 × 3
-#>    hcpcs type     section                                     
-#>    <chr> <chr>    <chr>                                       
-#>  1 0222U CPT I    Proprietary Laboratory Analysis             
-#>  2 39503 CPT I    Surgery                                     
-#>  3 69641 CPT I    Surgery                                     
-#>  4 70010 CPT I    Radiology                                   
-#>  5 81301 CPT I    Pathology                                   
-#>  6 99140 CPT I    Anesthesiology                              
-#>  7 99215 CPT I    E&M                                         
-#>  8 0583F CPT II   Performance Measurement                     
-#>  9 7010F CPT II   Performance Measurement                     
-#> 10 0779T CPT III  New Technology                              
-#> 11 G0478 HCPCS II Procedures/Professional Services (Temporary)
-#> 12 T1503 HCPCS II State Medicaid Agency                       
-#> 13 V5299 HCPCS II Vision/Hearing/Speech                       
-#> 14 1164  NA       NA                                          
-#> 15 NA    NA       NA                                          
+#>    hcpcs type     section                
+#>    <chr> <chr>    <chr>                  
+#>  1 0222U CPT I    Laboratory             
+#>  2 39503 CPT I    Surgery                
+#>  3 69641 CPT I    Surgery                
+#>  4 70010 CPT I    Radiology              
+#>  5 81301 CPT I    Pathology              
+#>  6 99140 CPT I    Anesthesiology         
+#>  7 99215 CPT I    E&M                    
+#>  8 0583F CPT II   Performance Measurement
+#>  9 7010F CPT II   Performance Measurement
+#> 10 0779T CPT III  New Technology         
+#> 11 G0478 HCPCS II Professional           
+#> 12 T1503 HCPCS II Medicaid               
+#> 13 V5299 HCPCS II Vision-Hearing-Speech  
+#> 14 1164  NA       NA                     
+#> 15 NA    NA       NA                     
 ```

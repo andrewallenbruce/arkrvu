@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">arkrvu</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9034</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9035</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -134,9 +134,8 @@ Multiple Procedure indicator of <code>4</code>.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Team Surgery (Mod 66)</span></span></span>
 <span class="r-in"><span><span class="fu">recode_team</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Not Permitted"                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "Requires Medical Necessity Documentation"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "Permitted"                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Not Permitted"              "Requires Medical Necessity"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "Permitted"                 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Bilateral Surgery (Mod 50)</span></span></span>
 <span class="r-in"><span><span class="fu">recode_bilat</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
@@ -151,15 +150,13 @@ Multiple Procedure indicator of <code>4</code>.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Co-Surgeon (Mod 62)</span></span></span>
 <span class="r-in"><span><span class="fu">recode_cosurg</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Not Permitted"                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "Requires Medical Necessity Documentation"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "Permitted"                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Not Permitted"              "Requires Medical Necessity"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "Permitted"                 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Assistant Surgery (Mods 80-82, AS)</span></span></span>
 <span class="r-in"><span><span class="fu">recode_asst</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Requires Medical Necessity Documentation"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "Assistant Not Paid"                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "Assistant Paid"                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Requires Medical Necessity" "Assistant Not Paid"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "Assistant Paid"            </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Diagnostic Imaging Reduction (mult == 4)</span></span></span>
 <span class="r-in"><span><span class="fu">recode_mult</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span></span>

@@ -1,5 +1,11 @@
 # Changelog
 
+## arkrvu 0.0.1.9035
+
+- exported
+  [`hcpcs_type()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+- refined recode output
+
 ## arkrvu 0.0.1.9034
 
 - fixed bug in HCPCS regexes
