@@ -13,6 +13,7 @@
   [`cpt_category()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
   [`hcpcs_section()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
   [`cpt_section()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  [`classify_hcpcs()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
   : Validate HCPCS Codes
 - [`rvu_link_table()`](https://andrewallenbruce.github.io/arkrvu/reference/link_tables.md)
   [`rvu_zip_links()`](https://andrewallenbruce.github.io/arkrvu/reference/link_tables.md)

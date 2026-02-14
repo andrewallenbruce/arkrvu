@@ -26,6 +26,8 @@ cpt_category(hcpcs)
 hcpcs_section(hcpcs)
 
 cpt_section(hcpcs)
+
+classify_hcpcs(df)
 ```
 
 ## Source
@@ -41,6 +43,10 @@ Codes](https://www.ama-assn.org/practice-management/cpt/category-iii-codes)
 - hcpcs:
 
   `<chr>` vector of possible HCPCS codes
+
+- df:
+
+  `<data.frame>` containing a column named `hcpcs`
 
 ## Value
 
@@ -169,35 +175,35 @@ is_cpt_II(x)
 is_cpt_III(x)
 #> [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
 
-fastplyr::new_tbl(
-  hcpcs = c(x, y),
-  type = hcpcs_level(hcpcs)) |>
-  collapse::mtt(
-    type = cheapr::if_else_(
-      type == "HCPCS I",
-      cpt_category(hcpcs),
-      type),
-    section = cheapr::if_else_(
-      type != "HCPCS II",
-      cpt_section(hcpcs),
-      hcpcs_section(hcpcs))) |>
-  collapse::roworder(type, hcpcs)
-#> # A tibble: 15 × 3
-#>    hcpcs type     section                
-#>    <chr> <chr>    <chr>                  
-#>  1 0222U CPT I    Laboratory             
-#>  2 39503 CPT I    Surgery                
-#>  3 69641 CPT I    Surgery                
-#>  4 70010 CPT I    Radiology              
-#>  5 81301 CPT I    Pathology              
-#>  6 99140 CPT I    Anesthesiology         
-#>  7 99215 CPT I    E&M                    
-#>  8 0583F CPT II   Performance Measurement
-#>  9 7010F CPT II   Performance Measurement
-#> 10 0779T CPT III  New Technology         
-#> 11 G0478 HCPCS II Professional           
-#> 12 T1503 HCPCS II Medicaid               
-#> 13 V5299 HCPCS II Vision-Hearing-Speech  
-#> 14 1164  NA       NA                     
-#> 15 NA    NA       NA                     
+fastplyr::new_tbl(hcpcs = c(x, y)) |>
+   classify_hcpcs()
+#> ! Expressions will be optimised where possible.
+#> 
+#> Optimised expressions are independent from unoptimised ones and typical
+#> data-masking rules may not apply
+#> 
+#> Run `fastplyr::fastplyr_disable_optimisations()` to disable optimisations
+#> globally
+#> 
+#> Run `fastplyr::fastplyr_disable_informative_msgs()` to disable this and other
+#> informative messages
+#> This message is displayed once per session.
+#> # A tibble: 15 × 4
+#>    hcpcs type  level    section                
+#>  * <chr> <fct> <fct>    <fct>                  
+#>  1 T1503 HCPCS HCPCS II Medicaid               
+#>  2 G0478 HCPCS HCPCS II Professional           
+#>  3 81301 CPT   CPT I    Pathology              
+#>  4 69641 CPT   CPT I    Surgery                
+#>  5 0583F CPT   CPT II   Performance Measurement
+#>  6 0779T CPT   CPT III  New Technology         
+#>  7 NA    NA    NA       NA                     
+#>  8 1164  NA    NA       NA                     
+#>  9 39503 CPT   CPT I    Surgery                
+#> 10 99215 CPT   CPT I    E&M                    
+#> 11 99140 CPT   CPT I    Anesthesiology         
+#> 12 70010 CPT   CPT I    Radiology              
+#> 13 0222U CPT   CPT I    Laboratory             
+#> 14 V5299 HCPCS HCPCS II Vision-Hearing-Speech  
+#> 15 7010F CPT   CPT II   Performance Measurement
 ```

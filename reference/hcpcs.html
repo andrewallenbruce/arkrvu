@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">arkrvu</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9035</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9036</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,9 @@
 <span></span>
 <span><span class="fu">hcpcs_section</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">cpt_section</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">cpt_section</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">classify_hcpcs</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -83,6 +85,10 @@
 
 <dl><dt id="arg-hcpcs">hcpcs<a class="anchor" aria-label="anchor" href="#arg-hcpcs"></a></dt>
 <dd><p><code>&lt;chr&gt;</code> vector of possible HCPCS codes</p></dd>
+
+
+<dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
+<dd><p><code>&lt;data.frame&gt;</code> containing a column named <code>hcpcs</code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -194,37 +200,37 @@ requirements:</p><ul><li><p>Necessary devices/drugs have received FDA clearance/
 <span class="r-in"><span><span class="fu">is_cpt_III</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">fastplyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/fastplyr/man/new_tbl.html" class="external-link">new_tbl</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  hcpcs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  type <span class="op">=</span> <span class="fu">hcpcs_level</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">collapse</span><span class="fu">::</span><span class="fu"><a href="https://fastverse.org/collapse/reference/ftransform.html" class="external-link">mtt</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    type <span class="op">=</span> <span class="fu">cheapr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/cheapr/man/if_else.html" class="external-link">if_else_</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="va">type</span> <span class="op">==</span> <span class="st">"HCPCS I"</span>,</span></span>
-<span class="r-in"><span>      <span class="fu">cpt_category</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      <span class="va">type</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    section <span class="op">=</span> <span class="fu">cheapr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/cheapr/man/if_else.html" class="external-link">if_else_</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="va">type</span> <span class="op">!=</span> <span class="st">"HCPCS II"</span>,</span></span>
-<span class="r-in"><span>      <span class="fu">cpt_section</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      <span class="fu">hcpcs_section</span><span class="op">(</span><span class="va">hcpcs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">collapse</span><span class="fu">::</span><span class="fu"><a href="https://fastverse.org/collapse/reference/roworder.html" class="external-link">roworder</a></span><span class="op">(</span><span class="va">type</span>, <span class="va">hcpcs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 15 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    hcpcs type     section                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 0222U CPT I    Laboratory             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 39503 CPT I    Surgery                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 69641 CPT I    Surgery                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 70010 CPT I    Radiology              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 81301 CPT I    Pathology              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 99140 CPT I    Anesthesiology         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 99215 CPT I    E&amp;M                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 0583F CPT II   Performance Measurement</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 7010F CPT II   Performance Measurement</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 0779T CPT III  New Technology         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> G0478 HCPCS II Professional           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> T1503 HCPCS II Medicaid               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> V5299 HCPCS II Vision-Hearing-Speech  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> 1164  <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>                     </span>
+<span class="r-in"><span><span class="fu">fastplyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/fastplyr/man/new_tbl.html" class="external-link">new_tbl</a></span><span class="op">(</span>hcpcs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>   <span class="fu">classify_hcpcs</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Expressions will be optimised where possible.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Optimised expressions are independent from unoptimised ones and typical</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> data-masking rules may not apply</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Run `fastplyr::fastplyr_disable_optimisations()` to disable optimisations</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> globally</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Run `fastplyr::fastplyr_disable_informative_msgs()` to disable this and other</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> informative messages</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This message is displayed once per session.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 15 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    hcpcs type  level    section                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> T1503 HCPCS HCPCS II Medicaid               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> G0478 HCPCS HCPCS II Professional           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 81301 CPT   CPT I    Pathology              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 69641 CPT   CPT I    Surgery                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 0583F CPT   CPT II   Performance Measurement</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 0779T CPT   CPT III  New Technology         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 1164  <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 39503 CPT   CPT I    Surgery                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 99215 CPT   CPT I    E&amp;M                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> 99140 CPT   CPT I    Anesthesiology         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> 70010 CPT   CPT I    Radiology              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> 0222U CPT   CPT I    Laboratory             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> V5299 HCPCS HCPCS II Vision-Hearing-Speech  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> 7010F CPT   CPT II   Performance Measurement</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

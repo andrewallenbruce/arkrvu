@@ -1,5 +1,10 @@
 # Changelog
 
+## arkrvu 0.0.1.9036
+
+- added
+  [`classify_hcpcs()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+
 ## arkrvu 0.0.1.9035
 
 - exported
