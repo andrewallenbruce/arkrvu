@@ -14,15 +14,15 @@
 \alias{recode_status}
 \title{Recode Indicators}
 \usage{
-recode_mod(x, which = c("name", "description"))
+recode_mod(x, which = "label")
 
-recode_glob(x, which = c("name", "description"))
+recode_glob(x, which = "label")
 
 recode_team(x)
 
-recode_bilat(x, which = c("name", "description"))
+recode_bilat(x, which = "label")
 
-recode_mult(x, which = c("name", "description"))
+recode_mult(x, which = "label")
 
 recode_cosurg(x)
 
@@ -30,14 +30,14 @@ recode_asst(x)
 
 recode_diag(x)
 
-recode_pctc(x, which = c("name", "description"))
+recode_pctc(x, which = "label")
 
-recode_status(x, which = c("name", "description"))
+recode_status(x, which = "label")
 }
 \arguments{
 \item{x}{\verb{<chr>} vector of indicators}
 
-\item{which}{\verb{<chr>} which recoding to perform; one of \code{"name"} or \code{"description"}}
+\item{which}{\verb{<chr>} which information to return; \code{"label"}, \code{"desc"} or \code{"rule"} (see individual functions for available options)}
 }
 \value{
 \verb{<chr>} vector of descriptions
@@ -56,8 +56,6 @@ services.
 
 \section{Assistant Surgery}{
 
-
-Fee schedule amount equals 16\% of amount otherwise applicable for surgical payment.
 
 Modifiers:
 \itemize{
@@ -81,7 +79,7 @@ Multiple Procedure indicator of \code{4}.
 }
 
 \examples{
-# Modifier
+# PC/TC Modifiers
 recode_mod(c("26", "TC", "53"))
 
 # Global Days
@@ -105,9 +103,10 @@ recode_asst(0:2)
 # Diagnostic Imaging Reduction (mult == 4)
 recode_mult(4)
 recode_diag(1)
+recode_pctc(1)
 
 # PC/TC Indicator
-recode_pctc(0:8)
+recode_pctc(0:8, "rule")
 
 # Status Codes
 recode_status(LETTERS[c(1:10, 13:14, 16, 18, 20, 24)])

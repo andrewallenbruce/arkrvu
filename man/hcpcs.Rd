@@ -2,12 +2,6 @@
 % Please edit documentation in R/hcpcs.R
 \name{hcpcs}
 \alias{hcpcs}
-\alias{is_hcpcs}
-\alias{is_hcpcs_I}
-\alias{is_hcpcs_II}
-\alias{is_cpt_I}
-\alias{is_cpt_II}
-\alias{is_cpt_III}
 \alias{hcpcs_type}
 \alias{hcpcs_level}
 \alias{cpt_category}
@@ -21,18 +15,6 @@
 \href{https://www.ama-assn.org/practice-management/cpt/category-iii-codes}{AMA Category III Codes}
 }
 \usage{
-is_hcpcs(hcpcs)
-
-is_hcpcs_I(hcpcs)
-
-is_hcpcs_II(hcpcs)
-
-is_cpt_I(hcpcs)
-
-is_cpt_II(hcpcs)
-
-is_cpt_III(hcpcs)
-
 hcpcs_type(hcpcs)
 
 hcpcs_level(hcpcs)
@@ -166,13 +148,6 @@ requirements:
 \examples{
 x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA, "1164")
 y <- c("39503", "99215", "99140", "70010", "0222U", "V5299", "7010F")
-
-is_hcpcs(x)
-is_hcpcs_I(x)
-is_hcpcs_II(x)
-is_cpt_I(x)
-is_cpt_II(x)
-is_cpt_III(x)
 
 fastplyr::new_tbl(hcpcs = c(x, y)) |>
    classify_hcpcs()

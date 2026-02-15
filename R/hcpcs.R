@@ -98,49 +98,36 @@
 #' x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA, "1164")
 #' y <- c("39503", "99215", "99140", "70010", "0222U", "V5299", "7010F")
 #'
-#' is_hcpcs(x)
-#' is_hcpcs_I(x)
-#' is_hcpcs_II(x)
-#' is_cpt_I(x)
-#' is_cpt_II(x)
-#' is_cpt_III(x)
-#'
 #' fastplyr::new_tbl(hcpcs = c(x, y)) |>
 #'    classify_hcpcs()
 NULL
 
-#' @rdname hcpcs
-#' @export
+#' @noRd
 is_hcpcs <- function(hcpcs) {
   grepl_(hcpcs, "^[A-EGHJ-MP-V]\\d{3}[AFMTU0-9]$")
 }
 
-#' @rdname hcpcs
-#' @export
+#' @noRd
 is_hcpcs_I <- function(hcpcs) {
   grepl_(hcpcs, "^\\d{4}[AFMTU0-9]$")
 }
 
-#' @rdname hcpcs
-#' @export
+#' @noRd
 is_hcpcs_II <- function(hcpcs) {
   grepl_(hcpcs, "^[A-EGHJ-MP-V]\\d{4}$")
 }
 
-#' @rdname hcpcs
-#' @export
+#' @noRd
 is_cpt_I <- function(hcpcs) {
   grepl_(hcpcs, "^\\d{4}[AMU0-9]$")
 }
 
-#' @rdname hcpcs
-#' @export
+#' @noRd
 is_cpt_II <- function(hcpcs) {
   grepl_(hcpcs, "^\\d{4}F$")
 }
 
-#' @rdname hcpcs
-#' @export
+#' @noRd
 is_cpt_III <- function(hcpcs) {
   grepl_(hcpcs, "^\\d{4}T$")
 }
@@ -217,25 +204,51 @@ is_cpt_med <- function(hcpcs) {
     grepl_(hcpcs, "^99[56][0-9]{2}$")
 }
 
+# Multi-analyte Assay With Algorithmic Analysis
 #' @noRd
 is_cpt_maaa <- function(hcpcs) {
   endsWith(hcpcs, "M")
+}
+
+#' @noRd
+is_cpt_em <- function(hcpcs) {
+  grepl_(hcpcs, "^99[2-4][0-9]{2}$")
+}
+
+#' @noRd
+is_cpt_surg <- function(hcpcs) {
+  grepl_(hcpcs, "^[1-6][0-9]{4}$")
+}
+
+#' @noRd
+is_cpt_rad <- function(hcpcs) {
+  grepl_(hcpcs, "^7[0-9]{4}$")
+}
+
+#' @noRd
+is_cpt_path <- function(hcpcs) {
+  grepl_(hcpcs, "^8[0-9]{4}$")
+}
+
+#' @noRd
+is_cpt_lab <- function(hcpcs) {
+  grepl_(hcpcs, "^0[012][0-9]{2}U$")
 }
 
 #' @rdname hcpcs
 #' @export
 cpt_section <- function(hcpcs) {
   cheapr::case(
-    grepl_(hcpcs, "^99[2-4][0-9]{2}$") ~ "E&M",
+    is_cpt_em(hcpcs) ~ "E&M",
     is_cpt_anes(hcpcs) ~ "Anesthesiology",
-    grepl_(hcpcs, "^[1-6][0-9]{4}$") ~ "Surgery",
-    grepl_(hcpcs, "^7[0-9]{4}$") ~ "Radiology",
-    grepl_(hcpcs, "^8[0-9]{4}$") ~ "Pathology",
+    is_cpt_surg(hcpcs) ~ "Surgery",
+    is_cpt_rad(hcpcs) ~ "Radiology",
+    is_cpt_path(hcpcs) ~ "Pathology",
     is_cpt_med(hcpcs) ~ "Medicine",
-    grepl_(hcpcs, "^0[012][0-9]{2}U$") ~ "Laboratory",
+    is_cpt_lab(hcpcs) ~ "Laboratory",
     endsWith(hcpcs, "A") ~ "Immunization",
     endsWith(hcpcs, "F") ~ "Performance Measurement",
-    is_cpt_maaa(hcpcs) ~ "MAAA", # "Multianalyte Assay With Algorithmic Analysis",
+    is_cpt_maaa(hcpcs) ~ "MAAA",
     endsWith(hcpcs, "T") ~ "New Technology",
     .default = NA_character_
   )

@@ -11,8 +11,6 @@
 #'
 #' @section Assistant Surgery:
 #'
-#' Fee schedule amount equals 16% of amount otherwise applicable for surgical payment.
-#'
 #' Modifiers:
 #'    - 80: Assistance by Another Physician
 #'    - 81: Minimal Assistance by a Another Physician
@@ -29,28 +27,28 @@
 #'
 #' @param x `<chr>` vector of indicators
 #'
-#' @param which `<chr>` which recoding to perform; one of `"name"` or `"description"`
+#' @param which `<chr>` which information to return; `"label"`, `"desc"` or `"rule"` (see individual functions for available options)
 #'
 #' @returns `<chr>` vector of descriptions
 NULL
 
 #' @rdname recoding
 #' @examples
-#' # Modifier
+#' # PC/TC Modifiers
 #' recode_mod(c("26", "TC", "53"))
 #'
 #' @export
-recode_mod <- function(x, which = c("name", "description")) {
+recode_mod <- function(x, which = "label") {
   switch(
-    match.arg(which),
-    name = cheapr::val_match(
+    which,
+    label = cheapr::val_match(
       x,
       "26" ~ "Professional Component",
       "TC" ~ "Technical Component",
       "53" ~ "Discontinued Procedure",
       .default = NA_character_
     ),
-    description = cheapr::val_match(
+    desc = cheapr::val_match(
       x,
       "26" ~ "Certain procedures are a combination of a physician or other qualified health care professional component and a technical component. When the physician or other qualified health care professional component is reported separately, the service may be identified by adding modifier 26 to the usual procedure number.",
       "TC" ~ "Under certain circumstances, a charge may be made for the technical component alone. Under those circumstances the technical component charge is identified by adding modifier TC to the usual procedure number. Technical component charges are institutional charges and not billed separately by physicians; however, portable x-ray suppliers only bill for technical component and should utilize modifier TC. The charge data from portable x-ray suppliers will then be used to build customary and prevailing profiles.",
@@ -66,22 +64,22 @@ recode_mod <- function(x, which = c("name", "description")) {
 #' recode_glob(c(0, 1, 9, "M", "Y", "Z"))
 #'
 #' @export
-recode_glob <- function(x, which = c("name", "description")) {
+recode_glob <- function(x, which = "label") {
   switch(
-    match.arg(which),
-    name = cheapr::val_match(
+    which,
+    label = cheapr::val_match(
       x,
-      "0" ~ "Minor Procedure (Day-Of Postop)",
-      "1" ~ "Minor Procedure (10-Day Postop) ",
-      "9" ~ "Major Surgery (90-Day Postop)",
-      "M" ~ "Maternity Code",
-      "Y" ~ "Carrier-Determined",
-      "Z" ~ "Included in Other Service's Global Period",
+      "0" ~ "1 Day Post-Op",
+      "1" ~ "10 Day Post-Op",
+      "9" ~ "90 Day Post-Op",
+      "M" ~ "Maternity",
+      "Y" ~ "Carrier",
+      "Z" ~ "Bundled",
       .default = NA_character_
     ),
-    description = cheapr::val_match(
+    desc = cheapr::val_match(
       x,
-      "0" ~ "Endoscopic or minor procedure with related Preoperative and Postoperative RVUs on the day of the procedure only included in the fee schedule payment amount. E&M services on the day of the procedure generally not payable.",
+      "0" ~ "Minor Procedure. Endoscopic or minor procedure with related Preoperative and Postoperative RVUs on the day of the procedure only included in the fee schedule payment amount. E&M services on the day of the procedure generally not payable.",
       "1" ~ "Minor procedure with Preoperative RVUs on the day of the procedure and Postoperative RVUs during a 10-day postoperative period included in the fee schedule amount. E&M services on the day of the procedure and during the 10-day postoperative period generally not payable.",
       "9" ~ "Major surgery with a 1-day Preoperative period and 90-day Postoperative period included in fee schedule amount.",
       "M" ~ "Maternity codes. Usual Global period does not apply.",
@@ -101,8 +99,8 @@ recode_glob <- function(x, which = c("name", "description")) {
 recode_team <- function(x) {
   cheapr::val_match(
     x,
-    "0" ~ "Not Permitted",
-    "1" ~ "Requires Medical Necessity",
+    "0" ~ "Restricted",
+    "1" ~ "Medical Necessity",
     "2" ~ "Permitted",
     .default = NA_character_
   )
@@ -114,10 +112,10 @@ recode_team <- function(x) {
 #' recode_bilat(0:3)
 #'
 #' @export
-recode_bilat <- function(x, which = c("name", "description")) {
+recode_bilat <- function(x, which = "label") {
   switch(
-    match.arg(which),
-    name = cheapr::val_match(
+    which,
+    label = cheapr::val_match(
       x,
       "0" ~ "No Adjustment",
       "1" ~ "Adjustment",
@@ -125,7 +123,7 @@ recode_bilat <- function(x, which = c("name", "description")) {
       "3" ~ "No Adjustment",
       .default = NA_character_
     ),
-    description = cheapr::val_match(
+    desc = cheapr::val_match(
       x,
       "0" ~ "If reported with mod 50 or RT and LT, payment for the two sides is the lower of (a) total charge for both sides (b) 100% of fee schedule amount for a single code. Adjustment is inappropriate because (a) of physiology or anatomy, or (b) code description states it is a unilateral procedure and there is an existing code for the bilateral procedure.",
       "1" ~ "If reported with bilateral modifier or twice on same day by any other means (with RT and LT mods, or with a 2 in the units field), base payment on lower of: (a) total charge for both sides or (b) 150% of fee schedule amount for a single code. If reported as bilateral procedure and reported with other procedure codes on same day, apply bilateral adjustment before applying any multiple procedure rules.",
@@ -142,10 +140,10 @@ recode_bilat <- function(x, which = c("name", "description")) {
 #' recode_mult(0:7)
 #'
 #' @export
-recode_mult <- function(x, which = c("name", "description")) {
+recode_mult <- function(x, which = "label") {
   switch(
-    match.arg(which),
-    name = cheapr::val_match(
+    which,
+    label = cheapr::val_match(
       x,
       "0" ~ "No Adjustment",
       "1" ~ "Standard Adjustment",
@@ -157,7 +155,7 @@ recode_mult <- function(x, which = c("name", "description")) {
       "7" ~ "Ophthalmology Reduction",
       .default = NA_character_
     ),
-    description = cheapr::val_match(
+    desc = cheapr::val_match(
       x,
       "0" ~ "If reported on the same day as another procedure, base the payment on the lower of (a) the actual charge, or (b) the fee schedule amount for the procedure.",
       "1" ~ "If reported on the same day as another procedure with an indicator of 1, 2, or 3, rank the procedures by fee schedule amount and apply the appropriate reduction to this code (100%, 50%, 25%, 25%, 25%, and by report). Base payment on the lower of (a) the actual charge, or (b) the fee schedule amount reduced by the appropriate percentage.",
@@ -181,8 +179,8 @@ recode_mult <- function(x, which = c("name", "description")) {
 recode_cosurg <- function(x) {
   cheapr::val_match(
     x,
-    "0" ~ "Not Permitted",
-    "1" ~ "Requires Medical Necessity",
+    "0" ~ "Restricted",
+    "1" ~ "Medical Necessity",
     "2" ~ "Permitted",
     .default = NA_character_
   )
@@ -197,9 +195,9 @@ recode_cosurg <- function(x) {
 recode_asst <- function(x) {
   cheapr::val_match(
     x,
-    "0" ~ "Requires Medical Necessity",
-    "1" ~ "Assistant Not Paid",
-    "2" ~ "Assistant Paid",
+    "0" ~ "Medical Necessity",
+    "1" ~ "Restricted",
+    "2" ~ "Permitted",
     .default = NA_character_
   )
 }
@@ -209,12 +207,13 @@ recode_asst <- function(x) {
 #' # Diagnostic Imaging Reduction (mult == 4)
 #' recode_mult(4)
 #' recode_diag(1)
+#' recode_pctc(1)
 #'
 #' @export
 recode_diag <- function(x) {
   cheapr::if_else_(
     x == "1",
-    "TC/PC Diagnostic Imaging Reduction",
+    "PC/TC Diagnostic Imaging Reduction",
     NA_character_
   )
 }
@@ -222,13 +221,13 @@ recode_diag <- function(x) {
 #' @rdname recoding
 #' @examples
 #' # PC/TC Indicator
-#' recode_pctc(0:8)
+#' recode_pctc(0:8, "rule")
 #'
 #' @export
-recode_pctc <- function(x, which = c("name", "description")) {
+recode_pctc <- function(x, which = "label") {
   switch(
-    match.arg(which),
-    name = cheapr::val_match(
+    which,
+    label = cheapr::val_match(
       x,
       "0" ~ "Physician Service",
       "1" ~ "Diagnostic Tests for Radiology Services",
@@ -241,15 +240,28 @@ recode_pctc <- function(x, which = c("name", "description")) {
       "8" ~ "Physician Interpretation",
       .default = NA_character_
     ),
-    description = cheapr::val_match(
+    rule = cheapr::val_match(
+      x,
+      "0" ~ "26/TC Not Permitted",
+      "1" ~ "26/TC Permitted",
+      "2" ~ "TC Not Permitted",
+      "3" ~ "26/TC Not Permitted",
+      "4" ~ "26/TC Not Permitted",
+      "5" ~ "26/TC Not Permitted",
+      "6" ~ "TC Not Permitted",
+      "7" ~ "26/TC Not Permitted",
+      "8" ~ "TC Not Permitted",
+      .default = NA_character_
+    ),
+    desc = cheapr::val_match(
       x,
       "0" ~ "PC/TC does not apply",
-      "1" ~ "Have both a PC and TC. Mods 26/TC can be used.",
+      "1" ~ "Has both a PC and TC.",
       "2" ~ "Standalone code. Describes PC of diagnostic tests for which there is a code that describes TC of diagnostic test only and another code that describes the Global test.",
-      "3" ~ "Standalone code. Mods 26/TC cannot be used. Describe TC of diagnostic tests for which there is a code that describes PC of the diagnostic test only. Also identifies codes that are covered only as diagnostic tests and do not have a PC code.",
-      "4" ~ "Standalone code. Mods 26/TC cannot be used. Describes diagnostic tests for which there are codes that describe PC of the test only, and the TC of the test only. Total RVUs is sum of total RVUs for PC and TC only codes combined.",
-      "5" ~ "Mods 26/TC cannot be used. Services provided by personnel working under physician supervision. Payment may not be made when provided to hospital inpatients or outpatients.",
-      "6" ~ "Mod TC cannot be used. Clinical Lab codes for which separate payment for interpretations by laboratory physicians may be made. Actual performance of tests paid by lab fee schedule.",
+      "3" ~ "Standalone code. Describe TC of diagnostic tests for which there is a code that describes PC of the diagnostic test only. Also identifies codes that are covered only as diagnostic tests and do not have a PC code.",
+      "4" ~ "Standalone code. Describes diagnostic tests for which there are codes that describe PC of the test only, and the TC of the test only. Total RVUs is sum of total RVUs for PC and TC only codes combined.",
+      "5" ~ "Services provided by personnel working under physician supervision. Payment may not be made when provided to hospital inpatients or outpatients.",
+      "6" ~ "Clinical Lab codes for which separate payment for interpretations by laboratory physicians may be made. Actual performance of tests paid by lab fee schedule.",
       "7" ~ "Payment may not be made if provided to hospital outpatient/inpatient by independently practicing physical or occupational therapist.",
       "8" ~ "Identifies PC of Clinical Lab codes for which separate payment made only if physician interprets abnormal smear for hospital inpatient. No TC billing recognized, payment for test made to hospital. No payment for CPT 85060 furnished to hospital outpatients or non-hospital patients. Physician interpretation paid through clinical laboratory fee schedule.",
       .default = NA_character_
@@ -263,10 +275,10 @@ recode_pctc <- function(x, which = c("name", "description")) {
 #' recode_status(LETTERS[c(1:10, 13:14, 16, 18, 20, 24)])
 #'
 #' @export
-recode_status <- function(x, which = c("name", "description")) {
+recode_status <- function(x, which = "label") {
   switch(
-    match.arg(which),
-    name = cheapr::val_match(
+    which,
+    label = cheapr::val_match(
       x,
       "A" ~ "Active",
       "B" ~ "Payment Bundle",
@@ -286,7 +298,7 @@ recode_status <- function(x, which = c("name", "description")) {
       "X" ~ "Statutory Exclusion",
       .default = NA_character_
     ),
-    description = cheapr::val_match(
+    desc = cheapr::val_match(
       x,
       "A" ~ "Separately paid if covered. RVUs and payment amounts. Carriers responsible for coverage decisions in absence of an NCD.",
       "B" ~ "Payment bundled into payment for other services not specified. No RVUs, no payment made. When covered, payment subsumed by payment for services to which they are incident.",
