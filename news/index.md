@@ -1,5 +1,9 @@
 # Changelog
 
+## arkrvu 0.0.1.9038
+
+- internal structure work
+
 ## arkrvu 0.0.1.9037
 
 - work on internal data structure

@@ -177,17 +177,6 @@ is_cpt_III(x)
 
 fastplyr::new_tbl(hcpcs = c(x, y)) |>
    classify_hcpcs()
-#> ! Expressions will be optimised where possible.
-#> 
-#> Optimised expressions are independent from unoptimised ones and typical
-#> data-masking rules may not apply
-#> 
-#> Run `fastplyr::fastplyr_disable_optimisations()` to disable optimisations
-#> globally
-#> 
-#> Run `fastplyr::fastplyr_disable_informative_msgs()` to disable this and other
-#> informative messages
-#> This message is displayed once per session.
 #> # A tibble: 15 × 4
 #>    hcpcs type  level    section                
 #>  * <chr> <fct> <fct>    <fct>                  
