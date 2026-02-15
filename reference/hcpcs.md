@@ -5,18 +5,6 @@ Validate HCPCS Codes
 ## Usage
 
 ``` r
-is_hcpcs(hcpcs)
-
-is_hcpcs_I(hcpcs)
-
-is_hcpcs_II(hcpcs)
-
-is_cpt_I(hcpcs)
-
-is_cpt_II(hcpcs)
-
-is_cpt_III(hcpcs)
-
 hcpcs_type(hcpcs)
 
 hcpcs_level(hcpcs)
@@ -161,19 +149,6 @@ I requirements:
 ``` r
 x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA, "1164")
 y <- c("39503", "99215", "99140", "70010", "0222U", "V5299", "7010F")
-
-is_hcpcs(x)
-#> [1]  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE
-is_hcpcs_I(x)
-#> [1] FALSE FALSE  TRUE  TRUE  TRUE  TRUE FALSE FALSE
-is_hcpcs_II(x)
-#> [1]  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE
-is_cpt_I(x)
-#> [1] FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE
-is_cpt_II(x)
-#> [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE
-is_cpt_III(x)
-#> [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
 
 fastplyr::new_tbl(hcpcs = c(x, y)) |>
    classify_hcpcs()

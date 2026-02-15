@@ -1,5 +1,9 @@
 # Changelog
 
+## arkrvu 0.0.1.9039
+
+- simplify hcpcs and recode helpers
+
 ## arkrvu 0.0.1.9038
 
 - internal structure work
