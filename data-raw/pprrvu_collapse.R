@@ -18,25 +18,22 @@ x <- x |>
       ),
       nine_
     ),
-    fastplyr::across(
-      c(
-        non_fac_indicator,
-        facility_indicator,
-        not_used_for_medicare_payment
-      ),
-      bin_
-    ),
     glob_days = glob_(glob_days),
     diag = diag_(diagnostic_imaging_family_indicator),
     has_op = has_op(pre_op, intra_op, post_op),
     has_rvu = has_rvu_(non_facility_total, facility_total),
-    has_mod = bin_(mod)
+    has_mod = bin_(mod),
+    hcpcs = cheapr::if_else_(
+      has_mod == 1L,
+      as.character(stringr::str_glue("{hcpcs}-{mod}")),
+      hcpcs
+    ),
+    mod = NULL,
+    has_mod = NULL
   ) |>
   collapse::slt(
     hcpcs,
     desc = description,
-    mod,
-    has_mod,
     stat = status_code,
     rvu_wk = work_rvu,
     rvu_pe_non = non_fac_pe_rvu,
@@ -57,11 +54,9 @@ x <- x |>
     endo = endo_base,
     diag
   ) |>
-  # classify_hcpcs() |>
   fastplyr::f_mutate(
     fastplyr::across(
       c(
-        mod,
         stat,
         has_rvu,
         pctc,
@@ -78,25 +73,27 @@ x <- x |>
     )
   )
 
-col_ind <- colnames(x)[c(1, 6:8, 13:26)]
-col_rvu <- colnames(x)[c(1, 6:7, 9:13)]
+x
 
-rvu <- collapse::slt(x, col_rvu) |>
+hcpcs <- collapse::gvr(x, "^hcpcs$|^stat$|^desc$") |>
+  collapse::mtt(hcpcs = substr(hcpcs, 1, 5)) |>
+  collapse::funique() |>
+  classify_hcpcs()
+
+rvu <- collapse::gvr(x, "^hcpcs$|^rvu_|_rvu$") |>
   collapse::rsplit(~has_rvu) |>
-  rlang::set_names(c("no_rvu", "has_rvu"))
+  rlang::set_names(c("no_rvu", "has_rvu")) |>
+  _$has_rvu
 
-no_rvu <- rvu$no_rvu$hcpcs
-
-rvu$has_rvu <- collapse::rowbind(
-  rvu$has_rvu |>
-    collapse::sbt(rvu_pe_fac == rvu_pe_non, -rvu_pe_fac) |>
-    collapse::frename(rvu_pe = rvu_pe_non) |>
+rvu <- collapse::rowbind(
+  collapse::sbt(rvu, rvu_pe_fac == rvu_pe_non, -rvu_pe_fac) |>
+    collapse::rnm(rvu_pe = rvu_pe_non) |>
     collapse::mtt(pos = "E"),
-  rvu$has_rvu |>
-    collapse::sbt(rvu_pe_fac != rvu_pe_non) |>
+  collapse::sbt(rvu, rvu_pe_fac != rvu_pe_non) |>
     collapse::pivot(
       values = c("rvu_pe_fac", "rvu_pe_non"),
-      names = list(value = "rvu_pe", variable = "pos")
+      names = list(value = "rvu_pe", variable = "pos"),
+      nthreads = 4L
     ) |>
     collapse::mtt(
       pos = as.character(pos),
@@ -112,36 +109,56 @@ rvu$has_rvu <- collapse::rowbind(
   collapse::roworder(hcpcs, pos) |>
   collapse::colorder(hcpcs, rvu_wk, rvu_mp, rvu_pe, pos)
 
-rvu$has_rvu <- rvu$has_rvu |>
-  collapse::rsplit(~has_mod) |>
-  rlang::set_names(c("no_mod", "has_mod"))
+op <- collapse::gvr(x, "^hcpcs$|^has_op$|^op_") |>
+  collapse::roworder(hcpcs) |>
+  collapse::sbt(has_op == 1L, -has_op)
 
-rvu$has_rvu$no_mod <- collapse::slt(rvu$has_rvu$no_mod, -mod)
+pctc <- collapse::gvr(x, "^hcpcs$|^pctc$") |>
+  collapse::roworder(hcpcs) |>
+  collapse::mtt(hcpcs = substr(hcpcs, 1, 5)) |>
+  collapse::funique() |>
+  collapse::sbt(!cheapr::is_na(pctc) & pctc != 0) # |>
+# collapse::mtt(
+#   name = recode_pctc(as.character(pctc)),
+#   desc = recode_pctc(as.character(pctc), "description"))
 
-rvu <- rvu$has_rvu$has_mod |>
-  collapse::mtt(
-    hcpcs = as.character(stringr::str_glue("{hcpcs}-{mod}")),
-    mod = NULL
+surg <- collapse::gvr(x, "^hcpcs$|^surg_") |>
+  collapse::roworder(hcpcs) |>
+  collapse::sbt(
+    !(cheapr::is_na(surg_bilat) &
+      cheapr::is_na(surg_asst) &
+      cheapr::is_na(surg_co) &
+      cheapr::is_na(surg_team))
   ) |>
-  collapse::rowbind(rvu$has_rvu$no_mod) |>
-  collapse::roworder(hcpcs)
+  purrr::set_names(c("hcpcs", "bilat", "asst", "cosurg", "team")) |>
+  collapse::pivot(
+    ids = c("hcpcs"),
+    values = c("bilat", "asst", "cosurg", "team"),
+    names = list(value = "ind", variable = "surg")
+  ) |>
+  collapse::mtt(hcpcs = substr(hcpcs, 1, 5)) |>
+  collapse::funique()
 
-ind <- collapse::slt(x, col_ind) |>
-  collapse::mtt(
-    hcpcs = cheapr::if_else_(
-      has_mod == 1L,
-      as.character(stringr::str_glue("{hcpcs}-{mod}")),
-      hcpcs
-    ),
-    mod = NULL,
-    has_mod = NULL
+ind <- collapse::gvr(x, "^hcpcs$|^glob$|^mult$|^endo$|^diag$") |>
+  collapse::roworder(hcpcs) |>
+  collapse::mtt(hcpcs = substr(hcpcs, 1, 5)) |>
+  collapse::funique() |>
+  collapse::sbt(
+    !(cheapr::is_na(glob) &
+      cheapr::is_na(mult) &
+      cheapr::is_na(endo) &
+      cheapr::is_na(diag))
   )
 
 x <- list(
   file = "RVU24A",
   cf = cf,
+  hcpcs = hcpcs,
   rvu = rvu,
-  ind = ind
+  ind = ind,
+  op = op,
+  pctc = pctc,
+  surg = surg
 )
 
 # hcpcs_idx <- fastplyr::new_tbl(

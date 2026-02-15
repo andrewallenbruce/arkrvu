@@ -246,25 +246,23 @@ cpt_section <- function(hcpcs) {
 classify_hcpcs <- function(df) {
   stopifnot(is.data.frame(df))
 
-  fastplyr::f_mutate(
+  collapse::mtt(
     df,
-    type = hcpcs_type(hcpcs),
+    type = cheapr::as_factor(hcpcs_type(hcpcs)),
     level = hcpcs_level(hcpcs),
     level = cheapr::if_else_(
       level == "HCPCS I",
       cpt_category(hcpcs),
       level
-    ),
+    ) |>
+      cheapr::as_factor(),
     section = cheapr::if_else_(
       level != "HCPCS II",
       cpt_section(hcpcs),
       hcpcs_section(hcpcs)
-    )
+    ) |>
+      cheapr::as_factor()
   ) |>
-    fastplyr::f_mutate(fastplyr::across(
-      c(type, level, section),
-      cheapr::as_factor
-    )) |>
     collapse::colorder(
       hcpcs,
       type,
