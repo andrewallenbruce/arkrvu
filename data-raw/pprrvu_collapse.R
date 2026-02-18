@@ -53,24 +53,6 @@ x <- x |>
     surg_team = team_surg,
     endo = endo_base,
     diag
-  ) |>
-  fastplyr::f_mutate(
-    fastplyr::across(
-      c(
-        stat,
-        has_rvu,
-        pctc,
-        glob,
-        mult,
-        has_op,
-        surg_bilat,
-        surg_asst,
-        surg_co,
-        surg_team,
-        diag
-      ),
-      cheapr::as_factor
-    )
   )
 
 x
@@ -82,8 +64,11 @@ hcpcs <- collapse::gvr(x, "^hcpcs$|^stat$|^desc$") |>
 
 rvu <- collapse::gvr(x, "^hcpcs$|^rvu_|_rvu$") |>
   collapse::rsplit(~has_rvu) |>
-  rlang::set_names(c("no_rvu", "has_rvu")) |>
-  _$has_rvu
+  rlang::set_names(c("no_rvu", "has_rvu"))
+
+no_rvu <- rvu$no_rvu$hcpcs
+
+rvu <- rvu$has_rvu
 
 rvu <- collapse::rowbind(
   collapse::sbt(rvu, rvu_pe_fac == rvu_pe_non, -rvu_pe_fac) |>
@@ -113,14 +98,16 @@ op <- collapse::gvr(x, "^hcpcs$|^has_op$|^op_") |>
   collapse::roworder(hcpcs) |>
   collapse::sbt(has_op == 1L, -has_op)
 
+# collapse::fcount(op, op_pre)
+
 pctc <- collapse::gvr(x, "^hcpcs$|^pctc$") |>
   collapse::roworder(hcpcs) |>
   collapse::mtt(hcpcs = substr(hcpcs, 1, 5)) |>
   collapse::funique() |>
-  collapse::sbt(!cheapr::is_na(pctc) & pctc != 0) # |>
-# collapse::mtt(
-#   name = recode_pctc(as.character(pctc)),
-#   desc = recode_pctc(as.character(pctc), "description"))
+  collapse::sbt(!is.na(pctc)) |>
+  collapse::sbt(pctc != "0")
+
+# collapse::fcount(pctc, pctc)
 
 surg <- collapse::gvr(x, "^hcpcs$|^surg_") |>
   collapse::roworder(hcpcs) |>
@@ -131,26 +118,42 @@ surg <- collapse::gvr(x, "^hcpcs$|^surg_") |>
       cheapr::is_na(surg_team))
   ) |>
   purrr::set_names(c("hcpcs", "bilat", "asst", "cosurg", "team")) |>
+  collapse::mtt(hcpcs = substr(hcpcs, 1, 5)) |>
+  collapse::funique() |>
   collapse::pivot(
     ids = c("hcpcs"),
     values = c("bilat", "asst", "cosurg", "team"),
     names = list(value = "ind", variable = "surg")
   ) |>
-  collapse::mtt(hcpcs = substr(hcpcs, 1, 5)) |>
-  collapse::funique()
+  collapse::sbt(!is.na(ind))
 
-ind <- collapse::gvr(x, "^hcpcs$|^glob$|^mult$|^endo$|^diag$") |>
-  collapse::roworder(hcpcs) |>
+# collapse::fcount(surg, ind)
+
+endo <- collapse::gvr(x, "^hcpcs$|^endo$") |>
+  collapse::mtt(hcpcs = substr(hcpcs, 1, 5)) |>
+  collapse::sbt(!is.na(endo)) |>
+  collapse::funique() |>
+  collapse::roworder(hcpcs)
+
+ind <- collapse::gvr(x, "^hcpcs$|^glob$|^mult$|^diag$") |>
   collapse::mtt(hcpcs = substr(hcpcs, 1, 5)) |>
   collapse::funique() |>
+  collapse::roworder(hcpcs) |>
   collapse::sbt(
     !(cheapr::is_na(glob) &
       cheapr::is_na(mult) &
-      cheapr::is_na(endo) &
       cheapr::is_na(diag))
-  )
+  ) |>
+  collapse::pivot(
+    ids = c("hcpcs"),
+    values = c("glob", "mult", "diag"),
+    names = list(value = "ind", variable = "desc")
+  ) |>
+  collapse::sbt(!cheapr::is_na(ind))
 
-x <- list(
+collapse::fcount(ind, ind)
+
+file <- list(
   file = "RVU24A",
   cf = cf,
   hcpcs = hcpcs,
@@ -158,8 +161,26 @@ x <- list(
   ind = ind,
   op = op,
   pctc = pctc,
-  surg = surg
+  surg = surg,
+  endo = endo
 )
+
+
+file$ind |>
+  collapse::mtt(
+    ind = as.character(ind),
+    re = cheapr::val_match(
+      as.character(desc),
+      "glob" ~ recode_glob(ind),
+      "mult" ~ recode_mult(ind),
+      "diag" ~ recode_diag(ind),
+      .default = NA_character_
+    )
+  ) |>
+  collapse::fcount(desc, re, sort = TRUE)
+
+file$hcpcs |>
+  collapse::fcount(stat, sort = TRUE)
 
 # hcpcs_idx <- fastplyr::new_tbl(
 #   idx = indexthis::to_index(hcpcs_idx$hcpcs),

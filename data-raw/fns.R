@@ -1,9 +1,9 @@
 nine_ <- function(x) {
-  cheapr::as_factor(cheapr::if_else_(x == "9", NA_character_, x))
+  cheapr::if_else_(x == "9", NA_character_, x)
 }
 
 bin_ <- function(x) {
-  cheapr::as_factor(cheapr::if_else_(cheapr::is_na(x), 0L, 1L))
+  cheapr::if_else_(cheapr::is_na(x), 0L, 1L)
 }
 
 glob_ <- function(x) {
@@ -17,20 +17,19 @@ glob_ <- function(x) {
     "YYY" ~ "Y",
     "ZZZ" ~ "Z",
     .default = NA_character_
-  ) |>
-    cheapr::as_factor()
+  )
 }
 
 diag_ <- function(x) {
-  cheapr::as_factor(cheapr::if_else_(x == "88", "1", NA_character_))
+  cheapr::if_else_(x == "88", "1", NA_character_)
 }
 
 has_rvu_ <- function(nf, fac) {
-  cheapr::as_factor(cheapr::if_else_((nf + fac) > 0L, 1L, 0L))
+  cheapr::if_else_((nf + fac) > 0L, 1L, 0L)
 }
 
 has_op <- function(pre, intra, post) {
-  (pre + intra + post) |> cheapr::as_factor()
+  (pre + intra + post)
 }
 
 add_zip_link <- function(df) {
