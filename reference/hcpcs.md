@@ -5,6 +5,8 @@ Validate HCPCS Codes
 ## Usage
 
 ``` r
+is_hcpcs(hcpcs)
+
 hcpcs_type(hcpcs)
 
 hcpcs_level(hcpcs)
@@ -149,12 +151,16 @@ I requirements:
 ``` r
 x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA, "1164")
 y <- c("39503", "99215", "99140", "70010", "0222U", "V5299", "7010F")
+x[which(is_hcpcs(x))]
+#> [1] "T1503" "G0478" "81301" "69641" "0583F" "0779T"
+x[which(!is_hcpcs(x))]
+#> [1] NA     "1164"
 
 fastplyr::new_tbl(hcpcs = c(x, y)) |>
    classify_hcpcs()
 #> # A tibble: 15 × 4
 #>    hcpcs type  level    section                
-#>  * <chr> <fct> <fct>    <fct>                  
+#>  * <chr> <chr> <chr>    <chr>                  
 #>  1 T1503 HCPCS HCPCS II Medicaid               
 #>  2 G0478 HCPCS HCPCS II Professional           
 #>  3 81301 CPT   CPT I    Pathology              

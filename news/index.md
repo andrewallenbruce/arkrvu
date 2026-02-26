@@ -1,5 +1,11 @@
 # Changelog
 
+## arkrvu 0.0.1.9041
+
+- fixed mistake in
+  [`is_hcpcs()`](https://andrewallenbruce.github.io/arkrvu/reference/hcpcs.md)
+  regex
+
 ## arkrvu 0.0.1.9040
 
 - clean up
