@@ -1,5 +1,10 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# arkrvu 0.0.1.9041
+
+* fixed mistake in `is_hcpcs()` regex
+
+
 # arkrvu 0.0.1.9040
 
 * clean up
