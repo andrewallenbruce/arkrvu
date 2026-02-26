@@ -97,14 +97,17 @@
 #' @examples
 #' x <- c("T1503", "G0478", "81301", "69641", "0583F", "0779T", NA, "1164")
 #' y <- c("39503", "99215", "99140", "70010", "0222U", "V5299", "7010F")
+#' x[which(is_hcpcs(x))]
+#' x[which(!is_hcpcs(x))]
 #'
 #' fastplyr::new_tbl(hcpcs = c(x, y)) |>
 #'    classify_hcpcs()
 NULL
 
-#' @noRd
+#' @rdname hcpcs
+#' @export
 is_hcpcs <- function(hcpcs) {
-  grepl_(hcpcs, "^[A-EGHJ-MP-V]\\d{3}[AFMTU0-9]$")
+  grepl_(hcpcs, "^[A-EGHJ-MP-V0-9]\\d{3}[AFMTU0-9]$")
 }
 
 #' @noRd
@@ -261,20 +264,18 @@ classify_hcpcs <- function(df) {
 
   collapse::mtt(
     df,
-    type = cheapr::as_factor(hcpcs_type(hcpcs)),
+    type = hcpcs_type(hcpcs),
     level = hcpcs_level(hcpcs),
     level = cheapr::if_else_(
       level == "HCPCS I",
       cpt_category(hcpcs),
       level
-    ) |>
-      cheapr::as_factor(),
+    ),
     section = cheapr::if_else_(
       level != "HCPCS II",
       cpt_section(hcpcs),
       hcpcs_section(hcpcs)
-    ) |>
-      cheapr::as_factor()
+    )
   ) |>
     collapse::colorder(
       hcpcs,
