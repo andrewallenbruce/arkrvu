@@ -1,5 +1,9 @@
 # Changelog
 
+## arkrvu 0.0.1.9042
+
+- internal data structure work
+
 ## arkrvu 0.0.1.9041
 
 - fixed mistake in
